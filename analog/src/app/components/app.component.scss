@@ -1,0 +1,54 @@
+$sidenavWidth: 3.5em;
+
+.base {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  height: 100%;
+  width: 100%;
+
+  overflow: hidden;
+}
+
+.header-spacer {
+  flex: 1 1 auto;
+}
+
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: $sidenavWidth;
+  overflow: hidden;
+  transition: width 0.3s;
+
+  button,
+  a {
+    width: 100%;
+    text-align: left;
+    height: 13vh;
+
+    .material-icons {
+      margin-right: 0.35em;
+    }
+  }
+
+  .bottom {
+    margin-top: auto;
+  }
+}
+
+.content-container {
+  width: calc(100% - #{$sidenavWidth});
+  margin-left: $sidenavWidth !important;
+
+  transition: margin-left 0.3s;
+}

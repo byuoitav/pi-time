@@ -1,0 +1,43 @@
+.login {
+  height: 90%;
+  width: 100%;
+
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+
+  .id {
+    height: 19vh;
+    font-size: 8vh;
+  }
+
+  .logo {
+    width: 50vh;
+    height: 50vh;
+  }
+}
+
+.num-pad {
+  display: grid;
+  grid-gap: 2vh 2vh;
+  grid-template-columns: auto auto auto;
+
+  button {
+    height: 17vh;
+    width: 17vh;
+    font-size: 4vh;
+
+    &.num {
+      font-size: 5vh;
+    }
+  }
+}
