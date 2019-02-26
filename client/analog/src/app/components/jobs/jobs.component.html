@@ -7,7 +7,7 @@
   <mat-card class="card jobs">
     <mat-grid-list
       class="grid"
-      cols="{{ emp?.showWorkOrders ? 6 : 5 }}"
+      cols="{{ emp?.showWorkOrders ? 5 : 4 }}"
       rowHeight="16vh"
       gutterSize=".2vh"
     >
@@ -27,18 +27,25 @@
       >
         WO
       </mat-grid-tile>
-      <mat-grid-tile colspan="2" rowspan="1"> </mat-grid-tile>
+      <mat-grid-tile colspan="1" rowspan="1"> </mat-grid-tile>
 
       <ng-container *ngFor="let job of emp?.jobs">
+        <!-- name -->
         <mat-grid-tile colspan="1" rowspan="1" class="job tile">
           {{ job?.name }}
         </mat-grid-tile>
+
+        <!-- week total -->
         <mat-grid-tile colspan="1" rowspan="1" class="job tile">
           {{ job?.totalTime.week | hours }}
         </mat-grid-tile>
+
+        <!-- pay period total -->
         <mat-grid-tile colspan="1" rowspan="1" class="job tile">
           {{ job?.totalTime.payPeriod | hours }}
         </mat-grid-tile>
+
+        <!-- work order -->
         <mat-grid-tile
           *ngIf="emp?.showWorkOrders"
           colspan="1"
@@ -63,6 +70,17 @@
               Change WO/SR
             </button>
           </div>
+        </mat-grid-tile>
+
+        <!-- clock in/out -->
+        <mat-grid-tile colspan="1" rowspan="1">
+          <button *ngIf="!job?.clockedIn" color="primary" mat-raised-button>
+            Clock In
+          </button>
+
+          <button *ngIf="job?.clockedIn" color="warn" mat-raised-button>
+            Clock Out
+          </button>
         </mat-grid-tile>
       </ng-container>
     </mat-grid-list>

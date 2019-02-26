@@ -1,13 +1,24 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="side" class="sidenav" opened>
-    <button
-      mat-flat-button
-      color=""
-      routerLink="jobs"
-      routerLinkActive="mat-accent"
-    >
-      <mat-icon>home</mat-icon>
-    </button>
+  <mat-sidenav #sidenav mode="side" opened>
+    <div class="sidenav">
+      <button
+        mat-flat-button
+        color=""
+        routerLink="jobs"
+        routerLinkActive="mat-accent"
+      >
+        <mat-icon>home</mat-icon>
+      </button>
+
+      <button
+        mat-flat-button
+        color=""
+        routerLink="tmp"
+        routerLinkActive="mat-accent"
+      >
+        <mat-icon>people</mat-icon>
+      </button>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
