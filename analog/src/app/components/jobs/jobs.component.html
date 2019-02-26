@@ -1,4 +1,53 @@
-<mat-card class="mat-primary">
-  <span>Week Total: {{ emp?.totalTime?.weekTotal }}</span>
-  <span>Pay Period Total: {{ emp?.totalTime?.payPeriodTotal }}</span>
-</mat-card>
+<div class="container">
+  <mat-card class="card totals">
+    <span>Week Total: {{ emp?.totalTime?.week | hours }}</span>
+    <span>Pay Period Total: {{ emp?.totalTime?.payPeriod | hours }}</span>
+  </mat-card>
+
+  <mat-card class="card jobs">
+    <mat-grid-list
+      class="grid"
+      cols="{{ emp?.showWorkOrders ? 6 : 5 }}"
+      rowHeight="10vh"
+      gutterSize=".2vh"
+    >
+      <!-- headers -->
+      <mat-grid-tile colspan="1" rowspan="1" class="tile">
+        Job Title
+      </mat-grid-tile>
+      <mat-grid-tile colspan="1" rowspan="1" class="tile"> Week </mat-grid-tile>
+      <mat-grid-tile colspan="1" rowspan="1" class="tile">
+        Pay Period
+      </mat-grid-tile>
+      <mat-grid-tile
+        *ngIf="emp?.showWorkOrders"
+        colspan="1"
+        rowspan="1"
+        class="tile"
+      >
+        WO
+      </mat-grid-tile>
+      <mat-grid-tile colspan="2" rowspan="1"> </mat-grid-tile>
+
+      <ng-container *ngFor="let job of emp?.jobs">
+        <mat-grid-tile colspan="1" rowspan="1" class="job tile">
+          {{ job?.name }}
+        </mat-grid-tile>
+        <mat-grid-tile colspan="1" rowspan="1" class="job tile">
+          {{ job?.totalTime.week | hours }}
+        </mat-grid-tile>
+        <mat-grid-tile colspan="1" rowspan="1" class="job tile">
+          {{ job?.totalTime.payPeriod | hours }}
+        </mat-grid-tile>
+        <mat-grid-tile
+          *ngIf="emp?.showWorkOrders"
+          colspan="1"
+          rowspan="1"
+          class="job tile"
+        >
+          <div class="work-order"></div>
+        </mat-grid-tile>
+      </ng-container>
+    </mat-grid-list>
+  </mat-card>
+</div>

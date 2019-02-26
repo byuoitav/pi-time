@@ -17,6 +17,8 @@ type Employee struct {
 
 	// TotalTime is the sum of time that this employee has worked across all jobs
 	TotalTime TotalTime `json:"total-time"`
+
+	ShowWorkOrders bool `json:"show-work-orders"`
 }
 
 // Job .

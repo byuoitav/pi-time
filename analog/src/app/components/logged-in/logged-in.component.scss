@@ -1,0 +1,33 @@
+$sidenavWidth: 3.5em;
+
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  width: $sidenavWidth;
+  overflow: hidden;
+
+  button,
+  a {
+    width: 100%;
+    text-align: left;
+    height: 9vh;
+
+    .material-icons {
+      margin-right: 0.35em;
+    }
+  }
+}
+
+.sidenav-content {
+  width: calc(100% - #{$sidenavWidth});
+  margin-left: $sidenavWidth;
+
+  overflow: hidden;
+}

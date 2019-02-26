@@ -19,8 +19,9 @@ export class JobsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.parent.data.subscribe(data => {
+    this.route.parent.data.subscribe((data: { employee: Employee }) => {
       console.log("hi from jobs", data);
+      this.emp = data.employee;
     });
   }
 }

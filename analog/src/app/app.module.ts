@@ -10,7 +10,8 @@ import {
   MatInputModule,
   MatSidenavModule,
   MatIconModule,
-  MatCardModule
+  MatCardModule,
+  MatDividerModule
 } from "@angular/material";
 import "hammerjs";
 
@@ -24,6 +25,7 @@ import { AppComponent } from "./components/app.component";
 import { JobsComponent } from "./components/jobs/jobs.component";
 import { LoginComponent } from "./components/login/login.component";
 import { LoggedInComponent } from "./components/logged-in/logged-in.component";
+import { HoursPipe } from "./pipes/hours.pipe";
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { LoggedInComponent } from "./components/logged-in/logged-in.component";
     JobsComponent,
     ByuIDPipe,
     LoginComponent,
-    LoggedInComponent
+    LoggedInComponent,
+    HoursPipe
   ],
   imports: [
     BrowserModule,
@@ -45,7 +48,8 @@ import { LoggedInComponent } from "./components/logged-in/logged-in.component";
     MatInputModule,
     MatSidenavModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    MatDividerModule
   ],
   providers: [APIService],
   bootstrap: [AppComponent]

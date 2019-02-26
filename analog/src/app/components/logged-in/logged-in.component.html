@@ -1,1 +1,16 @@
-<router-outlet></router-outlet>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" class="sidenav" opened>
+    <button
+      mat-flat-button
+      color=""
+      routerLink="jobs"
+      routerLinkActive="mat-accent"
+    >
+      <mat-icon>home</mat-icon>
+    </button>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

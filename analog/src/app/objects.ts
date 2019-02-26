@@ -109,7 +109,7 @@ export class Job {
   name: string = undefined;
 
   @JsonProperty("total-time", TotalTime, true)
-  totalTime: string = undefined;
+  totalTime: TotalTime = undefined;
 
   @JsonProperty("clocked-in", Boolean, true)
   clockedIn: boolean = undefined;
@@ -140,4 +140,7 @@ export class Employee {
 
   @JsonProperty("total-time", TotalTime, true)
   totalTime: TotalTime = undefined;
+
+  @JsonProperty("show-work-orders", Boolean, true)
+  showWorkOrders: boolean = undefined;
 }
