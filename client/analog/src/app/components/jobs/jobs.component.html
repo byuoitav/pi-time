@@ -8,7 +8,7 @@
     <mat-grid-list
       class="grid"
       cols="{{ emp?.showWorkOrders ? 6 : 5 }}"
-      rowHeight="10vh"
+      rowHeight="16vh"
       gutterSize=".2vh"
     >
       <!-- headers -->
@@ -45,7 +45,24 @@
           rowspan="1"
           class="job tile"
         >
-          <div class="work-order"></div>
+          <div class="work-order">
+            <button
+              class="mat-primary"
+              mat-stroked-button
+              color="primary"
+              disabled
+            >
+              {{ job?.currentWorkOrder?.id }}
+            </button>
+            <button
+              color="primary"
+              (click)="selectWo(job)"
+              (press)="selectWo(job)"
+              mat-raised-button
+            >
+              Change WO/SR
+            </button>
+          </div>
         </mat-grid-tile>
       </ng-container>
     </mat-grid-list>

@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from "@angular/common/http";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   MatToolbarModule,
   MatButtonModule,
@@ -11,7 +12,10 @@ import {
   MatSidenavModule,
   MatIconModule,
   MatCardModule,
-  MatDividerModule
+  MatDividerModule,
+  MatDialogModule,
+  MAT_DIALOG_DEFAULT_OPTIONS,
+  MatSelectModule
 } from "@angular/material";
 import "hammerjs";
 
@@ -26,6 +30,7 @@ import { JobsComponent } from "./components/jobs/jobs.component";
 import { LoginComponent } from "./components/login/login.component";
 import { LoggedInComponent } from "./components/logged-in/logged-in.component";
 import { HoursPipe } from "./pipes/hours.pipe";
+import { ChangeWoDialog } from "./dialogs/change-wo/change-wo.dialog";
 
 @NgModule({
   declarations: [
@@ -34,13 +39,16 @@ import { HoursPipe } from "./pipes/hours.pipe";
     ByuIDPipe,
     LoginComponent,
     LoggedInComponent,
-    HoursPipe
+    HoursPipe,
+    ChangeWoDialog
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatToolbarModule,
     MatButtonModule,
     MatGridListModule,
@@ -49,9 +57,20 @@ import { HoursPipe } from "./pipes/hours.pipe";
     MatSidenavModule,
     MatIconModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDialogModule,
+    MatSelectModule
   ],
-  providers: [APIService],
+  providers: [
+    APIService,
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        hasBackdrop: true
+      }
+    }
+  ],
+  entryComponents: [ChangeWoDialog],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
