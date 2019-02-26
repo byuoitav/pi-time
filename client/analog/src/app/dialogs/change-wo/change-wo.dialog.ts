@@ -10,6 +10,10 @@ import { Job, WorkOrder } from "../../objects";
 })
 export class ChangeWoDialog implements OnInit {
   workOrders: Array<WorkOrder> = new Array<WorkOrder>();
+  payTypes: Array<string> = new Array<string>();
+
+  selectedWO: WorkOrder;
+  selectedPay: string;
 
   constructor(
     public ref: MatDialogRef<ChangeWoDialog>,
@@ -21,7 +25,8 @@ export class ChangeWoDialog implements OnInit {
     this.workOrders.push(data.job.currentWorkOrder);
     this.workOrders.push(...data.job.availableWorkOrders);
 
-    // build 
+    // build pay types list
+    this.payTypes.push(...data.job.payTypes);
 
     console.log("work orders", this.workOrders);
   }

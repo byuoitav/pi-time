@@ -30,7 +30,7 @@ export class JobsComponent implements OnInit {
 
   selectWo(j: Job) {
     const ref = this.dialog.open(ChangeWoDialog, {
-      width: "35vw",
+      width: "40vw",
       data: {
         job: j
       }
