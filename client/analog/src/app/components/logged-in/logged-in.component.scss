@@ -9,15 +9,16 @@ $sidenavWidth: 3.5em;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  height: calc(100% - 64px); // the height of the top bar
 
   width: $sidenavWidth;
   overflow: hidden;
 
   button,
   a {
+    flex: 1 1 auto;
     width: 100%;
     text-align: left;
-    height: 9vh;
 
     .material-icons {
       margin-right: 0.35em;

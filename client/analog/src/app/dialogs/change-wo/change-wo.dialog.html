@@ -1,0 +1,33 @@
+<h1 mat-dialog-title>Change WO/SR</h1>
+
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-select [(value)]="selectedWO" placeholder="Select a Work Order">
+      <mat-select-trigger> {{selectedWO.id}} </mat-select-trigger>
+      <mat-option *ngFor="let wo of workOrders" [value]="wo">
+        {{wo?.id}}: {{wo?.name}}
+      </mat-option>
+    </mat-select>
+    <mat-hint>{{selectedWO.name}}</mat-hint>
+  </mat-form-field>
+
+  <span class="space"></span>
+
+  <mat-form-field>
+    <mat-select [(value)]="selectedPay" placeholder="Select a SR (TODO?)">
+      <mat-option *ngFor="let t of payTypes" [value]="t"> {{t}} </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions>
+  <button
+    color="warn"
+    (click)="onNoClick()"
+    (press)="onNoClick()"
+    mat-raised-button
+  >
+    Cancel
+  </button>
+  <button color="primary" mat-raised-button cdkFocusInitial>Submit</button>
+</div>
