@@ -6,6 +6,7 @@ import { AppComponent } from "./components/app.component";
 import { JobsComponent } from "./components/jobs/jobs.component";
 import { LoginComponent } from "./components/login/login.component";
 import { LoggedInComponent } from "./components/logged-in/logged-in.component";
+import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
 import { EmployeeResolverService } from "./services/employee-resolver.service";
 
 const routes: Routes = [
@@ -32,6 +33,10 @@ const routes: Routes = [
           {
             path: "jobs",
             component: JobsComponent
+          },
+          {
+            path: "workorders",
+            component: WorkOrdersComponent
           }
         ]
       }

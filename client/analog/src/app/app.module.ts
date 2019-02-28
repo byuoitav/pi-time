@@ -15,7 +15,9 @@ import {
   MatDividerModule,
   MatDialogModule,
   MAT_DIALOG_DEFAULT_OPTIONS,
-  MatSelectModule
+  MatSelectModule,
+  MatNativeDateModule,
+  MatDatepickerModule
 } from "@angular/material";
 import "hammerjs";
 
@@ -31,6 +33,8 @@ import { LoginComponent } from "./components/login/login.component";
 import { LoggedInComponent } from "./components/logged-in/logged-in.component";
 import { HoursPipe } from "./pipes/hours.pipe";
 import { ChangeWoDialog } from "./dialogs/change-wo/change-wo.dialog";
+import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
+import { JobTimeSelectComponent } from "./components/job-time-select/job-time-select.component";
 
 @NgModule({
   declarations: [
@@ -40,7 +44,9 @@ import { ChangeWoDialog } from "./dialogs/change-wo/change-wo.dialog";
     LoginComponent,
     LoggedInComponent,
     HoursPipe,
-    ChangeWoDialog
+    ChangeWoDialog,
+    WorkOrdersComponent,
+    JobTimeSelectComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +65,9 @@ import { ChangeWoDialog } from "./dialogs/change-wo/change-wo.dialog";
     MatCardModule,
     MatDividerModule,
     MatDialogModule,
-    MatSelectModule
+    MatSelectModule,
+    MatNativeDateModule,
+    MatDatepickerModule
   ],
   providers: [
     APIService,

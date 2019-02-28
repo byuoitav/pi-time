@@ -1,0 +1,56 @@
+<mat-sidenav-container
+  *ngIf="employee?.jobs?.length > 1; else oneJob"
+  class="sidenav-container"
+>
+  <mat-sidenav #sidenav mode="side" opened>
+    <div class="sidenav">
+      <button *ngFor="let job of employee?.jobs" mat-flat-button color="">
+        i'm a button
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <ng-container
+      *ngTemplateOutlet="datepick; context: { job: (employee?.jobs)[0] }"
+    >
+    </ng-container>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<ng-template #oneJob>
+  <ng-container
+    *ngTemplateOutlet="datepick; context: { job: (employee?.jobs)[0] }"
+  >
+  </ng-container>
+</ng-template>
+
+<ng-template #datepick let-job="job">
+  <mat-card class="card header">
+    <button mat-button (click)="addToDate(-1)" (press)="addToDate(-1)">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <div class="text">
+      <button mat-button (click)="picker.open()" (press)="picker.open()">
+        {{ selected | date: "fullDate" }}
+      </button>
+    </div>
+
+    <button mat-button (click)="addToDate(1)" (press)="addToDate(1)">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </mat-card>
+  <mat-card> <ng-content> </ng-content> </mat-card>
+</ng-template>
+
+<div class="hidden">
+  <input
+    [matDatepicker]="picker"
+    (dateChange)="selectDate($event.value)"
+    [min]="min"
+    [max]="max"
+    matInput
+  />
+</div>
+<mat-datepicker #picker touchUi></mat-datepicker>

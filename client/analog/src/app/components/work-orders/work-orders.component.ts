@@ -4,14 +4,13 @@ import { MatDialog } from "@angular/material";
 
 import { APIService } from "../../services/api.service";
 import { Employee, Job } from "../../objects";
-import { ChangeWoDialog } from "../../dialogs/change-wo/change-wo.dialog";
 
 @Component({
-  selector: "jobs",
-  templateUrl: "./jobs.component.html",
-  styleUrls: ["./jobs.component.scss"]
+  selector: "work-orders",
+  templateUrl: "./work-orders.component.html",
+  styleUrls: ["./work-orders.component.scss"]
 })
-export class JobsComponent implements OnInit {
+export class WorkOrdersComponent implements OnInit {
   public emp: Employee;
 
   constructor(
@@ -23,20 +22,10 @@ export class JobsComponent implements OnInit {
 
   ngOnInit() {
     this.route.parent.data.subscribe((data: { employee: Employee }) => {
+      console.log("hi from work orders", data);
       this.emp = data.employee;
     });
   }
 
-  selectWo(j: Job) {
-    const ref = this.dialog.open(ChangeWoDialog, {
-      width: "40vw",
-      data: {
-        job: j
-      }
-    });
-
-    ref.afterClosed().subscribe(result => {
-      console.log("closed with result", result);
-    });
-  }
+  lunchPunch(j: Job) {}
 }
