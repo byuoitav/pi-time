@@ -27,17 +27,27 @@
 
 <ng-template #datepick let-job="job">
   <mat-card class="card header">
-    <button mat-button (click)="addToDate(-1)" (press)="addToDate(-1)">
+    <button
+      mat-button
+      [disabled]="!isDateValid(addToDate(-1))"
+      (click)="date = addToDate(-1)"
+      (press)="date = addToDate(-1)"
+    >
       <mat-icon>chevron_left</mat-icon>
     </button>
 
     <div class="text">
       <button mat-button (click)="picker.open()" (press)="picker.open()">
-        {{ selected | date: "fullDate" }}
+        {{ date | date: "fullDate" }}
       </button>
     </div>
 
-    <button mat-button (click)="addToDate(1)" (press)="addToDate(1)">
+    <button
+      mat-button
+      [disabled]="!isDateValid(addToDate(1))"
+      (click)="date = addToDate(1)"
+      (press)="date = addToDate(1)"
+    >
       <mat-icon>chevron_right</mat-icon>
     </button>
   </mat-card>
@@ -47,9 +57,10 @@
 <div class="hidden">
   <input
     [matDatepicker]="picker"
-    (dateChange)="selectDate($event.value)"
+    (dateChange)="date = $event.value"
     [min]="min"
     [max]="max"
+    [matDatepickerFilter]="isDateValid"
     matInput
   />
 </div>

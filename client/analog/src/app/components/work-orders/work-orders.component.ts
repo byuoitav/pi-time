@@ -11,21 +11,34 @@ import { Employee, Job } from "../../objects";
   styleUrls: ["./work-orders.component.scss"]
 })
 export class WorkOrdersComponent implements OnInit {
-  public emp: Employee;
+  emp: Employee;
+  minDate: Date;
+  maxDate: Date;
+  date: Date;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private api: APIService,
     public dialog: MatDialog
-  ) {}
+  ) {
+    this.maxDate = new Date();
+    this.minDate = new Date();
+  }
 
   ngOnInit() {
     this.route.parent.data.subscribe((data: { employee: Employee }) => {
       console.log("hi from work orders", data);
       this.emp = data.employee;
     });
+
+    this.date = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 29);
   }
+
+  validDate = (d: Date): boolean => {
+    return false;
+  };
 
   lunchPunch(j: Job) {}
 }
