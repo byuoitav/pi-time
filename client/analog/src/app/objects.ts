@@ -100,7 +100,7 @@ export class Day {
   hasWorkOrderExceptions: boolean = undefined;
 
   @JsonProperty("work-order-billings", [WorkOrderBilling], true)
-  workOrderBilings: Array<WorkOrderBilling> = new Array<WorkOrderBilling>();
+  workOrderBillings: Array<WorkOrderBilling> = new Array<WorkOrderBilling>();
 }
 
 @JsonObject("Job")

@@ -3,7 +3,14 @@ import { HttpClient } from "@angular/common/http";
 import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript";
 import { BehaviorSubject } from "rxjs";
 
-import { Employee, Job, TotalTime, WorkOrder } from "../objects";
+import {
+  Employee,
+  Job,
+  TotalTime,
+  WorkOrder,
+  Day,
+  WorkOrderBilling
+} from "../objects";
 
 @Injectable({ providedIn: "root" })
 export class APIService {
@@ -58,6 +65,27 @@ export class APIService {
     job1.currentWorkOrder = wo1;
     job1.availableWorkOrders.push(wo2);
     job1.availableWorkOrders.push(wo3);
+
+    const d1 = new Day();
+    d1.time = new Date();
+    d1.time.setDate(d1.time.getDate() - 3); // 3 days ago
+    d1.hasTimesheetExceptions = false;
+    d1.punchedHours = 3.39 * 60;
+    d1.otherHours = 0;
+
+    const wob1 = new WorkOrderBilling();
+    wob1.workOrder = wo1;
+    wob1.billedTime = 3.5 * 60;
+    d1.workOrderBillings.push(wob1);
+
+    const wob2 = new WorkOrderBilling();
+    wob2.workOrder = wo2;
+    wob2.billedTime = 1 * 60;
+    d1.workOrderBillings.push(wob2);
+
+    job1.days.push(d1);
+
+    d1.hasWorkOrderExceptions = false;
 
     jobs.push(job1);
 

@@ -1,27 +1,23 @@
 <mat-sidenav-container
-  *ngIf="employee?.jobs?.length > 1; else oneJob"
+  *ngIf="jobs?.length > 1; else oneJob"
   class="sidenav-container"
 >
   <mat-sidenav #sidenav mode="side" opened>
     <div class="sidenav">
-      <button *ngFor="let job of employee?.jobs" mat-flat-button color="">
+      <button *ngFor="let job of jobs" mat-flat-button color="">
         i'm a button
       </button>
     </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
-    <ng-container
-      *ngTemplateOutlet="datepick; context: { job: (employee?.jobs)[0] }"
-    >
+    <ng-container *ngTemplateOutlet="datepick; context: { job: jobs[0] }">
     </ng-container>
   </mat-sidenav-content>
 </mat-sidenav-container>
 
 <ng-template #oneJob>
-  <ng-container
-    *ngTemplateOutlet="datepick; context: { job: (employee?.jobs)[0] }"
-  >
+  <ng-container *ngTemplateOutlet="datepick; context: { job: jobs[0] }">
   </ng-container>
 </ng-template>
 
@@ -29,9 +25,9 @@
   <mat-card class="card header">
     <button
       mat-button
-      [disabled]="!isDateValid(addToDate(-1))"
-      (click)="date = addToDate(-1)"
-      (press)="date = addToDate(-1)"
+      [disabled]="prevValidDate(date) === undefined"
+      (click)="date = prevValidDate(date)"
+      (press)="date = prevValidDate(date)"
     >
       <mat-icon>chevron_left</mat-icon>
     </button>
@@ -44,14 +40,14 @@
 
     <button
       mat-button
-      [disabled]="!isDateValid(addToDate(1))"
-      (click)="date = addToDate(1)"
-      (press)="date = addToDate(1)"
+      [disabled]="nextValidDate(date) === undefined"
+      (click)="date = nextValidDate(date)"
+      (press)="date = nextValidDate(date)"
     >
       <mat-icon>chevron_right</mat-icon>
     </button>
   </mat-card>
-  <mat-card> <ng-content> </ng-content> </mat-card>
+  <ng-content> </ng-content>
 </ng-template>
 
 <div class="hidden">

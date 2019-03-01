@@ -12,6 +12,9 @@ import { Employee, Job } from "../../objects";
 })
 export class WorkOrdersComponent implements OnInit {
   emp: Employee;
+  jobs: Array<Job> = new Array<Job>();
+  job: Job;
+
   minDate: Date;
   maxDate: Date;
   date: Date;
@@ -30,6 +33,22 @@ export class WorkOrdersComponent implements OnInit {
     this.route.parent.data.subscribe((data: { employee: Employee }) => {
       console.log("hi from work orders", data);
       this.emp = data.employee;
+
+      // build jobs list
+      for (const job of this.emp.jobs) {
+        for (const day of job.days) {
+          if (day.workOrderBillings.length > 0) {
+            this.jobs.push(job);
+            break;
+          }
+        }
+      }
+
+      if (this.jobs.length == 1) {
+        this.job = this.jobs[0];
+      }
+
+      // build valid dates list
     });
 
     this.date = new Date();
@@ -37,6 +56,12 @@ export class WorkOrdersComponent implements OnInit {
   }
 
   validDate = (d: Date): boolean => {
+    for (const day of this.job.days) {
+      if (d.getDate() === day.time.getDate()) {
+        return true;
+      }
+    }
+
     return false;
   };
 

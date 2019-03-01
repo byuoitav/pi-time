@@ -8,7 +8,7 @@ import {
 } from "@angular/core";
 import { MatDatepicker } from "@angular/material";
 
-import { Employee } from "../../objects";
+import { Employee, Job, Day } from "../../objects";
 
 @Component({
   selector: "job-time-select",
@@ -16,28 +16,62 @@ import { Employee } from "../../objects";
   styleUrls: ["./job-time-select.component.scss"]
 })
 export class JobTimeSelectComponent implements OnInit {
-  @Input() employee: Employee;
   @Input() min: Date = new Date();
   @Input() max: Date = new Date();
+  @Input() jobs: Array<Job> = new Array<Job>();
 
   @Input() valid: (date: Date | null) => boolean;
 
-  // two-way binding to date
   @Input()
-  get date() {
-    this.dateVal = this.dateVal;
+  get day() {
+    return this.dayVal;
+  }
+  set day(val) {
+    this.dayVal = val;
+    this.dayChange.emit(this.dayVal);
+  }
+  private dayVal: Day;
+  @Output() private dayChange = new EventEmitter<Day>();
+
+  get date(val) {
     return this.dateVal;
   }
   set date(val) {
-    if (val < this.min || val > this.max) {
-      return;
+    if (this.isDateValid(val)) {
+      this.dateVal = val;
     }
-
-    this.dateVal = val;
-    this.dateChange.emit(this.dateVal);
   }
   private dateVal: Date;
-  private dateChange = new EventEmitter<Date>();
+
+  job: Job;
+
+  // the currently selected date
+  //@Input()
+  //get date() {
+  //  return this.dateVal;
+  //}
+  //set date(val) {
+  //  if (val < this.min || val > this.max) {
+  //    return;
+  //  }
+
+  //  this.dateVal = val;
+  //  this.dateChange.emit(this.dateVal);
+  //}
+  //private dateVal: Date;
+  //@Output() private dateChange = new EventEmitter<Date>();
+
+  //// the currently selected job
+  //@Input()
+  //get job() {
+  //  return this.jobVal;
+  //}
+  //set job(val) {
+  //  this.jobVal = val;
+  //  this.jobChange.emit(this.jobVal);
+  //}
+  //private jobVal: Job;
+  //@Output() private jobChange = new EventEmitter<Job>();
 
   // TODO date validation (only allow dates that have punches)
   // TODO date warnings
@@ -51,12 +85,21 @@ export class JobTimeSelectComponent implements OnInit {
 
   ngOnInit() {
     if (this.date == null || this.date === undefined) {
-      this.dateVal = new Date();
+      // loop from max -> min to get the first valid date
+      const cur = this.max;
+      while (cur >= this.min) {
+        if (this.isDateValid(cur)) {
+          this.date = cur;
+          break;
+        }
+
+        cur.setDate(cur.getDate() - 1);
+      }
     }
 
     setTimeout(() => {
       this.picker.open();
-    }, 5000);
+    }, 0);
   }
 
   // use => to keep this context
@@ -72,12 +115,42 @@ export class JobTimeSelectComponent implements OnInit {
     return true;
   };
 
-  // TODO this should probably be a function like getnextdec/getnextinc
-  addToDate(x: number): Date {
-    return new Date(
-      this.date.getFullYear(),
-      this.date.getMonth(),
-      this.date.getDate() + x
-    );
+  nextValidDate(d: Date): Date {
+    const cur = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    if (cur >= this.max) {
+      return undefined;
+    }
+
+    cur.setDate(cur.getDate() + 1);
+
+    while (cur <= this.max) {
+      if (this.isDateValid(cur)) {
+        console.log("valid date", cur);
+        return cur;
+      }
+
+      cur.setDate(cur.getDate() + 1);
+    }
+
+    return undefined;
+  }
+
+  prevValidDate(d: Date): Date {
+    const cur = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    if (cur <= this.min) {
+      return undefined;
+    }
+
+    cur.setDate(cur.getDate() - 1);
+
+    while (cur >= this.min) {
+      if (this.isDateValid(cur)) {
+        return cur;
+      }
+
+      cur.setDate(cur.getDate() - 1);
+    }
+
+    return undefined;
   }
 }

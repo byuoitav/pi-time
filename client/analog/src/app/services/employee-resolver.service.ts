@@ -27,7 +27,6 @@ export class EmployeeResolverService implements Resolve<Employee> {
       take(1),
       mergeMap(emp => {
         if (emp) {
-          console.log("retuning employee", emp);
           return of(emp);
         } else {
           // id not found
