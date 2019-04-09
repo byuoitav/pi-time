@@ -33,7 +33,7 @@ export class JobTimeSelectComponent implements OnInit {
   private dayVal: Day;
   @Output() private dayChange = new EventEmitter<Day>();
 
-  get date(val) {
+  get date() {
     return this.dateVal;
   }
   set date(val) {
