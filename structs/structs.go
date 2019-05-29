@@ -1,4 +1,4 @@
-package base
+package structs
 
 import "time"
 
