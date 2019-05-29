@@ -1,10 +1,10 @@
 package socket
 
 import (
-	"log"
 	"net/http"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/gorilla/websocket"
 )
 
@@ -30,20 +30,23 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func ServeWebsocket(w http.ResponseWriter, r *http.Request) {
+//ServeWebsocket will create a wrapped websocket connection with a channel to push data to
+func ServeWebsocket(w http.ResponseWriter, r *http.Request) *Client {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("error: %v", err)
-		return
+		log.L.Errorf("Error upgrading websocket: %v", err)
+		return nil
 	}
 
-	client := &Client{hub: H, conn: conn, send: make(chan interface{}, 256)}
-	client.hub.register <- client
+	client := &Client{conn: conn, send: make(chan interface{}, 256)}
 
 	go client.read()
 	go client.write()
+
+	return client
 }
 
+//Client is a wrapper around the websocket connection with a channel to send outbound messages to
 type Client struct {
 	// the websocket connection
 	conn *websocket.Conn
@@ -53,7 +56,7 @@ type Client struct {
 }
 
 func (c *Client) read() {
-	defer func() {		
+	defer func() {
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -63,11 +66,11 @@ func (c *Client) read() {
 		_, msg, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.Printf("error: %v", err)
+				log.L.Infof("error: %v", err)
 			}
 			break
 		}
-		log.Printf("Recieved message from socket: %s", msg)
+		log.L.Infof("Recieved message from socket: %s", msg)
 	}
 }
 

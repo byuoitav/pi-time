@@ -1,84 +1,125 @@
 package structs
 
-import "time"
+//Timesheet gives all data about the current clock state for an employee and his/her jobs
+type Timesheet struct {
+	//PersonName is the person's name in Last, First format
+	PersonName string `json:"person_name"`
 
-// in general, durations are represented as int's where it is a number in minutes
+	//WeeklyTotal is the total hours worked so far in the week in format h:mm (string)
+	WeeklyTotal string `json:"weekly_total"`
 
-// Employee .
-type Employee struct {
-	// ID is the employees BYU ID number
-	ID string `json:"id"`
+	//PeriodTotal is the total hours worked so far in the pay period in format h:mm (string)
+	PeriodTotal string `json:"period_total"`
 
-	// Name is the employees full name
-	Name string `json:"name"`
-
-	// Jobs is the list of jobs they have
+	//Jobs is the array containing current clcok intformation about each job
 	Jobs []Job `json:"jobs"`
 
-	// TotalTime is the sum of time that this employee has worked across all jobs
-	TotalTime TotalTime `json:"total-time"`
+	//InternationalMessage is used to indicate that a warning should be shown to the user due to hour working limits
+	InternationalMessage string `json:"international_message"`
 }
 
-// Job .
+//Job represents the current state of an employee's job
 type Job struct {
-	// Name is the name of the job
-	Name string `json:"name"`
-
-	// TotalTime is the total time worked for this job
-	TotalTime TotalTime `json:"total-time"`
-
-	// ClockedIn is whether or not they are clock in for this job.
-	ClockedIn bool `json:"clocked-in"`
-
-	// PayTypes represents each of the pay types availble for this job (ie, on call, premium pay, normal, etc)
-	PayTypes []string `json:"pay-types"`
-
-	CurrentWorkOrder    WorkOrder   `json:"current-work-order"`
-	AvailableWorkOrders []WorkOrder `json:"available-work-orders"`
-
-	Days []Day `json:"days"`
+	JobCodeDesc           string    `json:"job_code_description"`
+	PunchType             string    `json:"punch_type"`
+	EmployeeRecord        int       `json:"employee_record"`
+	WeeklySubtotal        string    `json:"weekly_subtotal"`
+	PeriodSubtotal        string    `json:"period_subtotal"`
+	PhysicalFacilities    bool      `json:"physical_facilities"`
+	OperatingUnit         string    `json:"operating_unit"`
+	InvalidAccountMessage string    `json:"invalid_account_message"`
+	TRCs                  []TRC     `json:"trcs"`
+	CurrentWorkOrder      WorkOrder `json:"current_work_order"`
+	CurrentTRC            TRC       `json:"current_trc"`
+	FullPartTime          string    `json:"full_part_time"`
+	HasPunchException     bool      `json:"has_punch_exception"`
+	HasWorkOrderException bool      `json:"has_work_order_exception"`
 }
 
-// Day .
-type Day struct {
-	Date time.Time `json:"date"`
-
-	HasTimesheetExceptions bool    `json:"has-time-sheet-exceptions"`
-	PunchedHours           int     `json:"punched-hours"`
-	OtherHours             int     `json:"other-hours"`
-	Punches                []Punch `json:"punches"`
-
-	HasWorkOrderExceptions bool               `json:"has-work-order-exceptions"`
-	WorkOrderBillings      []WorkOrderBilling `json:"work-order-billings"`
+//TRC is a code for the type of hours that an employee can punch in under
+type TRC struct {
+	TRCID          string `json:"trc_id"`
+	TRCDescription string `json:"trc_description"`
 }
 
-// WorkOrderBilling .
-type WorkOrderBilling struct {
-	WorkOrder  WorkOrder `json:"work-order"`
-	BilledTime int       `json:"billed-time"`
-}
-
-// Punch .
-type Punch struct {
-	Time          time.Time `json:"in-time"`
-	Type          string    `json:"type"`
-	ExceptionType string    `json:"exception-type"`
-}
-
-// WorkOrder .
+//WorkOrder is ID and description for a work order
 type WorkOrder struct {
-	// ID is the work order id (ie, PS-1234-5)
-	ID string `json:"id"`
-
-	// Name is the name/description of this job (ie, Stadium Clean Up)
-	Name string `json:"name"`
+	WorkOrderID          string `json:"work_order_id"`
+	WorkOrderDescription string `json:"work_order_description"`
 }
 
-// TotalTime .
-type TotalTime struct {
-	// Week is The total time clocked in for this week
-	Week int `json:"week"`
+//TimeClockDay represents a day with activity on the clock
+type TimeClockDay struct {
+	Date                  string  `json:"date"`
+	HasPunchException     bool    `json:"has_punch_exception"`
+	HasWorkOrderException bool    `json:"has_work_order_exception"`
+	Punches               []Punch `json:"punches"`
+	PunchedHours          string  `json:"punched_hours"`
+}
 
-	// PayPeriod is the total time clocked in for this pay period
-	PayPeriod int `json:"pay-period"`
+//Punch represents a single punch in or out for an employee
+type Punch struct {
+	PunchType            string `json:"punch_type"`
+	PunchTime            string `json:"punch_time"`
+	SequenceNumber       int    `json:"sequence_number"`
+	DeletablePair        int    `json:"deletable_pair"`
+	Latitude             string `json:"latitude"`
+	Longitude            string `json:"longitude"`
+	LocationDescription  string `json:"location_description"`
+	TimeCollectionSource string `json:"time_collection_source"`
+	WorkOrderID          string `json:"work_order_id"`
+	TRCID                string `json:"trc_id"`
+	PunchDate            string `json:"punch_date"`
+	EmployeeRecord       int    `json:"employee_record"`
+	PunchZone            string `json:"punch_zone"`
+}
+
+//LunchPunch is used when posting a lunch punch to the system
+type LunchPunch struct {
+	StartTime            string `json:"start_time"`
+	Duration             string `json:"duration"`
+	EmployeeRecord       int    `json:"employee_record"`
+	PunchDate            string `json:"punch_date"`
+	TimeCollectionSource string `json:"time_collection_source"`
+	PunchZone            string `json:"punch_zone"`
+	LocationDescription  string `json:"location_description"`
+}
+
+//WorkOrderDaySummary is returned when querying a date for work orders logged on that date
+type WorkOrderDaySummary struct {
+	WorkOrderEntries []WorkOrderEntry `json:"work_order_entries"`
+	BilledHours      string           `json:"billed_hours"`
+	ReportedHours    string           `json:"reported_hours"`
+}
+
+//WorkOrderEntry represents a single work order logged for part of a day
+type WorkOrderEntry struct {
+	WorkOrder      WorkOrder `json:"work_order"`
+	TRC            TRC       `json:"trc"`
+	HoursWorked    string    `json:"hours_worked"`
+	SequenceNumber string    `json:"sequence_number"`
+	Editable       bool      `json:"editable"`
+}
+
+//ElapsedTimeSummary is the parent structure for sick and vacation hours
+type ElapsedTimeSummary struct {
+	SickLeaveBalanceHours     string           `json:"sick_leave_balance_hours"`
+	VacationLeaveBalanceHours string           `json:"vacation_leave_balance_balance"`
+	Dates                     []ElapsedTimeDay `json:"dates"`
+}
+
+//ElapsedTimeDay is the parent structure for sick and vacation hours for a day
+type ElapsedTimeDay struct {
+	PunchDate           string             `json:"punch_date"`
+	ElapstedTimeEntries []ElapsedTimeEntry `json:"elapsed_time_entries"`
+}
+
+//ElapsedTimeEntry is the structure for a single amount of sick or vacation time
+type ElapsedTimeEntry struct {
+	Editable       bool   `json:"editable"`
+	SequenceNumber string `json:"sequence_number"`
+	ElapsedHours   string `json:"elapsed_hours"`
+	TRC            TRC    `json:"trc"`
+	TRCID          string `json:"trc_id"`
+	PunchDate      string `json:"punch_date"`
 }
