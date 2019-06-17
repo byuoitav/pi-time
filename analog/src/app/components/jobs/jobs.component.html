@@ -7,7 +7,7 @@
   <mat-card class="card jobs">
     <mat-grid-list
       class="grid"
-      cols="{{ emp?.showWorkOrders ? 5 : 4 }}"
+      cols="{{ emp?.showTRC ? 5 : 4 }}"
       rowHeight="16vh"
       gutterSize=".2vh"
     >
@@ -19,12 +19,7 @@
       <mat-grid-tile colspan="1" rowspan="1" class="tile">
         Pay Period
       </mat-grid-tile>
-      <mat-grid-tile
-        *ngIf="emp?.showWorkOrders"
-        colspan="1"
-        rowspan="1"
-        class="tile"
-      >
+      <mat-grid-tile *ngIf="emp?.showTRC" colspan="1" rowspan="1" class="tile">
         WO
       </mat-grid-tile>
       <mat-grid-tile colspan="1" rowspan="1"> </mat-grid-tile>
@@ -45,7 +40,7 @@
           {{ job?.totalTime.payPeriod | hours }}
         </mat-grid-tile>
 
-        <!-- work order -->
+        <!-- work order
         <mat-grid-tile
           *ngIf="emp?.showWorkOrders"
           colspan="1"
@@ -71,6 +66,7 @@
             </button>
           </div>
         </mat-grid-tile>
+        -->
 
         <!-- clock in/out -->
         <mat-grid-tile colspan="1" rowspan="1">

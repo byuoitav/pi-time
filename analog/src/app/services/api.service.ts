@@ -34,7 +34,7 @@ export class APIService {
     const emp = new Employee();
     emp.id = "111111111";
     emp.name = "Daniel Randall";
-    emp.showWorkOrders = true;
+    emp.showTRC = true;
 
     const jobs = new Array<Job>();
     const totalTime = new TotalTime();
