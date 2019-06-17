@@ -1,5 +1,11 @@
 package structs
 
+//WebSocketMessage is a wrapper for whatever we're sending down the websocket
+type WebSocketMessage struct {
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
+}
+
 //Timesheet gives all data about the current clock state for an employee and his/her jobs
 type Timesheet struct {
 	//PersonName is the person's name in Last, First format
@@ -18,6 +24,19 @@ type Timesheet struct {
 	InternationalMessage string `json:"international_message"`
 }
 
+//EmployeeCache is the cache list
+type EmployeeCache struct {
+	Employees []EmployeeRecord `json:"employees"`
+}
+
+//EmployeeRecord comes back in the cache list
+type EmployeeRecord struct {
+	BYUID string `json:"byu_id"`
+	NETID string `json:"net_id"`
+	Jobs  []Job  `json:"jobs"`
+	Name  string `json:"sort_name"`
+}
+
 //Job represents the current state of an employee's job
 type Job struct {
 	JobCodeDesc           string    `json:"job_code_description"`
@@ -34,6 +53,8 @@ type Job struct {
 	FullPartTime          string    `json:"full_part_time"`
 	HasPunchException     bool      `json:"has_punch_exception"`
 	HasWorkOrderException bool      `json:"has_work_order_exception"`
+	ValidAccount          bool      `json:"valid_account"`
+	AccountCode           string    `json:"account_code"`
 }
 
 //TRC is a code for the type of hours that an employee can punch in under
