@@ -175,7 +175,7 @@ export class Day {
 @JsonObject("Job")
 export class Job {
   @JsonProperty("employee-id", Number, true)
-  employeeID: string = undefined;
+  employeeID: Number = undefined;
 
   @JsonProperty("description", String, true)
   description: string = undefined;

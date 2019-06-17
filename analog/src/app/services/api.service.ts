@@ -9,7 +9,10 @@ import {
   TotalTime,
   WorkOrder,
   Day,
-  WorkOrderBilling
+  WorkOrderEntry,
+  Hours,
+  PunchType,
+  TRC
 } from "../objects";
 
 @Injectable({ providedIn: "root" })
@@ -32,23 +35,29 @@ export class APIService {
     }
 
     const emp = new Employee();
-    emp.id = "111111111";
     emp.name = "Daniel Randall";
-    emp.showTRC = true;
 
     const jobs = new Array<Job>();
     const totalTime = new TotalTime();
 
-    totalTime.week = 3.57678 * 60;
-    totalTime.payPeriod = 17.8979 * 60;
+    totalTime.week = new Hours("3:57");
+    totalTime.payPeriod = new Hours("17:42");
+
+    const trc1 = new TRC();
+    trc1.id = "REG";
+    trc1.description = "Regular";
+
+    const trc2 = new TRC();
+    trc2.id = "OT";
+    trc2.description = "Overtime";
 
     const job1 = new Job();
-    job1.name = "Custodian I";
-    job1.totalTime = totalTime;
-    job1.clockedIn = true;
-    job1.payTypes.push("Regular Hours");
-    job1.payTypes.push("On Call");
-    job1.payTypes.push("Overtime");
+    job1.employeeID = 4502111111111;
+    job1.description = "Custodian I";
+    job1.subtotals = totalTime;
+    job1.clockStatus = PunchType.In;
+    job1.trcs.push(trc1);
+    job1.trcs.push(trc2);
 
     const wo1 = new WorkOrder();
     wo1.id = "AB-1234";
@@ -63,29 +72,28 @@ export class APIService {
     wo3.name = "Sleeping time";
 
     job1.currentWorkOrder = wo1;
-    job1.availableWorkOrders.push(wo2);
-    job1.availableWorkOrders.push(wo3);
+    job1.workOrders.push(wo2);
+    job1.workOrders.push(wo3);
 
     const d1 = new Day();
     d1.time = new Date();
     d1.time.setDate(d1.time.getDate() - 3); // 3 days ago
-    d1.hasTimesheetExceptions = false;
-    d1.punchedHours = 3.39 * 60;
-    d1.otherHours = 0;
+    d1.hasPunchException = false;
+    d1.punchedHours = new Hours("3:45");
 
-    const wob1 = new WorkOrderBilling();
+    const wob1 = new WorkOrderEntry();
     wob1.workOrder = wo1;
-    wob1.billedTime = 3.5 * 60;
-    d1.workOrderBillings.push(wob1);
+    wob1.hoursBilled = new Hours("3:30");
+    d1.workOrderEntries.push(wob1);
 
-    const wob2 = new WorkOrderBilling();
+    const wob2 = new WorkOrderEntry();
     wob2.workOrder = wo2;
-    wob2.billedTime = 1 * 60;
-    d1.workOrderBillings.push(wob2);
+    wob2.hoursBilled = new Hours("1:00");
+    d1.workOrderEntries.push(wob2);
 
     job1.days.push(d1);
 
-    d1.hasWorkOrderExceptions = false;
+    d1.hasWorkOrderException = false;
 
     jobs.push(job1);
 

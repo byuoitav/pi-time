@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 
-import { Job, WorkOrder } from "../../objects";
+import { Job, WorkOrder, TRC } from "../../objects";
 
 @Component({
   selector: "change-wo",
@@ -10,7 +10,7 @@ import { Job, WorkOrder } from "../../objects";
 })
 export class ChangeWoDialog implements OnInit {
   workOrders: Array<WorkOrder> = new Array<WorkOrder>();
-  payTypes: Array<string> = new Array<string>();
+  payTypes: Array<TRC> = new Array<TRC>();
 
   selectedWO: WorkOrder;
   selectedPay: string;
@@ -23,10 +23,10 @@ export class ChangeWoDialog implements OnInit {
 
     // build work orders list
     this.workOrders.push(data.job.currentWorkOrder);
-    this.workOrders.push(...data.job.availableWorkOrders);
+    this.workOrders.push(...data.job.workOrders);
 
     // build pay types list
-    this.payTypes.push(...data.job.payTypes);
+    this.payTypes.push(...data.job.trcs);
 
     console.log("work orders", this.workOrders);
   }

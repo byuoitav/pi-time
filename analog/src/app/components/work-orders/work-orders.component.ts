@@ -37,7 +37,7 @@ export class WorkOrdersComponent implements OnInit {
       // build jobs list
       for (const job of this.emp.jobs) {
         for (const day of job.days) {
-          if (day.workOrderBillings.length > 0) {
+          if (day.workOrderEntries.length > 0) {
             this.jobs.push(job);
             break;
           }
