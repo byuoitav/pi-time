@@ -1,0 +1,86 @@
+package structs
+
+import "time"
+
+//This file is all of the structs that will be sent to the angular client
+
+//WebSocketMessage is a wrapper for whatever we're sending down the websocket
+type WebSocketMessage struct {
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
+}
+
+//Employee is all of the information about an employee for their timeclock session
+type Employee struct {
+	ID        string        `json:"id"`
+	Name      string        `json:"name"`
+	Jobs      []EmployeeJob `json:"jobs"`
+	TotalTime TotalTime     `json:"total-time"`
+	Message   string        `json:"international-message"`
+}
+
+//TotalTime is a struct to hold pay period and total kinds of time
+type TotalTime struct {
+	Week      string `json:"week"`
+	PayPeriod string `json:"pay-period"`
+}
+
+//EmployeeJob is a job for an employee - sent to the client
+type EmployeeJob struct {
+	EmployeeJobID        string            `json:"employee-job-id"`
+	Description          string            `json:"description"`
+	TimeSubtotals        TotalTime         `json:"time-subtotals"`
+	ClockStatus          string            `json:"clock-status"`
+	JobType              string            `json:"job-type"`
+	IsPhysicalFacilities bool              `json:"is-physical-facilities"`
+	TRCs                 []ClientTRC       `json:"trcs"`
+	CurrentTRC           ClientTRC         `json:"current-trc"`
+	WorkOrders           []ClientWorkOrder `json:"work-orders"`
+	Days                 []ClientDay       `json:"days"`
+}
+
+//ClientTRC is a TRC sent to the client side
+type ClientTRC struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
+}
+
+//ClientWorkOrder is the work order structure sent to the client
+type ClientWorkOrder struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+//ClientDay is the day structure sent to the client
+type ClientDay struct {
+	Date                  time.Time              `json:"date"`
+	HasPunchException     bool                   `json:"has-punch-exception"`
+	HasWorkOrderException bool                   `json:"has-work-order-exception"`
+	PunchedHours          string                 `json:"punched-hours"`
+	BilledHours           string                 `json:"billed-hours"`
+	ReportedHours         string                 `json:"reported-hours"`
+	Punches               []ClientPunch          `json:"punches"`
+	WorkOrderEntries      []ClientWorkOrderEntry `json:"work-order-entries"`
+	SickHours             string                 `json:"sick-hours"`
+	VacationHours         string                 `json:"vacation-hours"`
+	SickHoursYTD          string                 `json:"sick-hours-ytd"`
+	VacationHoursYTD      string                 `json:"vacation-hours-ytd"`
+}
+
+//ClientPunch is the punch structure sent to the client
+type ClientPunch struct {
+	ID            string    `json:"id"`
+	EmployeeJobID string    `json:"employee-job-id"`
+	Time          time.Time `json:"time"`
+	PunchType     string    `json:"type"`
+	DeletablePair int       `json:"deletable-pair"`
+}
+
+//ClientWorkOrderEntry is a work order entry sent to the client
+type ClientWorkOrderEntry struct {
+	ID          string          `json:"id"`
+	WorkOrder   ClientWorkOrder `json:"work-order"`
+	HoursBilled string          `json:"hours-billed"`
+	TRC         ClientTRC       `json:"trc"`
+	Editable    bool            `json:"editable"`
+}

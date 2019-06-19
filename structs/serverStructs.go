@@ -1,10 +1,6 @@
 package structs
 
-//WebSocketMessage is a wrapper for whatever we're sending down the websocket
-type WebSocketMessage struct {
-	Key   string      `json:"key"`
-	Value interface{} `json:"value"`
-}
+//This file is all of the structs that will come back from the WSO2 services
 
 //Timesheet gives all data about the current clock state for an employee and his/her jobs
 type Timesheet struct {
