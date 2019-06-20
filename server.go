@@ -26,6 +26,24 @@ func main() {
 
 	router := common.NewRouter()
 
+	router.POST("/punch", handlers.Punch)
+	router.POST("/lunchpunch", handlers.LunchPunch)
+	router.PUT("/sick", handlers.Sick)
+	router.PUT("/vacation", handlers.Vacation)
+	router.POST("/workorderentry", handlers.WorkOrderEntry)
+	router.DELETE("/punch/:jobid/:date:seqnum", handlers.DeletePunch)
+	router.POST("/event", func(context echo.Context) error {
+		var event commonEvents.Eventgerr := context.Bind(&event)
+		if gerr != nil {
+			return context.String(http.StatusBadRequest, gerr.Error())
+		}
+
+		eventsender.MyMessenger.SendEvent(event)
+
+		log.L.Debugf("sent event from UI: %+v", event)
+		return context.String(http.StatusOK, "success")
+	})
+
 	router.GET("/id/:id", handlers.LogInUser)
 
 	router.PUT("/updateCache", updateCacheNow)
@@ -36,6 +54,8 @@ func main() {
 		HTML5:  true,
 		Browse: true,
 	}))
+
+	
 
 	server := http.Server{
 		Addr:           port,
