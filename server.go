@@ -9,6 +9,7 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/handlers"
 	"github.com/byuoitav/pi-time/helpers"
+	"github.com/byuoitav/pi-time/events"
 	"github.com/labstack/echo/middleware"
 )
 
