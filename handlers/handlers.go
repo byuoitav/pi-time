@@ -6,6 +6,8 @@ import (
 	"github.com/byuoitav/common/log"
 	commonEvents "github.com/byuoitav/common/v2/events"
 	eventsender "github.com/byuoitav/pi-time/events"
+	"github.com/byuoitav/pi-time/helpers"
+	"github.com/byuoitav/pi-time/structs"
 	"github.com/labstack/echo"
 )
 
@@ -16,7 +18,23 @@ func Punch(context echo.Context) error {
 
 // LunchPunch adds a lunch punch
 func LunchPunch(context echo.Context) error {
-	return nil
+	//byu id passed in the url
+	byuID := context.Param("id")
+
+	//the body needs to be a ClientLunchPunchRequest struct
+	var incomingRequest structs.ClientLunchPunchRequest
+	err := context.Bind(&incomingRequest)
+	if err != nil {
+		return context.String(http.StatusBadRequest, err.Error())
+	}
+
+	//call the helper
+	err = helpers.LunchPunch(byuID, incomingRequest)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.String(http.StatusOK, "ok")
 }
 
 // Sick adds entry to sick time

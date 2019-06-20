@@ -31,7 +31,7 @@ func main() {
 
 	//all of the functions to call to add / update / delete / do things on the UI
 	router.POST("/punch", handlers.Punch)
-	router.POST("/lunchpunch", handlers.LunchPunch)
+	router.POST("/lunchpunch/:id", handlers.LunchPunch)
 	router.PUT("/sick", handlers.Sick)
 	router.PUT("/vacation", handlers.Vacation)
 	router.POST("/workorderentry", handlers.WorkOrderEntry)

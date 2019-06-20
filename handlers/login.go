@@ -28,12 +28,17 @@ func LogInUser(context echo.Context) error {
 	//store the websocket connection in a map so we can get to it later for that employee id
 	socket.AddConnection(byuID, webSocketClient)
 
+
+	
+	
 	//send the timesheet down the web socket
 	socket.SendMessageToClient(byuID, "timesheet", timesheet)
 
 	//if offline, send an offline message down the web socket
 	if isOffline {
 		socket.SendMessageToClient(byuID, "offline-mode", true)
+	} else {
+		socket.SendMessageToClient(byuID, "offline-mode", false)
 	}
 
 	return nil

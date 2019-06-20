@@ -27,7 +27,7 @@ type TotalTime struct {
 
 //EmployeeJob is a job for an employee - sent to the client
 type EmployeeJob struct {
-	EmployeeJobID        string            `json:"employee-job-id"`
+	EmployeeJobID        int               `json:"employee-job-id"`
 	Description          string            `json:"description"`
 	TimeSubtotals        TotalTime         `json:"time-subtotals"`
 	ClockStatus          string            `json:"clock-status"`
@@ -70,7 +70,7 @@ type ClientDay struct {
 //ClientPunch is the punch structure sent to the client
 type ClientPunch struct {
 	ID            string    `json:"id"`
-	EmployeeJobID string    `json:"employee-job-id"`
+	EmployeeJobID int       `json:"employee-job-id"`
 	Time          time.Time `json:"time"`
 	PunchType     string    `json:"type"`
 	DeletablePair int       `json:"deletable-pair"`
@@ -83,4 +83,11 @@ type ClientWorkOrderEntry struct {
 	HoursBilled string          `json:"hours-billed"`
 	TRC         ClientTRC       `json:"trc"`
 	Editable    bool            `json:"editable"`
+}
+
+//ClientLunchPunchRequest send us for lunch punch
+type ClientLunchPunchRequest struct {
+	EmployeeJobID     int       `json:"employee-job-id"`
+	StartTime         time.Time `json:"time"`
+	DurationInMinutes int       `json:"duration-in-minutes"`
 }
