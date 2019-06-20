@@ -9,7 +9,6 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/handlers"
 	"github.com/byuoitav/pi-time/helpers"
-	"github.com/byuoitav/pi-time/events"
 	"github.com/labstack/echo/middleware"
 )
 
@@ -27,36 +26,30 @@ func main() {
 
 	router := common.NewRouter()
 
+	//login and upgrade to websocket
+	router.GET("/id/:id", handlers.LogInUser)
+
+	//all of the functions to call to add / update / delete / do things on the UI
 	router.POST("/punch", handlers.Punch)
 	router.POST("/lunchpunch", handlers.LunchPunch)
 	router.PUT("/sick", handlers.Sick)
 	router.PUT("/vacation", handlers.Vacation)
 	router.POST("/workorderentry", handlers.WorkOrderEntry)
 	router.DELETE("/punch/:jobid/:date:seqnum", handlers.DeletePunch)
-	router.POST("/event", func(context echo.Context) error {
-		var event commonEvents.Eventgerr := context.Bind(&event)
-		if gerr != nil {
-			return context.String(http.StatusBadRequest, gerr.Error())
-		}
 
-		eventsender.MyMessenger.SendEvent(event)
+	//endpoint for UI events
+	router.POST("/event", handlers.SendEvent)
 
-		log.L.Debugf("sent event from UI: %+v", event)
-		return context.String(http.StatusOK, "success")
-	})
-
-	router.GET("/id/:id", handlers.LogInUser)
-
+	//force an update of the employee cache
 	router.PUT("/updateCache", updateCacheNow)
 
+	//serve the angular web page
 	router.Group("/", middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:   "analog-dist",
 		Index:  "index.html",
 		HTML5:  true,
 		Browse: true,
 	}))
-
-	
 
 	server := http.Server{
 		Addr:           port,
