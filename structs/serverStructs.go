@@ -45,15 +45,12 @@ type Job struct {
 	PeriodSubtotal        string    `json:"period_subtotal"`
 	PhysicalFacilities    bool      `json:"physical_facilities"`
 	OperatingUnit         string    `json:"operating_unit"`
-	InvalidAccountMessage string    `json:"invalid_account_message"`
 	TRCs                  []TRC     `json:"trcs"`
 	CurrentWorkOrder      WorkOrder `json:"current_work_order"`
 	CurrentTRC            TRC       `json:"current_trc"`
 	FullPartTime          string    `json:"full_part_time"`
 	HasPunchException     bool      `json:"has_punch_exception"`
 	HasWorkOrderException bool      `json:"has_work_order_exception"`
-	ValidAccount          bool      `json:"valid_account"`
-	AccountCode           string    `json:"account_code"`
 }
 
 //TRC is a code for the type of hours that an employee can punch in under
@@ -107,9 +104,12 @@ type LunchPunch struct {
 
 //WorkOrderDaySummary is returned when querying a date for work orders logged on that date
 type WorkOrderDaySummary struct {
-	WorkOrderEntries []WorkOrderEntry `json:"work_order_entries"`
-	BilledHours      string           `json:"billed_hours"`
-	ReportedHours    string           `json:"reported_hours"`
+	Date                    string           `json:"punch_date"`
+	WorkOrderEntries        []WorkOrderEntry `json:"work_order_entries"`
+	PunchHours              string           `json:"punch_hours"`
+	PhysicalFacilitiesHours string           `json:"physical_facilities_hours"`
+	HasPunchException       bool             `json:"has_punch_exception"`
+	HasWorkOrderException   bool             `json:"has_work_order_exception"`
 }
 
 //WorkOrderEntry represents a single work order logged for part of a day

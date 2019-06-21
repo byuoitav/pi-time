@@ -27,16 +27,19 @@ type TotalTime struct {
 
 //EmployeeJob is a job for an employee - sent to the client
 type EmployeeJob struct {
-	EmployeeJobID        int               `json:"employee-job-id"`
-	Description          string            `json:"description"`
-	TimeSubtotals        TotalTime         `json:"time-subtotals"`
-	ClockStatus          string            `json:"clock-status"`
-	JobType              string            `json:"job-type"`
-	IsPhysicalFacilities bool              `json:"is-physical-facilities"`
-	TRCs                 []ClientTRC       `json:"trcs"`
-	CurrentTRC           ClientTRC         `json:"current-trc"`
-	WorkOrders           []ClientWorkOrder `json:"work-orders"`
-	Days                 []ClientDay       `json:"days"`
+	EmployeeJobID         int               `json:"employee-job-id"`
+	Description           string            `json:"description"`
+	TimeSubtotals         TotalTime         `json:"time-subtotals"`
+	ClockStatus           string            `json:"clock-status"`
+	JobType               string            `json:"job-type"`
+	IsPhysicalFacilities  bool              `json:"is-physical-facilities"`
+	HasPunchException     bool              `json:"has-punch-exception"`
+	HasWorkOrderException bool              `json:"has-work-order-exception"`
+	OperatingUnit         string            `json:"operating_unit"`
+	TRCs                  []ClientTRC       `json:"trcs"`
+	CurrentTRC            ClientTRC         `json:"current-trc"`
+	WorkOrders            []ClientWorkOrder `json:"work-orders"`
+	Days                  []ClientDay       `json:"days"`
 }
 
 //ClientTRC is a TRC sent to the client side
@@ -53,23 +56,25 @@ type ClientWorkOrder struct {
 
 //ClientDay is the day structure sent to the client
 type ClientDay struct {
-	Date                  time.Time              `json:"date"`
-	HasPunchException     bool                   `json:"has-punch-exception"`
-	HasWorkOrderException bool                   `json:"has-work-order-exception"`
-	PunchedHours          string                 `json:"punched-hours"`
-	BilledHours           string                 `json:"billed-hours"`
-	ReportedHours         string                 `json:"reported-hours"`
-	Punches               []ClientPunch          `json:"punches"`
-	WorkOrderEntries      []ClientWorkOrderEntry `json:"work-order-entries"`
-	SickHours             string                 `json:"sick-hours"`
-	VacationHours         string                 `json:"vacation-hours"`
-	SickHoursYTD          string                 `json:"sick-hours-ytd"`
-	VacationHoursYTD      string                 `json:"vacation-hours-ytd"`
+	Date                  time.Time     `json:"date"`
+	HasPunchException     bool          `json:"has-punch-exception"`
+	HasWorkOrderException bool          `json:"has-work-order-exception"`
+	Punches               []ClientPunch `json:"punches"`
+	PunchedHours          string        `json:"punched-hours"`
+
+	PunchHours              string                 `json:"punch_hours"`
+	PhysicalFacilitiesHours string                 `json:"physical_facilities_hours"`
+	WorkOrderEntries        []ClientWorkOrderEntry `json:"work-order-entries"`
+
+	SickHours        string `json:"sick-hours"`
+	VacationHours    string `json:"vacation-hours"`
+	SickHoursYTD     string `json:"sick-hours-ytd"`
+	VacationHoursYTD string `json:"vacation-hours-ytd"`
 }
 
 //ClientPunch is the punch structure sent to the client
 type ClientPunch struct {
-	ID            string    `json:"id"`
+	ID            int       `json:"id"`
 	EmployeeJobID int       `json:"employee-job-id"`
 	Time          time.Time `json:"time"`
 	PunchType     string    `json:"type"`

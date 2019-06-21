@@ -14,20 +14,20 @@ import (
 // Punch adds an in or out punch as determined by the body sent
 func Punch(context echo.Context) error {
 
-	byuID := context.Param("id")
+	//byuID := context.Param("id")
 
 	var incomingRequest structs.ClientPunch
 	err := context.Bind(&incomingRequest)
 	if err != nil {
-		return context.STring(http.StatusBadRequest, err.Error())
+		return context.String(http.StatusBadRequest, err.Error())
 	}
 
 	//call the helper
 
-	err = helpers.Punch(byuID, incomingRequest)
-	if err != nil {
-		return context.String(http.StatusInternalServerError, error.Error())
-	}
+	// err = helpers.Punch(byuID, incomingRequest)
+	// if err != nil {
+	// 	return context.String(http.StatusInternalServerError, error.Error())
+	// }
 
 	return context.String(http.StatusOK, "ok")
 }
@@ -56,7 +56,7 @@ func LunchPunch(context echo.Context) error {
 // Sick adds entry to sick time
 func Sick(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date are all passed in the url
-	byuID := context.Param("id")
+	//byuID := context.Param("id")
 
 	var incomingRequest structs.ClientSickRequest
 	err := context.Bind(incomingRequest)
@@ -64,10 +64,10 @@ func Sick(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.Sick(byuID, incomingRequest)
-	if err != nil {
-		return contetx.String(http.StatusInternalServerError, err.Error())
-	}
+	// err = helpers.Sick(byuID, incomingRequest)
+	// if err != nil {
+	// 	return contetx.String(http.StatusInternalServerError, err.Error())
+	// }
 
 	return context.String(http.StatusOK, "ok")
 }
@@ -75,7 +75,7 @@ func Sick(context echo.Context) error {
 // Vacation adds entry to vacation time
 func Vacation(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date are all passed in the url
-	byuID := context.Param("id")
+	//byuID := context.Param("id")
 
 	var incomingRequest structs.ClientVacationRequest
 	err := context.Bind(incomingRequest)
@@ -83,10 +83,10 @@ func Vacation(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.Vacation(byuID, incomingRequest)
-	if err != nil {
-		return contetx.String(http.StatusInternalServerError, err.Error())
-	}
+	// err = helpers.Vacation(byuID, incomingRequest)
+	// if err != nil {
+	// 	return contetx.String(http.StatusInternalServerError, err.Error())
+	// }
 
 	return context.String(http.StatusOK, "ok")
 }
@@ -94,7 +94,7 @@ func Vacation(context echo.Context) error {
 //WorkOrderEntry handles adding a new WorkOrderEntry (post)
 func WorkOrderEntry(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
-	byuID := context.Param("id")
+	//byuID := context.Param("id")
 
 	var incomingRequest structs.ClientWorkOrderEntry
 	err := context.Bind(&incomingRequest)
@@ -102,31 +102,31 @@ func WorkOrderEntry(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.WorkOrderEntry(byuID, incomingRequest)
-	if err != nil {
-		return context.String(http.StatusInternalServerError, err.Error())
-	}
+	// err = helpers.WorkOrderEntry(byuID, incomingRequest)
+	// if err != nil {
+	// 	return context.String(http.StatusInternalServerError, err.Error())
+	// }
 
-	return context.String(http.StatusOK)
+	return context.String(http.StatusOK, "ok")
 }
 
 // DeletePunch deletes an added punch
 func DeletePunch(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date, Sequence number are all passed in the url
-	byuID := context.Param("id")
+	//byuID := context.Param("id")
 
-	var incomingRequest = structs.ClientDeletePunch
-	err := context.Bind(&incomingRequest)
-	if err != nil {
-		return context.String(http.StatusBadRequest, err.Error())
-	}
+	// var incomingRequest = structs.ClientDeletePunch
+	// err := context.Bind(&incomingRequest)
+	// if err != nil {
+	// 	return context.String(http.StatusBadRequest, err.Error())
+	// }
 
-	err = helpers.DeletePunch(byuID, incomingRequest)
-	if err != nil {
-		return context.String(http.StatusInternalServerError, err.Error())
-	}
+	// err = helpers.DeletePunch(byuID, incomingRequest)
+	// if err != nil {
+	// 	return context.String(http.StatusInternalServerError, err.Error())
+	// }
 
-	return context.String(https.StatusOK)
+	return context.String(http.StatusOK, "ok")
 }
 
 //SendEvent passes an event to the messenger
