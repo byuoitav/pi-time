@@ -45,7 +45,7 @@ func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 
 //LunchPunch will do the lunch punch
 func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
-	//tranlsate our body to theirs
+	//translate our body to theirs
 	var WSO2Request structs.LunchPunch
 	WSO2Request.EmployeeRecord = request.EmployeeJobID
 	WSO2Request.StartTime = request.StartTime.Format("15:04")
@@ -58,7 +58,7 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 	var punchResponse structs.Punch
 
 	err :=
-		wso2requests.MakeWSO2Request("GET", "https://api.byu.edu:443/domains/erp/hr/ytime_lunch_punch/v1/"+byuID, WSO2Request, &punchResponse)
+		wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/ytime_lunch_punch/v1/"+byuID, WSO2Request, &punchResponse)
 
 	if err != nil {
 		log.L.Errorf("Error when making lunch punch %s", err.Error())
@@ -72,4 +72,102 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 	//return success
 	return nil
 
+}
+
+//Punch will do an in or out punch
+func Punch(byuID string, structs.ClientPunchRequest) error {
+	//translate our body to theirs
+	var WSO2Request structs.Punch
+	WSO2Request.PunchType = request.PunchType
+	WSO2Request.PunchTime = request.Time.Format("15:04")
+	//later WSO2Request.SequenceNumber =
+	WSO2Request.DeletablePair = request.DeletablePair
+	// WSO2Request.Latitude =
+	// WSO2Request.Longitude =
+	WSO2Request.LocationDescription = os.Getenv("SYSTEM_ID")
+	WSO2Request.TimeCollectionSource = "CPI"
+	//later WSO2Request.WorkOrderID =
+	//later WSO2Request.TRCID =
+	WSO2Request.PunchDate = request.Time.Format("2006-01-02")
+	WSO2Request.EmployeeRecord = request.EmployeeJobID
+	WSO2Request.PunchZone = "XXX"
+
+	var punchResponse structs.Timesheet
+
+	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, WSO2Request, &punchResponse)
+
+	if err !- nil {
+		log.L.Errorf("Error when making punch %s", err.Error())
+	}
+
+
+	//if successful
+	return nil
+}
+
+//WorkOrderEntry will do the work order entry
+func WorkOrderEntry(byuID string, structs.ClientWorkOrderRequest) error {
+	var WSO2Request structs.WorkOrderEntry
+	WSO2Request.WorkOrder = request.WorkOrder
+	WSO2Request.TRC = request.TRC
+	WSO2Request.HoursWorked = request.HoursBilled
+	WSO2Request.SequenceNumber = request.SequenceNumber 
+	WSO2Request.Editable = request.Editable
+
+	var punchResponse structs.WorkOrderDaySummary
+
+	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID, WSO2Request, &punchResponse)
+
+	if err !- nil {
+		log.L.Errorf("Error when adding work order entry %s", err.Error())
+	}
+
+
+	//if successful
+	return nil
+}
+
+//Sick .
+func Sick(byuID string, request structs.ClientSickRequest) {
+	var WSO2Request structs.ElapsedTimeEntry
+	WSO2Request.Editable = request.Editable
+	WSO2Request.SequenceNumber = request.SequenceNumber
+	WSO2Request.ElapsedHours = request.ElapsedHours
+	// WSO2Request.TRC = ???
+	// WSO2Request.TRCID = ???
+	WSO2Request.PunchDate = request.punchDate
+
+	var punchResponse structs.ElapsedTimeSummary
+
+	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, WSO2Request, &punchResponse)
+
+	if err !- nil {
+		log.L.Errorf("Error when adding sick entry %s", err.Error())
+	}
+
+
+	//if successful
+	return nil
+}
+
+//Vacation .
+func Vacation(byuID string, request structs.ClientVacationRequest) {
+	var WSO2Request structs.ElapsedTimeEntry
+	WSO2Request.Editable = request.Editable
+	WSO2Request.SequenceNumber = request.SequenceNumber
+	WSO2Request.ElapsedHours = request.ElapsedHours
+	// WSO2Request.TRC = ???
+	// WSO2Request.TRCID = ???
+	WSO2Request.PunchDate = request.punchDate
+
+	var punchResponse structs.ElapsedTimeSummary
+
+	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, WSO2Request, &punchResponse)
+
+	if err !- nil {
+		log.L.Errorf("Error when adding vacation entry %s", err.Error())
+	}
+
+	//if successful
+	return nil
 }
