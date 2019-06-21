@@ -140,3 +140,10 @@ type ElapsedTimeEntry struct {
 	TRCID          string `json:"trc_id"`
 	PunchDate      string `json:"punch_date"`
 }
+
+//DeletePunch .
+type DeletePunch struct {
+	PunchType      string `json:"punch-type"`
+	PunchTime      string `json:"punch-time"`
+	SequenceNumber string `json:"sequence-number"`
+}

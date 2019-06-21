@@ -91,3 +91,24 @@ type ClientLunchPunchRequest struct {
 	StartTime         time.Time `json:"time"`
 	DurationInMinutes int       `json:"duration-in-minutes"`
 }
+
+//ClientSickRequest .
+type ClientSickRequest struct {
+	Editable bool `json:"editable"`
+	//SequenceNumber int    `json:"sequence-number"`
+	ElapsedHours string `json:"elapsed-hours"`
+}
+
+//ClientVacationRequest .
+type ClientVacationRequest struct {
+	Editable bool `json:"editable"`
+	//SequenceNumber int    `json:"sequence-number"`
+	ElapsedHours string `json:"elapsed-hours"`
+}
+
+//ClientDeletePunch .
+type ClientDeletePunch struct {
+	PunchType string `json:"punch-type"`
+	PunchTime string `json:"punch-time"`
+	//SequenceNumber int    `json:"sequence-number"`
+}
