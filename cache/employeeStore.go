@@ -83,6 +83,28 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
+//UpdatePossibleWorkOrders .
+func UpdatePossibleWorkOrders(byuID string, jobID string, workOrderArray []structs.WorkOrder) {
+	employeeCacheMutex.Lock()
+	defer employeeCacheMutex.Unlock()
+
+	employee := employeeCache[byuID]
+	for _, job := range employee.Jobs {
+		if job.EmployeeJobID == jobID {
+
+			//find the job
+			job.WorkOrders = []structs.ClientWorkOrder{}
+
+			for serverWorkOrder := range workOrderArray {
+				var newClientWorkOrder structs.ClientWorkOrder
+				newClientWorkOrder.ID = serverWorkOrder.ID
+				newClientWorkOrder.Name = serverWorkOrder.Description
+				job.WorkOrders = append(job.WorkOrders, newClientWorkOrder)
+			}
+		}
+	}
+}
+
 //UpdateEmployeePunchesForJob updates from a []structs.TimeClockDay
 func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.TimeClockDay) {
 	employeeCacheMutex.Lock()
@@ -174,10 +196,18 @@ func GetPunchesForAllJobs(byuID string) {
 func GetPossibleWorkOrders(byuID string) {
 	//lock the mutex, get the employee record from the cache (read-only)
 
-	//similar to the punches, loop through the jobs
-	//for each job, call /domains/erp/hr/work_orders_by_operating_unit/v1/{operating_unit}
-	//it will return an array of WorkOrder that you then translate and stick into the WorkOrders array on the Job structure
+	employeeCacheMutex.Lock()
+	employee := employeeCache[byuID]
+	employeeCacheMutex.Unlock()
 
+	for _, job := range employee.Jobs {
+		//call WSO2 to get work orders for job
+		workOrders := helpers.GetWorkOrders(job.OperatingUnit)
+
+		//update the work orders
+		UpdatePossibleWorkOrders(byuID, job.EmployeeJobID, workOrders)
+
+	}
 }
 
 //GetWorkOrderEntries will get the list of work order entries for the employee and add them to the cached employee record

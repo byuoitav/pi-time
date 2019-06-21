@@ -170,7 +170,7 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 // 	return nil
 // }
 
-//GetPunchesForJob gets a list of serverside TimeCLockDay structures from WSO2
+//GetPunchesForJob gets a list of serverside TimeClockDay structures from WSO2
 func GetPunchesForJob(byuID string, jobID int) []structs.TimeClockDay {
 	var WSO2Response []structs.TimeClockDay
 
@@ -179,6 +179,20 @@ func GetPunchesForJob(byuID string, jobID int) []structs.TimeClockDay {
 
 	if err != nil {
 		log.L.Errorf("Error when retrieving punches for employee and job %s %i %s", byuID, jobID, err.Error())
+	}
+
+	return WSO2Response
+}
+
+//GetWorkOrders gets all the possilbe work orders for the day from WSO2
+func GetWorkOrders(operatingUnit string) structs.WorkOrderDaySummary {
+	var WSO2Response structs.WorkOrderDaySummary
+
+	err := wso2requests.MakeWSO2Request("GET",
+		"/domains/erp/hr/work_orders_by_operating_unit/v1/"+operatingUnit, "", &WSO2Response)
+
+	if err != nil {
+		log.L.Errorf("Error when retrieving possible work orders for operating unit")
 	}
 
 	return WSO2Response
