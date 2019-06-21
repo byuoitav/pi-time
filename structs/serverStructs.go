@@ -4,6 +4,9 @@ package structs
 
 //Timesheet gives all data about the current clock state for an employee and his/her jobs
 type Timesheet struct {
+	//BYUID is the byu id
+	BYUID string `json:"byu_id"`
+
 	//PersonName is the person's name in Last, First format
 	PersonName string `json:"person_name"`
 
