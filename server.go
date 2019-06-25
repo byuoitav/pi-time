@@ -26,10 +26,24 @@ func main() {
 
 	router := common.NewRouter()
 
+	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.LogInUser)
 
+	//all of the functions to call to add / update / delete / do things on the UI
+	router.POST("/punch/:id", handlers.Punch)
+	router.POST("/lunchpunch/:id", handlers.LunchPunch)
+	router.PUT("/sick/:id", handlers.Sick)
+	router.PUT("/vacation/:id", handlers.Vacation)
+	router.POST("/workorderentry/id", handlers.WorkOrderEntry)
+	router.DELETE("/punch/:jobid/:date/:seqnum", handlers.DeletePunch)
+
+	//endpoint for UI events
+	router.POST("/event", handlers.SendEvent)
+
+	//force an update of the employee cache
 	router.PUT("/updateCache", updateCacheNow)
 
+	//serve the angular web page
 	router.Group("/", middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:   "analog-dist",
 		Index:  "index.html",

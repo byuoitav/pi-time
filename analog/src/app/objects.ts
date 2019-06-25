@@ -113,8 +113,8 @@ export class Punch {
   @JsonProperty("id", Number, true)
   id: number = undefined;
 
-  @JsonProperty("employee-id", Number, true)
-  employeeID: number = undefined;
+  @JsonProperty("employee-job-id", Number, true)
+  employeeJobID: number = undefined;
 
   @JsonProperty("time", DateConverter, true)
   time: Date = undefined;
@@ -186,8 +186,8 @@ export class Day {
 
 @JsonObject("Job")
 export class Job {
-  @JsonProperty("employee-id", Number, true)
-  employeeID: Number = undefined;
+  @JsonProperty("employee-job-id", Number, true)
+  employeeJobID: Number = undefined;
 
   @JsonProperty("description", String, true)
   description: string = undefined;

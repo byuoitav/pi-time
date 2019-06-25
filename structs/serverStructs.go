@@ -1,13 +1,12 @@
 package structs
 
-//WebSocketMessage is a wrapper for whatever we're sending down the websocket
-type WebSocketMessage struct {
-	Key   string      `json:"key"`
-	Value interface{} `json:"value"`
-}
+//This file is all of the structs that will come back from the WSO2 services
 
 //Timesheet gives all data about the current clock state for an employee and his/her jobs
 type Timesheet struct {
+	//BYUID is the byu id
+	BYUID string `json:"byu_id"`
+
 	//PersonName is the person's name in Last, First format
 	PersonName string `json:"person_name"`
 
@@ -46,15 +45,12 @@ type Job struct {
 	PeriodSubtotal        string    `json:"period_subtotal"`
 	PhysicalFacilities    bool      `json:"physical_facilities"`
 	OperatingUnit         string    `json:"operating_unit"`
-	InvalidAccountMessage string    `json:"invalid_account_message"`
 	TRCs                  []TRC     `json:"trcs"`
 	CurrentWorkOrder      WorkOrder `json:"current_work_order"`
 	CurrentTRC            TRC       `json:"current_trc"`
 	FullPartTime          string    `json:"full_part_time"`
 	HasPunchException     bool      `json:"has_punch_exception"`
 	HasWorkOrderException bool      `json:"has_work_order_exception"`
-	ValidAccount          bool      `json:"valid_account"`
-	AccountCode           string    `json:"account_code"`
 }
 
 //TRC is a code for the type of hours that an employee can punch in under
@@ -108,9 +104,12 @@ type LunchPunch struct {
 
 //WorkOrderDaySummary is returned when querying a date for work orders logged on that date
 type WorkOrderDaySummary struct {
-	WorkOrderEntries []WorkOrderEntry `json:"work_order_entries"`
-	BilledHours      string           `json:"billed_hours"`
-	ReportedHours    string           `json:"reported_hours"`
+	Date                    string           `json:"punch_date"`
+	WorkOrderEntries        []WorkOrderEntry `json:"work_order_entries"`
+	PunchHours              string           `json:"punch_hours"`
+	PhysicalFacilitiesHours string           `json:"physical_facilities_hours"`
+	HasPunchException       bool             `json:"has_punch_exception"`
+	HasWorkOrderException   bool             `json:"has_work_order_exception"`
 }
 
 //WorkOrderEntry represents a single work order logged for part of a day
@@ -143,4 +142,11 @@ type ElapsedTimeEntry struct {
 	TRC            TRC    `json:"trc"`
 	TRCID          string `json:"trc_id"`
 	PunchDate      string `json:"punch_date"`
+}
+
+//DeletePunch .
+type DeletePunch struct {
+	PunchType      string `json:"punch-type"`
+	PunchTime      string `json:"punch-time"`
+	SequenceNumber string `json:"sequence-number"`
 }

@@ -3,8 +3,9 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/byuoitav/pi-time/cache"
+
 	"github.com/byuoitav/pi-time/helpers"
-	"github.com/byuoitav/pi-time/socket"
 	"github.com/labstack/echo"
 )
 
@@ -23,17 +24,26 @@ func LogInUser(context echo.Context) error {
 	}
 
 	//upgrade the connection to a websocket
-	webSocketClient := socket.ServeWebsocket(context.Response().Writer, context.Request())
+	webSocketClient := cache.ServeWebsocket(context.Response().Writer, context.Request())
 
 	//store the websocket connection in a map so we can get to it later for that employee id
-	socket.AddConnection(byuID, webSocketClient)
+	cache.AddConnection(byuID, webSocketClient)
 
-	//send the timesheet down the web socket
-	socket.SendMessageToClient(byuID, "timesheet", timesheet)
+	//store the employee in the cache and update it
+	cache.AddEmployee(byuID)
+	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
+
+	//now launch some threads to go get all of the other information for the employee
+	go cache.GetPossibleWorkOrders(byuID)
+	go cache.GetPunchesForAllJobs(byuID)
+	go cache.GetWorkOrderEntries(byuID)
+	go cache.GetSickVacation(byuID)
 
 	//if offline, send an offline message down the web socket
 	if isOffline {
-		socket.SendMessageToClient(byuID, "offline-mode", true)
+		cache.SendMessageToClient(byuID, "offline-mode", true)
+	} else {
+		cache.SendMessageToClient(byuID, "offline-mode", false)
 	}
 
 	return nil
