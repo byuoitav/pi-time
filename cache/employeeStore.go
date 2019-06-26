@@ -108,6 +108,36 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 			}
 		}
 	}
+	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+}
+
+//UpdateOtherHoursForJob updates the other hours for a job
+func UpdateOtherHoursForJob(byuID string, jobID int, punchDate string, elapsedTimeSummary []structs.ElapsedTimeSummary) {
+	employeeCacheMutex.Lock()
+	defer employeeCacheMutex.Unlock()
+
+	employee := employeeCache[byuID]
+	for i := range employee.Jobs {
+		if employee.Jobs[i].EmployeeJobID == jobID {
+			for x := range employee.Jobs[i].Days {
+				if employee.Jobs[i].Days[x].Date == punchDate {
+					employee.Jobs[i].Days[x].OtherHours = []structs.ClientOtherHours{}
+					for _, elapsedTimeRecord := range elapsedTimeSummary {
+						var newClientOtherHours structs.ClientOtherHours
+						newClientOtherHours.Editable = elapsedTimeRecord.Editable
+						newClientOtherHours.SequenceNumber = elapsedTimeRecord.SequenceNumber
+						newClientOtherHours.TimeReportingCodeHours = elapsedTimeRecord.TimeReportingCodeHours
+						newClientOtherHours.TRC = elapsedTimeRecord.TRC
+
+						employee.Jobs[i].Days[x].SickHoursYTD = elapsedTimeSummary.SickLeaveBalanceHours
+						employee.Jobs[i].Days[x].VacationHoursYTD = elapsedTimeSummary.VacationLeaveBalanceHours
+						employee.Jobs[i].Days[x].OtherHours = append(employee.Jobs[i].Days[x].OtherHours, newClientOtherHours)
+					}
+				}
+			}
+		}
+	}
+	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
 //UpdateWorkOrderEntriesForJob updates the work order entries for a particular job
@@ -319,7 +349,20 @@ func GetWorkOrderEntries(byuID string) {
 	}
 }
 
-//GetSickVacation will get the sick and vacation entries for the employee and add them to the cached employee record
-func GetSickVacation(byuID string) {
+//GetOtherHours will get the Other Hours entries for the employee and add them to the cached employee record
+func GetOtherHours(byuID string) {
+	//lock the mutex, get the employee record from the cache
+	employeeCacheMutex.Lock()
+	employee := employeeCache[byuID]
+	employeeCacheMutex.Unlock()
 
+	for _, job := range employee.Jobs {
+		if job.IsPhysicalFacilities && job.FullPartTime == "F" {
+			//call WSO2 to get other hours for the job
+			otherHours := helpers.GetOtherHours(byuID, job.EmployeeJobID, punchDate)
+
+			//update the other hours
+			UpdateOtherHoursForJob(byuID, job.EmployeeJobID, punchDate, otherHours)
+		}
+	}
 }

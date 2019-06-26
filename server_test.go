@@ -28,7 +28,8 @@ func TestAPI(t *testing.T) {
 	//get punches for all the jobs
 	//cache.GetPunchesForAllJobs(byuID)
 
-	cache.GetWorkOrderEntries(byuID)
+	//cache.GetWorkOrderEntries(byuID)
+	cache.GetOtherHours(byuID)
 
 	employee := cache.GetEmployeeFromStore(byuID)
 	employeeJSON, _ := json.Marshal(employee)

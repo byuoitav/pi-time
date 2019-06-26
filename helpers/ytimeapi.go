@@ -217,3 +217,19 @@ func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDay
 
 	return WSO2Response
 }
+
+//GetOtherHours gets the other hours for a job from WSO2
+func GetOtherHours(byuID string, employeeJobID int) structs.ElapsedTimeSummary {
+	var WSO2Response structs.ElapsedTimeSummary
+
+	log.L.Debugf("Getting other hours for employee and job %v %v", byuID, employeeJobID)
+
+	err := wso2requests.MakeWSO2Request("GET",
+		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response)
+
+	if err != nil {
+		log.L.Errorf("Error when retrieving other hours %v", err.Error())
+	}
+
+	return WSO2Response
+}
