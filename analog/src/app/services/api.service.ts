@@ -10,9 +10,9 @@ import {
   WorkOrder,
   Day,
   WorkOrderEntry,
-  Hours,
   PunchType,
-  TRC
+  TRC,
+  JobType
 } from "../objects";
 
 @Injectable({ providedIn: "root" })
@@ -40,8 +40,8 @@ export class APIService {
     const jobs = new Array<Job>();
     const totalTime = new TotalTime();
 
-    totalTime.week = new Hours("3:57");
-    totalTime.payPeriod = new Hours("17:42");
+    totalTime.week = "3:57";
+    totalTime.payPeriod = "17:42";
 
     const trc1 = new TRC();
     trc1.id = "REG";
@@ -55,6 +55,8 @@ export class APIService {
     job1.employeeID = 4502111111111;
     job1.description = "Custodian I";
     job1.subtotals = totalTime;
+    job1.isPhysicalFacilities = true;
+    job1.jobType = JobType.FullTime;
     job1.clockStatus = PunchType.In;
     job1.trcs.push(trc1);
     job1.trcs.push(trc2);
@@ -79,16 +81,16 @@ export class APIService {
     d1.time = new Date();
     d1.time.setDate(d1.time.getDate() - 3); // 3 days ago
     d1.hasPunchException = false;
-    d1.punchedHours = new Hours("3:45");
+    d1.punchedHours = "3:45";
 
     const wob1 = new WorkOrderEntry();
     wob1.workOrder = wo1;
-    wob1.hoursBilled = new Hours("3:30");
+    wob1.hoursBilled = "3:30";
     d1.workOrderEntries.push(wob1);
 
     const wob2 = new WorkOrderEntry();
     wob2.workOrder = wo2;
-    wob2.hoursBilled = new Hours("1:00");
+    wob2.hoursBilled = "1:00";
     d1.workOrderEntries.push(wob2);
 
     job1.days.push(d1);
