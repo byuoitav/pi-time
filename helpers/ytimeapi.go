@@ -174,25 +174,45 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 func GetPunchesForJob(byuID string, jobID int) []structs.TimeClockDay {
 	var WSO2Response []structs.TimeClockDay
 
+	log.L.Debugf("Sending WSO2 GET request to %v", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+strconv.Itoa(jobID))
+
 	err := wso2requests.MakeWSO2Request("GET",
 		"https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+strconv.Itoa(jobID), "", &WSO2Response)
 
 	if err != nil {
-		log.L.Errorf("Error when retrieving punches for employee and job %s %i %s", byuID, jobID, err.Error())
+		log.L.Errorf("Error when retrieving punches for employee and job %s %v %s", byuID, jobID, err.Error())
 	}
 
 	return WSO2Response
 }
 
 //GetWorkOrders gets all the possilbe work orders for the day from WSO2
-func GetWorkOrders(operatingUnit string) structs.WorkOrderDaySummary {
-	var WSO2Response structs.WorkOrderDaySummary
+func GetWorkOrders(operatingUnit string) []structs.WorkOrder {
+	var WSO2Response []structs.WorkOrder
+
+	log.L.Debugf("Getting work orders for operating unit %v", operatingUnit)
 
 	err := wso2requests.MakeWSO2Request("GET",
-		"/domains/erp/hr/work_orders_by_operating_unit/v1/"+operatingUnit, "", &WSO2Response)
+		"https://api.byu.edu:443/domains/erp/hr/work_orders_by_operating_unit/v1/"+operatingUnit, "", &WSO2Response)
 
 	if err != nil {
-		log.L.Errorf("Error when retrieving possible work orders for operating unit")
+		log.L.Errorf("Error when retrieving possible work orders for operating unit %v", err.Error())
+	}
+
+	return WSO2Response
+}
+
+//GetWorkOrderEntries gets all the work order entries for a particular job from WSO2
+func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDaySummary {
+	var WSO2Response []structs.WorkOrderDaySummary
+
+	log.L.Debugf("Getting work orders for employee and job %v %v", byuID, employeeJobID)
+
+	err := wso2requests.MakeWSO2Request("GET",
+		"https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response)
+
+	if err != nil {
+		log.L.Errorf("Error when retrieving possible work orders for operating unit %v", err.Error())
 	}
 
 	return WSO2Response

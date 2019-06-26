@@ -83,11 +83,11 @@ type ClientPunch struct {
 
 //ClientWorkOrderEntry is a work order entry sent to the client
 type ClientWorkOrderEntry struct {
-	ID          string          `json:"id"`
-	WorkOrder   ClientWorkOrder `json:"work-order"`
-	HoursBilled string          `json:"hours-billed"`
-	TRC         ClientTRC       `json:"trc"`
-	Editable    bool            `json:"editable"`
+	ID                     int             `json:"id"`
+	WorkOrder              ClientWorkOrder `json:"work-order"`
+	TimeReportingCodeHours string          `json:"time-reporting-code-hours"`
+	TRC                    ClientTRC       `json:"trc"`
+	Editable               bool            `json:"editable"`
 }
 
 //ClientLunchPunchRequest send us for lunch punch

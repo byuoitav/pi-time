@@ -114,11 +114,15 @@ type WorkOrderDaySummary struct {
 
 //WorkOrderEntry represents a single work order logged for part of a day
 type WorkOrderEntry struct {
-	WorkOrder      WorkOrder `json:"work_order"`
-	TRC            TRC       `json:"trc"`
-	HoursWorked    string    `json:"hours_worked"`
-	SequenceNumber string    `json:"sequence_number"`
-	Editable       bool      `json:"editable"`
+	WorkOrder              WorkOrder `json:"work_order"`
+	TRC                    TRC       `json:"trc"`
+	TimeReportingCodeHours string    `json:"time_reporting_code_hours"`
+	SequenceNumber         int       `json:"sequence_number"`
+	Editable               bool      `json:"editable"`
+
+	//these only used when posting
+	EmployeeRecord int `json:"employee_record"`
+	
 }
 
 //ElapsedTimeSummary is the parent structure for sick and vacation hours
@@ -137,7 +141,7 @@ type ElapsedTimeDay struct {
 //ElapsedTimeEntry is the structure for a single amount of sick or vacation time
 type ElapsedTimeEntry struct {
 	Editable       bool   `json:"editable"`
-	SequenceNumber string `json:"sequence_number"`
+	SequenceNumber int    `json:"sequence_number"`
 	ElapsedHours   string `json:"elapsed_hours"`
 	TRC            TRC    `json:"trc"`
 	TRCID          string `json:"trc_id"`

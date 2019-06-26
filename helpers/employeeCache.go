@@ -23,7 +23,7 @@ func init() {
 func WatchForCachedEmployees(updateNowChan chan struct{}) {
 	for {
 
-		downloadCachedEmployees()
+		DownloadCachedEmployees()
 
 		//wait for 4 hours and then do it again
 		select {
@@ -35,7 +35,8 @@ func WatchForCachedEmployees(updateNowChan chan struct{}) {
 	}
 }
 
-func downloadCachedEmployees() error {
+//DownloadCachedEmployees makes a call to WSO2 to get the employee cache
+func DownloadCachedEmployees() error {
 	var cacheList structs.EmployeeCache
 
 	//make a WSO2 request to get the cache
