@@ -122,30 +122,27 @@ type WorkOrderEntry struct {
 
 	//these only used when posting
 	EmployeeRecord int `json:"employee_record"`
-	
 }
 
 //ElapsedTimeSummary is the parent structure for sick and vacation hours
 type ElapsedTimeSummary struct {
 	SickLeaveBalanceHours     string           `json:"sick_leave_balance_hours"`
 	VacationLeaveBalanceHours string           `json:"vacation_leave_balance_balance"`
-	Dates                     []ElapsedTimeDay `json:"dates"`
+	Dates                     []ElapsedTimeDay `json:"elapsed_time_dates"`
 }
 
 //ElapsedTimeDay is the parent structure for sick and vacation hours for a day
 type ElapsedTimeDay struct {
 	PunchDate           string             `json:"punch_date"`
-	ElapstedTimeEntries []ElapsedTimeEntry `json:"elapsed_time_entries"`
+	ElapstedTimeEntries []ElapsedTimeEntry `json:"punches"`
 }
 
 //ElapsedTimeEntry is the structure for a single amount of sick or vacation time
 type ElapsedTimeEntry struct {
-	Editable       bool   `json:"editable"`
-	SequenceNumber int    `json:"sequence_number"`
-	ElapsedHours   string `json:"elapsed_hours"`
-	TRC            TRC    `json:"trc"`
-	TRCID          string `json:"trc_id"`
-	PunchDate      string `json:"punch_date"`
+	Editable               bool   `json:"editable"`
+	SequenceNumber         int    `json:"sequence_number"`
+	TimeReportingCodeHours string `json:"time_reporting_code_hours"`
+	TRC                    TRC    `json:"trc"`
 }
 
 //DeletePunch .
