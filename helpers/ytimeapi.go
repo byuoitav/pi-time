@@ -225,7 +225,7 @@ func GetOtherHours(byuID string, employeeJobID int) structs.ElapsedTimeSummary {
 	log.L.Debugf("Getting other hours for employee and job %v %v", byuID, employeeJobID)
 
 	err := wso2requests.MakeWSO2Request("GET",
-		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response)
+		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response)
 
 	if err != nil {
 		log.L.Errorf("Error when retrieving other hours %v", err.Error())

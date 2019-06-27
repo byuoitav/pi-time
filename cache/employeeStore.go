@@ -112,31 +112,46 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 }
 
 //UpdateOtherHoursForJob updates the other hours for a job
-func UpdateOtherHoursForJob(byuID string, jobID int, punchDate string, elapsedTimeSummary []structs.ElapsedTimeSummary) {
+func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.ElapsedTimeSummary) {
 	employeeCacheMutex.Lock()
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
-			for x := range employee.Jobs[i].Days {
-				if employee.Jobs[i].Days[x].Date == punchDate {
-					employee.Jobs[i].Days[x].OtherHours = []structs.ClientOtherHours{}
-					for _, elapsedTimeRecord := range elapsedTimeSummary {
-						var newClientOtherHours structs.ClientOtherHours
-						newClientOtherHours.Editable = elapsedTimeRecord.Editable
-						newClientOtherHours.SequenceNumber = elapsedTimeRecord.SequenceNumber
-						newClientOtherHours.TimeReportingCodeHours = elapsedTimeRecord.TimeReportingCodeHours
-						newClientOtherHours.TRC = elapsedTimeRecord.TRC
+			//loop through the dates on the and match them up
+
+			for _, elapsedTimeDay := range elapsedTimeSummary.Dates {
+				serverDate, err := time.Parse("2006-01-02", elapsedTimeDay.PunchDate)
+				if err != nil {
+					//freak out
+					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error())
+				}
+
+				for x := range employee.Jobs[i].Days {
+					if employee.Jobs[i].Days[x].Date == serverDate {
+
+						//loop through the ElapstedTimeEntries and translate them to ClientOtherHours
+						employee.Jobs[i].Days[x].OtherHours = []structs.ClientOtherHours{}
+
+						for _, elapsedTimeEntry := range elapsedTimeDay.ElapstedTimeEntries {
+							var newClientOtherHours structs.ClientOtherHours
+							newClientOtherHours.Editable = elapsedTimeEntry.Editable
+							newClientOtherHours.SequenceNumber = elapsedTimeEntry.SequenceNumber
+							newClientOtherHours.TimeReportingCodeHours = elapsedTimeEntry.TimeReportingCodeHours
+							newClientOtherHours.TRC = elapsedTimeEntry.TRC
+							employee.Jobs[i].Days[x].OtherHours = append(employee.Jobs[i].Days[x].OtherHours, newClientOtherHours)
+						}
 
 						employee.Jobs[i].Days[x].SickHoursYTD = elapsedTimeSummary.SickLeaveBalanceHours
 						employee.Jobs[i].Days[x].VacationHoursYTD = elapsedTimeSummary.VacationLeaveBalanceHours
-						employee.Jobs[i].Days[x].OtherHours = append(employee.Jobs[i].Days[x].OtherHours, newClientOtherHours)
+
 					}
 				}
 			}
 		}
 	}
+
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
@@ -357,12 +372,12 @@ func GetOtherHours(byuID string) {
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
-		if job.IsPhysicalFacilities && job.FullPartTime == "F" {
+		if job.JobType == "F" {
 			//call WSO2 to get other hours for the job
-			otherHours := helpers.GetOtherHours(byuID, job.EmployeeJobID, punchDate)
+			otherHours := helpers.GetOtherHours(byuID, job.EmployeeJobID)
 
 			//update the other hours
-			UpdateOtherHoursForJob(byuID, job.EmployeeJobID, punchDate, otherHours)
+			UpdateOtherHoursForJob(byuID, job.EmployeeJobID, otherHours)
 		}
 	}
 }
