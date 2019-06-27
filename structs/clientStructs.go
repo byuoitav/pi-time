@@ -119,8 +119,8 @@ type ClientDeletePunch struct {
 
 //ClientOtherHours .
 type ClientOtherHours struct {
-	Editable               bool   `json:"editable"`
-	SequenceNumber         int    `json:"sequence_number"`
-	TimeReportingCodeHours string `json:"time_reporting_code_hours"`
-	TRC                    TRC    `json:"trc"`
+	Editable               bool      `json:"editable"`
+	SequenceNumber         int       `json:"sequence_number"`
+	TimeReportingCodeHours string    `json:"time_reporting_code_hours"`
+	TRC                    ClientTRC `json:"trc"`
 }

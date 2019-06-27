@@ -107,6 +107,7 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 				employee.Jobs[i].WorkOrders = append(employee.Jobs[i].WorkOrders, newClientWorkOrder)
 			}
 		}
+		break
 	}
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
@@ -127,8 +128,9 @@ func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.
 					//freak out
 					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error())
 				}
-
+				foundDay := false
 				for x := range employee.Jobs[i].Days {
+
 					if employee.Jobs[i].Days[x].Date == serverDate {
 
 						//loop through the ElapstedTimeEntries and translate them to ClientOtherHours
@@ -139,16 +141,28 @@ func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.
 							newClientOtherHours.Editable = elapsedTimeEntry.Editable
 							newClientOtherHours.SequenceNumber = elapsedTimeEntry.SequenceNumber
 							newClientOtherHours.TimeReportingCodeHours = elapsedTimeEntry.TimeReportingCodeHours
-							newClientOtherHours.TRC = elapsedTimeEntry.TRC
+							newClientOtherHours.TRC = structs.ClientTRC{
+								ID:          elapsedTimeEntry.TRC.TRCID,
+								Description: elapsedTimeEntry.TRC.TRCDescription,
+							}
 							employee.Jobs[i].Days[x].OtherHours = append(employee.Jobs[i].Days[x].OtherHours, newClientOtherHours)
 						}
 
 						employee.Jobs[i].Days[x].SickHoursYTD = elapsedTimeSummary.SickLeaveBalanceHours
 						employee.Jobs[i].Days[x].VacationHoursYTD = elapsedTimeSummary.VacationLeaveBalanceHours
 
+						foundDay = true
+
 					}
 				}
+				if !foundDay {
+					var newDay structs.ClientDay
+					newDay.Date = serverDate
+					updateClientDayFromServerOtherHoursDay(&newDay, &elapsedTimeSummary)
+					employee.Jobs[i].Days = append(employee.Jobs[i].Days, newDay)
+				}
 			}
+			break
 		}
 	}
 
@@ -308,6 +322,29 @@ func updateClientDayFromServerWorkOrderDay(clientDay *structs.ClientDay, serverD
 		newWorkOrderEntry.Editable = serverWorkOrderEntry.Editable
 
 		clientDay.WorkOrderEntries = append(clientDay.WorkOrderEntries, newWorkOrderEntry)
+	}
+}
+
+func updateClientDayFromServerOtherHoursDay(clientDay *structs.ClientDay, serverDay *structs.ElapsedTimeSummary) {
+	clientDay.SickHoursYTD = serverDay.SickLeaveBalanceHours
+	clientDay.VacationHoursYTD = serverDay.VacationLeaveBalanceHours
+
+	clientDay.OtherHours = []structs.ClientOtherHours{}
+
+	for _, serverElapsedTimeDay := range serverDay.Dates {
+		for _, serverElapsedTimeEntry := range serverElapsedTimeDay.ElapstedTimeEntries {
+			var newElapsedTimeEntry structs.ClientOtherHours
+
+			newElapsedTimeEntry.Editable = serverElapsedTimeEntry.Editable
+			newElapsedTimeEntry.SequenceNumber = serverElapsedTimeEntry.SequenceNumber
+			newElapsedTimeEntry.TRC = structs.ClientTRC{
+				ID:          serverElapsedTimeEntry.TRC.TRCID,
+				Description: serverElapsedTimeEntry.TRC.TRCDescription,
+			}
+			newElapsedTimeEntry.TimeReportingCodeHours = serverElapsedTimeEntry.TimeReportingCodeHours
+
+			clientDay.OtherHours = append(clientDay.OtherHours, newElapsedTimeEntry)
+		}
 	}
 }
 
