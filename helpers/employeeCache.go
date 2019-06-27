@@ -50,10 +50,9 @@ func DownloadCachedEmployees() error {
 		//open our badger db
 		//initialize the badger db
 		log.L.Debugf("Initializing Badger DB")
-		opts := badger.DefaultOptions
 		dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-		opts.Dir = dbLoc
-		opts.ValueDir = dbLoc
+		opts := badger.DefaultOptions(dbLoc)
+
 		db, err := badger.Open(opts)
 		if err != nil {
 			log.L.Fatal(err)
@@ -84,10 +83,10 @@ func DownloadCachedEmployees() error {
 
 //GetEmployeeFromCache looks up an employee in the cache
 func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
-	opts := badger.DefaultOptions
+
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	opts.Dir = dbLoc
-	opts.ValueDir = dbLoc
+	opts := badger.DefaultOptions(dbLoc)
+
 	db, err := badger.Open(opts)
 	if err != nil {
 		log.L.Fatal(err)
