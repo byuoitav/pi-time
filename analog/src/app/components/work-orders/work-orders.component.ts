@@ -33,6 +33,7 @@ export class WorkOrdersComponent implements OnInit {
     this.route.parent.data.subscribe((data: { employee: Employee }) => {
       console.log("hi from work orders", data);
       this.emp = data.employee;
+      /*
 
       // build jobs list
       for (const job of this.emp.jobs) {
@@ -47,6 +48,7 @@ export class WorkOrdersComponent implements OnInit {
       if (this.jobs.length == 1) {
         this.job = this.jobs[0];
       }
+      */
 
       // build valid dates list
     });

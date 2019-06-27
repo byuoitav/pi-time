@@ -34,6 +34,7 @@ export class APIService {
       this.theme = this.urlParams.get("theme");
     }
 
+    /*
     const emp = new Employee();
     emp.name = "Daniel Randall";
 
@@ -52,7 +53,7 @@ export class APIService {
     trc2.description = "Overtime";
 
     const job1 = new Job();
-    job1.employeeID = 4502111111111;
+    // job1.employeeID = 4502111111111;
     job1.description = "Custodian I";
     job1.subtotals = totalTime;
     job1.isPhysicalFacilities = true;
@@ -103,6 +104,7 @@ export class APIService {
     emp.totalTime = totalTime;
 
     this.employee = new BehaviorSubject<Employee>(emp);
+    */
   }
 
   public switchTheme(name: string) {
@@ -117,8 +119,51 @@ export class APIService {
     );
   }
 
-  public getEmployee(id: string | number): BehaviorSubject<Employee> {
-    this.rightHeader = this.employee.value.name;
-    return this.employee;
-  }
+  logout = () => {
+    this.employee = undefined;
+  };
+
+  getEmployee = (id: string | number): BehaviorSubject<Employee> => {
+    // return the current employee if it already exists and has the same id
+    // if (this.employee) {
+    // const val = this.employee.value;
+    // return this.employee;
+    // }
+
+    // this.rightHeader = this.employee.value.name;
+
+    const employee = new BehaviorSubject<Employee>(undefined);
+
+    const endpoint = "ws://" + window.location.host + "/id/" + id;
+    const ws = new WebSocket(endpoint);
+
+    ws.onmessage = event => {
+      const data: Message = JSON.parse(event.data);
+
+      console.log("key: '" + data.key + "', value:", data.value);
+      switch (data.key) {
+        case "employee":
+          try {
+            const emp = this.jsonConvert.deserialize(data.value, Employee);
+            console.log("employee", emp);
+          } catch (e) {
+            console.warn("unable to deserialize employee", e);
+            employee.error("invalid response from api");
+          }
+          break;
+      }
+    };
+
+    ws.onerror = event => {
+      console.error("error", event);
+      employee.error("invalid employee id");
+    };
+
+    return employee;
+  };
+}
+
+interface Message {
+  key: string;
+  value: object;
 }

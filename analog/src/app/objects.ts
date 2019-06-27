@@ -82,6 +82,7 @@ export class Hours {
   }
 }
 
+@JsonObject("TRC")
 export class TRC {
   @JsonProperty("id", String, true)
   id: string = undefined;
@@ -119,8 +120,8 @@ export class Punch {
   @JsonProperty("time", DateConverter, true)
   time: Date = undefined;
 
-  @JsonProperty("type", PunchType, true)
-  type: PunchType = undefined;
+  @JsonProperty("type", String, true)
+  type: String = undefined;
 
   @JsonProperty("deletable-pair", Number, true)
   deletablePair: number = undefined;
@@ -146,22 +147,22 @@ export class WorkOrderEntry {
 
 @JsonObject("Day")
 export class Day {
-  @JsonProperty("date", DateConverter, true)
+  @JsonProperty("date", DateConverter, false)
   time: Date = undefined;
 
-  @JsonProperty("has-punch-exception", Boolean, true)
+  @JsonProperty("has-punch-exception", Boolean, false)
   hasPunchException: boolean = undefined;
 
   @JsonProperty("has-work-order-exception", Boolean, true)
   hasWorkOrderException: boolean = undefined;
 
-  @JsonProperty("punched-hours", String, true)
+  @JsonProperty("punched-hours", String, false)
   punchedHours: string = undefined;
 
-  @JsonProperty("billed-hours", String, false)
+  @JsonProperty("billed-hours", String, true)
   billedHours: string = undefined;
 
-  @JsonProperty("reported-hours", String, false)
+  @JsonProperty("reported-hours", String, true)
   reportedHours: string = undefined;
 
   @JsonProperty("punches", [Punch], true)
@@ -171,16 +172,16 @@ export class Day {
   workOrderEntries: Array<WorkOrderEntry> = new Array<WorkOrderEntry>();
 
   // sick/vacation, YTD sick/vacation
-  @JsonProperty("sick-hours", String, false)
+  @JsonProperty("sick-hours", String, true)
   sickHours: string = undefined;
 
-  @JsonProperty("vacation-hours", String, false)
+  @JsonProperty("vacation-hours", String, true)
   vacationHours: string = undefined;
 
-  @JsonProperty("sick-hours-ytd", String, false)
+  @JsonProperty("sick-hours-ytd", String, true)
   sickHoursYTD: string = undefined;
 
-  @JsonProperty("vacation-hours-ytd", String, false)
+  @JsonProperty("vacation-hours-ytd", String, true)
   vacationHoursYTD: string = undefined;
 }
 
@@ -195,11 +196,13 @@ export class Job {
   @JsonProperty("time-subtotals", TotalTime, true)
   subtotals: TotalTime = undefined;
 
-  @JsonProperty("clock-status", PunchType, true)
-  clockStatus: PunchType = undefined;
+  // TODO PunchType
+  @JsonProperty("clock-status", String, true)
+  clockStatus: String = undefined;
 
-  @JsonProperty("job-type", JobType, true)
-  jobType: JobType = undefined;
+  // TODO JobType
+  @JsonProperty("job-type", String, true)
+  jobType: String = undefined;
 
   @JsonProperty("is-physical-facilities", Boolean, true)
   isPhysicalFacilities: Boolean = undefined;
@@ -234,7 +237,10 @@ export class Job {
 
 @JsonObject("Employee")
 export class Employee {
-  @JsonProperty("name", String, true)
+  @JsonProperty("id", String, false)
+  id: string = undefined;
+
+  @JsonProperty("name", String, false)
   name: string = undefined;
 
   @JsonProperty("jobs", [Job], true)
@@ -243,7 +249,7 @@ export class Employee {
   @JsonProperty("total-time", TotalTime, true)
   totalTime: TotalTime = undefined;
 
-  @JsonProperty("international-message", String, false)
+  @JsonProperty("international-message", String, true)
   message: String = undefined;
 
   showTRC = (): boolean => {

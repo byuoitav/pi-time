@@ -10,7 +10,7 @@ import { Employee } from "../../objects";
   styleUrls: ["./login.component.scss"]
 })
 export class LoginComponent implements OnInit {
-  public id = "";
+  public id = "666567890";
 
   constructor(public api: APIService, private router: Router) {}
 

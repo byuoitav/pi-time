@@ -15,7 +15,6 @@ import (
 var updateCacheNowChannel = make(chan struct{})
 
 func main() {
-
 	log.SetLevel("debug")
 
 	//start a go routine that will pull the cache information for offline mode
