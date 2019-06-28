@@ -29,7 +29,8 @@ func main() {
 	router.GET("/id/:id", handlers.LogInUser)
 
 	//all of the functions to call to add / update / delete / do things on the UI
-	router.POST("/punch/:id", handlers.Punch)
+
+	router.POST("/punch/:id", handlers.Punch) //will send in a ClientPunchRequest in the body
 	router.POST("/lunchpunch/:id", handlers.LunchPunch)
 	router.PUT("/sick/:id", handlers.Sick)
 	router.PUT("/vacation/:id", handlers.Vacation)
