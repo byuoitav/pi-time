@@ -5,8 +5,8 @@ import {
   RouterStateSnapshot,
   ActivatedRouteSnapshot
 } from "@angular/router";
-import { Observable, of, EMPTY } from "rxjs";
-import { mergeMap, take } from "rxjs/operators";
+import { Observable, of, EMPTY, Subject } from "rxjs";
+import { map, catchError, takeUntil, take } from "rxjs/operators";
 
 import { APIService } from "./api.service";
 import { Employee } from "../objects";
@@ -15,6 +15,8 @@ import { Employee } from "../objects";
   providedIn: "root"
 })
 export class EmployeeResolverService implements Resolve<Employee> {
+  private unsubscribe = new Subject();
+
   constructor(private api: APIService, private router: Router) {}
 
   resolve(
@@ -24,15 +26,17 @@ export class EmployeeResolverService implements Resolve<Employee> {
     const id = route.paramMap.get("id");
 
     return this.api.getEmployee(id).pipe(
-      take(1),
-      mergeMap(emp => {
-        if (emp) {
-          return of(emp);
-        } else {
-          // id not found
-          this.router.navigate(["/login"]);
-          return EMPTY;
+      take(2), // the first one is always undefined
+      map(val => {
+        if (val instanceof Employee) {
+          return val;
         }
+      }),
+      catchError(err => {
+        this.router.navigate(["/login"]);
+
+        console.warn("error", err);
+        return EMPTY;
       })
     );
   }
