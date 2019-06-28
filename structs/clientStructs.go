@@ -125,7 +125,7 @@ type ClientOtherHours struct {
 	TRC                    ClientTRC `json:"trc"`
 }
 
-//ClientPunchRequest is the punch structure fro  the client on a punch in or out
+//ClientPunchRequest is the punch structure from the client on a punch in or out
 type ClientPunchRequest struct {
 	BYUID         int       `json:"byu-id"`
 	EmployeeJobID int       `json:"employee-job-id"`

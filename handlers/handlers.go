@@ -14,9 +14,9 @@ import (
 // Punch adds an in or out punch as determined by the body sent
 func Punch(context echo.Context) error {
 
-	//byuID := context.Param("id")
+	byuID := context.Param("id")
 
-	var incomingRequest structs.ClientPunch
+	var incomingRequest structs.ClientPunchRequest
 	err := context.Bind(&incomingRequest)
 	if err != nil {
 		return context.String(http.StatusBadRequest, err.Error())
@@ -24,10 +24,10 @@ func Punch(context echo.Context) error {
 
 	//call the helper
 
-	// err = helpers.Punch(byuID, incomingRequest)
-	// if err != nil {
-	// 	return context.String(http.StatusInternalServerError, error.Error())
-	// }
+	err = helpers.Punch(byuID, incomingRequest)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
 
 	return context.String(http.StatusOK, "ok")
 }
