@@ -7,9 +7,31 @@
   @include mat-card-theme($theme);
 }
 
+$byu-blue: (
+  300: #3c568b,
+  500: #002e5d,
+  700: #000333,
+  contrast: (
+    300: #ffffff,
+    500: #ffffff,
+    700: #ffffff
+  )
+);
+
+$light-blue: (
+  300: #6092f2,
+  500: #1b65bf,
+  700: #003c8e,
+  contrast: (
+    300: #000000,
+    500: #ffffff,
+    700: #ffffff
+  )
+);
+
 // default (light) theme
-$default-primary: mat-palette($mat-blue, 800, 600, 900);
-$default-accent: mat-palette($mat-blue-grey);
+$default-primary: mat-palette($byu-blue, 500, 300, 700);
+$default-accent: mat-palette($light-blue, 500, 300, 700);
 $default-warn: mat-palette($mat-pink);
 
 $default: mat-light-theme($default-primary, $default-accent, $default-warn);

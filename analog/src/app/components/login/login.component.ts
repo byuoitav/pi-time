@@ -31,6 +31,6 @@ export class LoginComponent implements OnInit {
   login(id: string) {
     // TODO show some error (somehow?) if this fails
     console.log("navigating to jobs with id", this.id);
-    this.router.navigate(["/employees/" + this.id + "/jobs"]);
+    this.router.navigate(["/employee/" + this.id]);
   }
 }

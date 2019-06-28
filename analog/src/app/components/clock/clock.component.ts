@@ -8,10 +8,10 @@ import { ChangeWoDialog } from "../../dialogs/change-wo/change-wo.dialog";
 
 @Component({
   selector: "jobs",
-  templateUrl: "./jobs.component.html",
-  styleUrls: ["./jobs.component.scss"]
+  templateUrl: "./clock.component.html",
+  styleUrls: ["./clock.component.scss"]
 })
-export class JobsComponent implements OnInit {
+export class ClockComponent implements OnInit {
   public emp: Employee;
 
   constructor(
@@ -22,8 +22,9 @@ export class JobsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.parent.data.subscribe(data => {
+    this.route.data.subscribe(data => {
       this.emp = data.employee;
+      this.emp.jobs.length = 1;
       console.log("employee", this.emp);
     });
   }
@@ -40,4 +41,9 @@ export class JobsComponent implements OnInit {
       console.log("closed with result", result);
     });
   }
+
+  toTimesheet = () => {
+    console.log("going to job select");
+    this.router.navigate(["./job/"], { relativeTo: this.route });
+  };
 }

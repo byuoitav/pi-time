@@ -25,8 +25,10 @@ export class EmployeeResolverService implements Resolve<Employee> {
   ): Observable<Employee> | Observable<never> {
     const id = route.paramMap.get("id");
 
+    // TODO need to change this to return Observable<BehaviorSubject<Employee>> so
+    // that the employee gets updated in child components
     return this.api.getEmployee(id).pipe(
-      take(2), // the first one is always undefined
+      take(8), // the first one is always undefined
       map(val => {
         if (val instanceof Employee) {
           return val;

@@ -17,7 +17,8 @@ import {
   MAT_DIALOG_DEFAULT_OPTIONS,
   MatSelectModule,
   MatNativeDateModule,
-  MatDatepickerModule
+  MatDatepickerModule,
+  MatTabsModule
 } from "@angular/material";
 import "hammerjs";
 
@@ -28,25 +29,28 @@ import { APIService } from "./services/api.service";
 import { ByuIDPipe } from "./pipes/byu-id.pipe";
 
 import { AppComponent } from "./components/app.component";
-import { JobsComponent } from "./components/jobs/jobs.component";
+import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
-import { LoggedInComponent } from "./components/logged-in/logged-in.component";
 import { HoursPipe } from "./pipes/hours.pipe";
 import { ChangeWoDialog } from "./dialogs/change-wo/change-wo.dialog";
 import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
-import { JobTimeSelectComponent } from "./components/job-time-select/job-time-select.component";
+import { JobSelectComponent } from "./components/job-select/job-select.component";
+import { DateSelectComponent } from "./components/date-select/date-select.component";
+import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-    JobsComponent,
+    ClockComponent,
     ByuIDPipe,
     LoginComponent,
-    LoggedInComponent,
     HoursPipe,
     ChangeWoDialog,
     WorkOrdersComponent,
-    JobTimeSelectComponent
+    // JobTimeSelectComponent,
+    JobSelectComponent,
+    DateSelectComponent,
+    DayOverviewComponent
   ],
   imports: [
     BrowserModule,
@@ -67,7 +71,8 @@ import { JobTimeSelectComponent } from "./components/job-time-select/job-time-se
     MatDialogModule,
     MatSelectModule,
     MatNativeDateModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatTabsModule
   ],
   providers: [
     APIService,

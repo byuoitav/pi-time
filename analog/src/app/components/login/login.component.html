@@ -1,14 +1,15 @@
+<mat-toolbar color="primary">
+  <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
+  <span>Y-Time</span> <span class="header-spacer"></span>
+</mat-toolbar>
+
 <div class="login">
   <div class="input">
     <span *ngIf="id?.length > 0" class="id">{{ id | byuID }}</span>
     <span *ngIf="id?.length == 0" class="id">Enter BYU ID</span>
 
     <!-- logo -->
-    <object
-      type="image/svg+xml"
-      data="./assets/byu_medallion_black_white.svg"
-      class="logo"
-    >
+    <object type="image/svg+xml" data="./assets/byu_medallion.svg" class="logo">
     </object>
   </div>
 

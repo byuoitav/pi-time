@@ -18,7 +18,6 @@ import {
 @Injectable({ providedIn: "root" })
 export class APIService {
   public theme = "default";
-  public rightHeader = "";
 
   private jsonConvert: JsonConvert;
   private urlParams: URLSearchParams;
@@ -58,8 +57,6 @@ export class APIService {
     // const val = this.employee.value;
     // return this.employee;
     // }
-
-    // this.rightHeader = this.employee.value.name;
 
     const employee = new BehaviorSubject<Employee>(undefined);
 
