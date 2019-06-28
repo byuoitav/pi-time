@@ -75,35 +75,37 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 
 }
 
-// //Punch will do an in or out punch
-// func Punch(byuID string, request structs.ClientPunchRequest) error {
-// 	//translate our body to theirs
-// 	var WSO2Request structs.Punch
-// 	WSO2Request.PunchType = request.PunchType
-// 	WSO2Request.PunchTime = request.Time.Format("15:04")
-// 	//later WSO2Request.SequenceNumber =
-// 	WSO2Request.DeletablePair = request.DeletablePair
-// 	// WSO2Request.Latitude =
-// 	// WSO2Request.Longitude =
-// 	WSO2Request.LocationDescription = os.Getenv("SYSTEM_ID")
-// 	WSO2Request.TimeCollectionSource = "CPI"
-// 	//later WSO2Request.WorkOrderID =
-// 	//later WSO2Request.TRCID =
-// 	WSO2Request.PunchDate = request.Time.Format("2006-01-02")
-// 	WSO2Request.EmployeeRecord = request.EmployeeJobID
-// 	WSO2Request.PunchZone = "XXX"
+//Punch will do an in or out punch
+func Punch(byuID string, request structs.ClientPunchRequest) error {
+	//translate our body to theirs
+	var WSO2Request structs.Punch
+	WSO2Request.PunchType = request.PunchType
+	WSO2Request.PunchTime = request.Time.Format("15:04")
+	WSO2Request.Latitude = "40.25258"
+	WSO2Request.Longitude = "-111.657658"
+	WSO2Request.LocationDescription = os.Getenv("SYSTEM_ID")
+	WSO2Request.TimeCollectionSource = "CPI"
+	WSO2Request.WorkOrderID = request.WorkOrderID
+	WSO2Request.TRCID = request.TRCID
+	WSO2Request.PunchDate = request.Time.Format("2006-01-02")
+	WSO2Request.EmployeeRecord = request.EmployeeJobID
+	WSO2Request.PunchZone = ""
 
-// 	var punchResponse structs.Timesheet
+	var punchResponse structs.Timesheet
 
-// 	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, WSO2Request, &punchResponse)
+	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, WSO2Request, &punchResponse)
 
-// 	if err != nil {
-// 		log.L.Errorf("Error when making punch %s", err.Error())
-// 	}
+	if err != nil {
+		log.L.Errorf("Error when making punch %s", err.Error())
+	}
 
-// 	//if successful
-// 	return nil
-// }
+	//add response to employee record
+
+	//send back down websocket
+
+	//if successful
+	return nil
+}
 
 // //WorkOrderEntry will do the work order entry
 // func WorkOrderEntry(byuID string, request structs.ClientWorkOrderEntry) error {
