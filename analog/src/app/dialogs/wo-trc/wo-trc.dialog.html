@@ -1,6 +1,8 @@
-<h1 mat-dialog-title>Change WO/SR</h1>
+<h1 *ngIf="job?.currentWorkOrder" mat-dialog-title>Change Work Order</h1>
+<h1 *ngIf="!job?.currentWorkOrder" mat-dialog-title>Select Work Order</h1>
 
 <div mat-dialog-content>
+  <!--
   <mat-form-field>
     <mat-select [(value)]="selectedWO" placeholder="Select a Work Order">
       <mat-select-trigger> {{selectedWO.id}} </mat-select-trigger>
@@ -17,6 +19,19 @@
     <mat-select [(value)]="selectedPay" placeholder="Select a SR (TODO?)">
       <mat-option *ngFor="let t of payTypes" [value]="t"> {{t}} </mat-option>
     </mat-select>
+  </mat-form-field>
+  -->
+
+  <mat-form-field>
+    <mat-select [(value)]="selectedPay" placeholder="Select a TRC">
+      <mat-option *ngFor="let t of job?.trcs" [value]="t">
+        {{t?.description}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="Enter WO/SR" (click)="selectWorkOrder()" />
   </mat-form-field>
 </div>
 

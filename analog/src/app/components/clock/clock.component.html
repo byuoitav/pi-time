@@ -2,6 +2,7 @@
   <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
   <span>Y-Time</span> <span class="header-spacer"></span>
   <span>{{ emp?.name }}</span>
+  <button mat-icon-button><mat-icon>exit_to_app</mat-icon></button>
 </mat-toolbar>
 
 <div class="container">
@@ -47,12 +48,12 @@
 
         <!-- week total -->
         <mat-grid-tile colspan="1" rowspan="1">
-          {{ job?.totalTime?.week | hours }}
+          {{ job?.subtotals?.week }}
         </mat-grid-tile>
 
         <!-- pay period total -->
         <mat-grid-tile colspan="1" rowspan="1">
-          {{ job?.totalTime?.payPeriod | hours }}
+          {{ job?.subtotals?.payPeriod }}
         </mat-grid-tile>
 
         <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
@@ -61,11 +62,21 @@
 
         <!-- clock in/out -->
         <mat-grid-tile colspan="2" rowspan="1">
-          <mat-radio-group class="clock-group">
-            <mat-radio-button color="primary" class="clock-button"
+          <mat-radio-group
+            class="clock-group"
+            [value]="job?.clockStatus"
+            (change)="clockInOut(job, $event.value)"
+          >
+            <mat-radio-button
+              color="primary"
+              class="clock-button"
+              [value]="punchType.In"
               >IN</mat-radio-button
             >
-            <mat-radio-button color="warn" class="clock-button"
+            <mat-radio-button
+              color="warn"
+              class="clock-button"
+              [value]="punchType.Out"
               >OUT</mat-radio-button
             >
           </mat-radio-group>

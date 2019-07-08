@@ -5,8 +5,8 @@ import {
   RouterStateSnapshot,
   ActivatedRouteSnapshot
 } from "@angular/router";
-import { Observable, of, EMPTY, Subject } from "rxjs";
-import { map, catchError, takeUntil, take } from "rxjs/operators";
+import { Observable, of, EMPTY, Subject, BehaviorSubject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
 import { APIService } from "./api.service";
 import { Employee } from "../objects";
@@ -14,32 +14,35 @@ import { Employee } from "../objects";
 @Injectable({
   providedIn: "root"
 })
-export class EmployeeResolverService implements Resolve<Employee> {
-  private unsubscribe = new Subject();
-
+export class EmployeeResolverService
+  implements Resolve<BehaviorSubject<Employee>> {
   constructor(private api: APIService, private router: Router) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<Employee> | Observable<never> {
+  ): Observable<BehaviorSubject<Employee>> | Observable<never> {
     const id = route.paramMap.get("id");
+    const unsubscribe = new Subject();
 
-    // TODO need to change this to return Observable<BehaviorSubject<Employee>> so
-    // that the employee gets updated in child components
-    return this.api.getEmployee(id).pipe(
-      take(8), // the first one is always undefined
-      map(val => {
-        if (val instanceof Employee) {
-          return val;
+    const employee = this.api.getEmployee(id);
+
+    return new Observable(observer => {
+      employee.pipe(takeUntil(unsubscribe)).subscribe(
+        val => {
+          if (val instanceof Employee) {
+            observer.next(employee);
+            observer.complete();
+            unsubscribe.complete();
+          }
+        },
+        err => {
+          observer.error(err);
+          unsubscribe.complete();
         }
-      }),
-      catchError(err => {
-        this.router.navigate(["/login"]);
+      );
 
-        console.warn("error", err);
-        return EMPTY;
-      })
-    );
+      return { unsubscribe() {} };
+    });
   }
 }

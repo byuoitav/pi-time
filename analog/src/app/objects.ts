@@ -1,3 +1,4 @@
+import { InjectionToken } from "@angular/core";
 import {
   JsonObject,
   JsonProperty,
@@ -5,6 +6,8 @@ import {
   JsonConverter,
   JsonCustomConvert
 } from "json2typescript";
+
+export const PORTAL_DATA = new InjectionToken<{}>("PORTAL_DATA");
 
 export enum PunchType {
   In = "I",
@@ -231,7 +234,11 @@ export class Job {
   };
 
   showWorkOrder = (): boolean => {
-    return true;
+    if (!this.currentWorkOrder) {
+      return false;
+    }
+
+    return this.clockStatus === PunchType.In;
   };
 }
 

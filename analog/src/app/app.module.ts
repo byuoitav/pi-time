@@ -21,6 +21,7 @@ import {
   MatTabsModule,
   MatRadioModule
 } from "@angular/material";
+import { OverlayModule } from "@angular/cdk/overlay";
 import "hammerjs";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -33,11 +34,12 @@ import { AppComponent } from "./components/app.component";
 import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
 import { HoursPipe } from "./pipes/hours.pipe";
-import { ChangeWoDialog } from "./dialogs/change-wo/change-wo.dialog";
+import { WoTrcDialog } from "./dialogs/wo-trc/wo-trc.dialog";
 import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
 import { JobSelectComponent } from "./components/job-select/job-select.component";
 import { DateSelectComponent } from "./components/date-select/date-select.component";
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
+import { WoSelectComponent } from "./components/wo-select/wo-select.component";
 
 @NgModule({
   declarations: [
@@ -46,12 +48,13 @@ import { DayOverviewComponent } from "./components/day-overview/day-overview.com
     ByuIDPipe,
     LoginComponent,
     HoursPipe,
-    ChangeWoDialog,
+    WoTrcDialog,
     WorkOrdersComponent,
     // JobTimeSelectComponent,
     JobSelectComponent,
     DateSelectComponent,
-    DayOverviewComponent
+    DayOverviewComponent,
+    WoSelectComponent
   ],
   imports: [
     BrowserModule,
@@ -74,7 +77,8 @@ import { DayOverviewComponent } from "./components/day-overview/day-overview.com
     MatNativeDateModule,
     MatDatepickerModule,
     MatTabsModule,
-    MatRadioModule
+    MatRadioModule,
+    OverlayModule
   ],
   providers: [
     APIService,
@@ -85,7 +89,7 @@ import { DayOverviewComponent } from "./components/day-overview/day-overview.com
       }
     }
   ],
-  entryComponents: [ChangeWoDialog],
+  entryComponents: [WoTrcDialog, WoSelectComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

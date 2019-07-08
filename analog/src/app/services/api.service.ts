@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript";
 import { BehaviorSubject } from "rxjs";
-
 import {
   Employee,
   Job,
@@ -74,6 +73,8 @@ export class APIService {
               data.value,
               Employee
             );
+
+            console.log("updated employee", emp);
             employee.next(emp);
           } catch (e) {
             console.warn("unable to deserialize employee", e);

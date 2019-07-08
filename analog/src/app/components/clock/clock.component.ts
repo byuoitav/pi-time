@@ -1,10 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material";
+import { BehaviorSubject } from "rxjs";
 
 import { APIService } from "../../services/api.service";
-import { Employee, Job } from "../../objects";
-import { ChangeWoDialog } from "../../dialogs/change-wo/change-wo.dialog";
+import { Employee, Job, PunchType } from "../../objects";
+import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
 
 @Component({
   selector: "jobs",
@@ -12,7 +13,16 @@ import { ChangeWoDialog } from "../../dialogs/change-wo/change-wo.dialog";
   styleUrls: ["./clock.component.scss"]
 })
 export class ClockComponent implements OnInit {
-  public emp: Employee;
+  public punchType = PunchType;
+
+  private _emp: BehaviorSubject<Employee>;
+  get emp(): Employee {
+    if (this._emp) {
+      return this._emp.value;
+    }
+
+    return undefined;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -23,12 +33,29 @@ export class ClockComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe(data => {
-      this.emp = data.employee;
-      this.emp.jobs.length = 1;
-      console.log("employee", this.emp);
+      this._emp = data.employee;
     });
   }
 
+  clockInOut = (job: Job, state: PunchType) => {
+    console.log("clocking job", job.description, "to state", state);
+
+    if (job.isPhysicalFacilities) {
+      // show work order popup to clock in
+      const ref = this.dialog.open(WoTrcDialog, {
+        width: "50vw",
+        data: job
+      });
+
+      ref.afterClosed().subscribe(result => {
+        console.log("closed with result", result);
+      });
+    } else {
+      // clock in here
+    }
+  };
+
+  /*
   selectWo(j: Job) {
     const ref = this.dialog.open(ChangeWoDialog, {
       width: "40vw",
@@ -41,6 +68,7 @@ export class ClockComponent implements OnInit {
       console.log("closed with result", result);
     });
   }
+  */
 
   toTimesheet = () => {
     console.log("going to job select");

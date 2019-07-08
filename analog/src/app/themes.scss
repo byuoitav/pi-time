@@ -79,3 +79,9 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
     }
   }
 }
+
+.overlay {
+  &.wo-select-overlay {
+    background-color: white;
+  }
+}
