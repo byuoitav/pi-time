@@ -16,7 +16,7 @@ export class DateSelectComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.jobIdx = params.get("job");
+      this.jobIdx = +params.get("job");
       console.log("jobidx", this.jobIdx);
     });
 

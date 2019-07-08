@@ -36,10 +36,10 @@ export class DayOverviewComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.jobIdx = params.get("job");
+      this.jobIdx = +params.get("job");
       console.log("jobidx", this.jobIdx);
 
-      this.dayIdx = params.get("date");
+      this.dayIdx = +params.get("date");
       console.log("dayidx", this.dayIdx);
     });
 

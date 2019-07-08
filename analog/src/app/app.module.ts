@@ -18,7 +18,8 @@ import {
   MatSelectModule,
   MatNativeDateModule,
   MatDatepickerModule,
-  MatTabsModule
+  MatTabsModule,
+  MatRadioModule
 } from "@angular/material";
 import "hammerjs";
 
@@ -72,7 +73,8 @@ import { DayOverviewComponent } from "./components/day-overview/day-overview.com
     MatSelectModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    MatTabsModule
+    MatTabsModule,
+    MatRadioModule
   ],
   providers: [
     APIService,

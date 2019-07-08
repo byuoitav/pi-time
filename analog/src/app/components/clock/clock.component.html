@@ -14,40 +14,44 @@
     <mat-grid-list
       class="grid"
       cols="{{ emp?.showTRC() ? 6 : 5 }}"
-      rowHeight="16vh"
+      rowHeight="12vh"
       gutterSize=".2vh"
     >
       <!-- headers -->
-      <mat-grid-tile colspan="1" rowspan="1" class="tile">
+      <mat-grid-tile colspan="1" rowspan="1" class="header">
         Job Title
       </mat-grid-tile>
-      <mat-grid-tile colspan="1" rowspan="1" class="tile"> Week </mat-grid-tile>
-      <mat-grid-tile colspan="1" rowspan="1" class="tile">
+      <mat-grid-tile colspan="1" rowspan="1" class="header">
+        Week
+      </mat-grid-tile>
+      <mat-grid-tile colspan="1" rowspan="1" class="header">
         Pay Period
       </mat-grid-tile>
       <mat-grid-tile
         *ngIf="emp?.showTRC()"
         colspan="1"
         rowspan="1"
-        class="tile"
+        class="tile header"
       >
         TRC
       </mat-grid-tile>
-      <mat-grid-tile colspan="2" rowspan="1">Clock</mat-grid-tile>
+      <mat-grid-tile colspan="2" rowspan="1" class="header"
+        >Clock</mat-grid-tile
+      >
 
       <ng-container *ngFor="let job of emp?.jobs">
         <!-- name -->
-        <mat-grid-tile colspan="1" rowspan="1" class="job tile">
+        <mat-grid-tile colspan="1" rowspan="1">
           {{ job?.description }}
         </mat-grid-tile>
 
         <!-- week total -->
-        <mat-grid-tile colspan="1" rowspan="1" class="job tile">
+        <mat-grid-tile colspan="1" rowspan="1">
           {{ job?.totalTime?.week | hours }}
         </mat-grid-tile>
 
         <!-- pay period total -->
-        <mat-grid-tile colspan="1" rowspan="1" class="job tile">
+        <mat-grid-tile colspan="1" rowspan="1">
           {{ job?.totalTime?.payPeriod | hours }}
         </mat-grid-tile>
 
@@ -57,8 +61,14 @@
 
         <!-- clock in/out -->
         <mat-grid-tile colspan="2" rowspan="1">
-          <button color="primary" mat-raised-button>Clock In</button>
-          <button color="warn" mat-raised-button>Clock Out</button>
+          <mat-radio-group class="clock-group">
+            <mat-radio-button color="primary" class="clock-button"
+              >IN</mat-radio-button
+            >
+            <mat-radio-button color="warn" class="clock-button"
+              >OUT</mat-radio-button
+            >
+          </mat-radio-group>
         </mat-grid-tile>
       </ng-container>
     </mat-grid-list>
