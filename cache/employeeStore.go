@@ -367,6 +367,7 @@ func GetPunchesForAllJobs(byuID string) {
 func GetPossibleWorkOrders(byuID string) {
 	//lock the mutex, get the employee record from the cache (read-only)
 	employeeCacheMutex.Lock()
+	employee := employeeCache[byuID]
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
@@ -385,6 +386,7 @@ func GetPossibleWorkOrders(byuID string) {
 func GetWorkOrderEntries(byuID string) {
 	//lock the mutex, get the employee record from the cache (read-only)
 	employeeCacheMutex.Lock()
+	employee := employeeCache[byuID]
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
