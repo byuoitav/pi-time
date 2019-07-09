@@ -1,3 +1,38 @@
-<p>
-  wo-select works!
-</p>
+<div class="base">
+  <div class="top">
+    <div class="output">
+      <input
+        class="input mat-elevation-z3"
+        [value]="filterString"
+        (input)="onInputChange($event)"
+      />
+      <button class="cancel" color="accent" mat-raised-button>Cancel</button>
+    </div>
+
+    <div class="options">
+      <mat-grid-list
+        *ngIf="filtered?.length > 0"
+        cols="2"
+        rowHeight="15vh"
+        gutterSize="3vh"
+      >
+        <mat-grid-tile
+          *ngFor="let wo of (filtered | slice: 0:4)"
+          class="option"
+          colspan="1"
+          rowspan="1"
+        >
+          <button class="mat-elevation-z1" mat-stroked-button>
+            {{ wo?.id }}: {{ wo?.name }}
+          </button>
+        </mat-grid-tile>
+      </mat-grid-list>
+
+      <span *ngIf="filtered?.length === 0" class="no-options"
+        >No work orders found matching filter</span
+      >
+    </div>
+  </div>
+
+  <div class="simple-keyboard"></div>
+</div>
