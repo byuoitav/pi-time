@@ -35,12 +35,17 @@ export class ClockComponent implements OnInit {
     this.route.data.subscribe(data => {
       this._emp = data.employee;
     });
+
+    // TODO remove
+    setTimeout(() => {
+      this.clockInOut(this.emp.jobs[2], PunchType.In);
+    }, 1500);
   }
 
   clockInOut = (job: Job, state: PunchType) => {
     console.log("clocking job", job.description, "to state", state);
 
-    if (job.isPhysicalFacilities) {
+    if (job.isPhysicalFacilities && state === PunchType.In) {
       // show work order popup to clock in
       const ref = this.dialog.open(WoTrcDialog, {
         width: "50vw",
@@ -51,24 +56,9 @@ export class ClockComponent implements OnInit {
         console.log("closed with result", result);
       });
     } else {
-      // clock in here
+      // clock in/out here
     }
   };
-
-  /*
-  selectWo(j: Job) {
-    const ref = this.dialog.open(ChangeWoDialog, {
-      width: "40vw",
-      data: {
-        job: j
-      }
-    });
-
-    ref.afterClosed().subscribe(result => {
-      console.log("closed with result", result);
-    });
-  }
-  */
 
   toTimesheet = () => {
     console.log("going to job select");

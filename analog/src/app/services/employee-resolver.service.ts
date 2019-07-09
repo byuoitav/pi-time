@@ -37,6 +37,8 @@ export class EmployeeResolverService
           }
         },
         err => {
+          // TODO add an anchor tab to show popup
+          this.router.navigate(["/login"]);
           observer.error(err);
           unsubscribe.complete();
         }
