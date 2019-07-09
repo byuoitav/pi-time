@@ -6,7 +6,14 @@
         [value]="filterString"
         (input)="onInputChange($event)"
       />
-      <button class="cancel" color="accent" mat-raised-button>Cancel</button>
+      <button
+        class="cancel"
+        color="accent"
+        (click)="cancel()"
+        mat-raised-button
+      >
+        Cancel
+      </button>
     </div>
 
     <div class="options">

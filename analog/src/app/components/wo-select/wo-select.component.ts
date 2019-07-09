@@ -5,6 +5,7 @@ import {
   ViewEncapsulation,
   AfterViewInit
 } from "@angular/core";
+import { OverlayRef } from "@angular/cdk/overlay";
 import Keyboard from "simple-keyboard";
 
 import { WorkOrder, PORTAL_DATA } from "../../objects";
@@ -24,7 +25,10 @@ export class WoSelectComponent implements OnInit, AfterViewInit {
 
   private keyboard: Keyboard;
 
-  constructor(@Inject(PORTAL_DATA) private workOrders: WorkOrder[]) {
+  constructor(
+    private ref: OverlayRef,
+    @Inject(PORTAL_DATA) private workOrders: WorkOrder[]
+  ) {
     const wo1 = new WorkOrder();
     wo1.id = "QR3924";
     wo1.name = "PPCH Pipe Maintenance";
@@ -105,5 +109,9 @@ export class WoSelectComponent implements OnInit, AfterViewInit {
 
       return datastr.includes(this.filterString);
     });
+  };
+
+  cancel = () => {
+    this.ref.dispose();
   };
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject, Injector } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
-import { Overlay } from "@angular/cdk/overlay";
+import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 
 import { WoSelectComponent } from "../../components/wo-select/wo-select.component";
 import { Job, WorkOrder, TRC, PORTAL_DATA } from "../../objects";
@@ -44,7 +44,7 @@ export class WoTrcDialog implements OnInit {
   }
 
   selectWorkOrder = () => {
-    const ref = this._overlay.create({
+    const overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
       disposeOnNavigation: true,
@@ -55,15 +55,19 @@ export class WoTrcDialog implements OnInit {
     const portal = new ComponentPortal(
       WoSelectComponent,
       null,
-      this.createInjector(this.job.workOrders)
+      this.createInjector(overlayRef, this.job.workOrders)
     );
 
-    ref.attach(portal);
+    const containerRef = overlayRef.attach(portal);
+    return overlayRef;
   };
 
-  private createInjector(data): PortalInjector {
+  private createInjector(overlayRef: OverlayRef, data: any): PortalInjector {
     const tokens = new WeakMap();
+
+    tokens.set(OverlayRef, overlayRef);
     tokens.set(PORTAL_DATA, data);
+
     return new PortalInjector(this._injector, tokens);
   }
 }
