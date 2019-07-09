@@ -16,7 +16,6 @@ func init() {
 	if len(dbLoc) == 0 {
 		log.L.Fatalf("Need CACHE_DATABASE_LOCATION variable")
 	}
-
 }
 
 //WatchForCachedEmployees will start a timer and download the cache every 4 hours

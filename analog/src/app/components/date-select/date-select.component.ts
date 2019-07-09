@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { BehaviorSubject } from "rxjs";
 
 import { Employee } from "../../objects";
 
@@ -10,7 +11,15 @@ import { Employee } from "../../objects";
 })
 export class DateSelectComponent implements OnInit {
   jobIdx: number;
-  emp: Employee;
+
+  private _emp: BehaviorSubject<Employee>;
+  get emp(): Employee {
+    if (this._emp) {
+      return this._emp.value;
+    }
+
+    return undefined;
+  }
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -21,9 +30,9 @@ export class DateSelectComponent implements OnInit {
     });
 
     this.route.data.subscribe(data => {
-      console.log("day select data", data);
-      this.emp = data.employee;
-      console.log("day select job", data.employee.jobs[this.jobIdx]);
+      this._emp = data.employee;
+
+      console.log("day select job", this.emp.jobs[this.jobIdx]);
     });
   }
 

@@ -1,5 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { BehaviorSubject } from "rxjs";
+
+import { Employee } from "../../objects";
 
 @Component({
   selector: "job-select",
@@ -7,14 +10,22 @@ import { ActivatedRoute, Router } from "@angular/router";
   styleUrls: ["./job-select.component.scss"]
 })
 export class JobSelectComponent implements OnInit {
+  private _emp: BehaviorSubject<Employee>;
+  get emp(): Employee {
+    if (this._emp) {
+      return this._emp.value;
+    }
+
+    return undefined;
+  }
+
   constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
     this.route.data.subscribe(data => {
-      console.log("job select data", data);
-      data.employee.jobs.length = 1;
+      this._emp = data.employee;
 
-      if (data.employee && data.employee.jobs.length === 1) {
+      if (this.emp && this.emp.jobs.length === 1) {
         this.selectJob(0);
       }
     });
