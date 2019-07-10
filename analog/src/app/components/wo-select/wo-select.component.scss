@@ -11,7 +11,7 @@ $outputWidth: 30vw;
   align-items: center;
 }
 
-.input {
+.wo-select-input {
   width: 95%;
   height: 9vh;
   font-size: 1.3em;
@@ -31,7 +31,7 @@ $outputWidth: 30vw;
   max-width: 100%;
 }
 
-.top {
+.wo-select-top {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -41,7 +41,7 @@ $outputWidth: 30vw;
   height: 33vh;
 }
 
-.output {
+.wo-select-output {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -51,12 +51,12 @@ $outputWidth: 30vw;
   padding: 0 2vw;
 }
 
-.cancel {
+.wo-select-cancel {
   padding: 1.3vh 3.3vw;
   font-size: 1em;
 }
 
-.options {
+.wo-select-options {
   width: 100vw - $outputWidth - 4vw;
   padding: 0 2vw;
   text-align: center;

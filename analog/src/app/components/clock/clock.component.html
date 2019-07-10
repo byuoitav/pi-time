@@ -59,7 +59,7 @@
         </mat-grid-tile>
 
         <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
-          {{ job?.currentTRC?.id }}
+          {{ job?.currentTRC?.id ? job?.currentTRC?.id : "N/A" }}
         </mat-grid-tile>
 
         <!-- clock in/out -->
