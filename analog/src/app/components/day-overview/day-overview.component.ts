@@ -71,4 +71,8 @@ export class DayOverviewComponent implements OnInit {
         return "";
     }
   }
+
+  logout = () => {
+    this._empRef.logout();
+  };
 }

@@ -5,7 +5,9 @@
   <span>{{ job?.description }}</span> <span class="header-spacer"></span>
   <span>{{ day?.time | date: "fullDate" }}</span>
   <span class="header-spacer"></span> <span>{{ emp?.name }}</span>
-  <button mat-icon-button><mat-icon>exit_to_app</mat-icon></button>
+  <button (click)="logout()" mat-icon-button>
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
 </mat-toolbar>
 
 <mat-tab-group mat-stretch-tabs color="primary" backgroundColor="accent">
