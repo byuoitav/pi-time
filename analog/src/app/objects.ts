@@ -22,9 +22,13 @@ export enum JobType {
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
   serialize(date: Date): any {
-    function pad(n) {
-      return n < 10 ? "0" + n : n;
+    if (!date) {
+      return "0001-01-01T00:00:00Z";
     }
+
+    const pad = n => {
+      return n < 10 ? "0" + n : n;
+    };
 
     return (
       date.getUTCFullYear() +
@@ -43,7 +47,7 @@ class DateConverter implements JsonCustomConvert<Date> {
   }
 
   deserialize(date: any): Date {
-    if (date == null) {
+    if (!date || date === "0001-01-01T00:00:00Z") {
       return undefined;
     }
 

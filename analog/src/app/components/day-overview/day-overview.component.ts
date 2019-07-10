@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 
-import { Employee, Job, Day } from "../../objects";
-import { BehaviorSubject } from 'rxjs';
+import { EmployeeRef } from "../../services/api.service";
+import { Employee, Job, Day, PunchType } from "../../objects";
+import { BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "day-overview",
@@ -10,12 +11,12 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ["./day-overview.component.scss"]
 })
 export class DayOverviewComponent implements OnInit {
-  options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
-  private _emp: BehaviorSubject<Employee>;
+  private _empRef: EmployeeRef;
   get emp(): Employee {
-    if (this._emp) {
-      return this._emp.value;
+    if (this._empRef) {
+      return this._empRef.employee;
     }
 
     return undefined;
@@ -52,8 +53,7 @@ export class DayOverviewComponent implements OnInit {
     });
 
     this.route.data.subscribe(data => {
-      this._emp = data.employee;
-      console.log("employee", this.emp);
+      this._empRef = data.empRef;
     });
   }
 
@@ -62,11 +62,13 @@ export class DayOverviewComponent implements OnInit {
   }
 
   typeToString(type: string): string {
-    if (type === "I") {
-      return "IN";
-    }
-    if (type === "O") {
-      return "OUT";
+    switch (type) {
+      case PunchType.In:
+        return "IN";
+      case PunchType.Out:
+        return "OUT";
+      default:
+        return "";
     }
   }
 }
