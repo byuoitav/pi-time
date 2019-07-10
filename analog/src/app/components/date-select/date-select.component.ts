@@ -106,14 +106,24 @@ export class DateSelectComponent implements OnInit {
     this.getViewDays();
   }
 
-  selectDay = (idx: number) => {
-    this.router.navigate(["./" + idx], { relativeTo: this.route });
+  selectDay = (day: Date) => {
+    let idx = -1;
+    for (let i = 0; i < this.emp.jobs[this.jobIdx].days.length; i++) {
+      if (this.emp.jobs[this.jobIdx].days[i].time.toDateString() === day.toDateString()) {
+        idx = i;
+        break;
+      }
+    }
+
+    if (idx != -1) {
+      this.router.navigate(["./" + idx], { relativeTo: this.route });
+    }
   };
 
-  selectRandomDay = () => {
-    const max = this.emp.jobs[this.jobIdx].days.length - 1;
-    this.selectDay(Math.floor(Math.random() * Math.floor(max)));
-  };
+  // selectRandomDay = () => {
+  //   const max = this.emp.jobs[this.jobIdx].days.length - 1;
+  //   this.selectDay(Math.floor(Math.random() * Math.floor(max)));
+  // };
 
   getViewDays() {
     this.viewDays = [];

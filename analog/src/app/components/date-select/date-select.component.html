@@ -1,5 +1,7 @@
 <mat-toolbar color="primary">
-    <button class="back-button" mat-icon-button (click)="goBack()"><mat-icon class="back">navigate_before</mat-icon></button>
+    <button mat-button (click)="goBack()">
+        <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
+      </button>
     <span>{{emp?.jobs[jobIdx].description}}</span>
     <span class="header-spacer"></span>
     <span>{{ emp?.name }}</span>
@@ -24,7 +26,7 @@
 
             <ng-container *ngFor="let day of viewDays">
                 <mat-grid-tile colspan="1" rowspan="1">
-                    <div class="date" [class.today]="today.toDateString() === day.toDateString()" [class.exception]="dayHasException(day)" [class.outside]="day.getMonth() != viewMonth">
+                    <div (click)="selectDay(day)" class="date" [class.today]="today.toDateString() === day.toDateString()" [class.exception]="dayHasException(day)" [class.outside]="day.getMonth() != viewMonth">
                         <span style="text-align: center">{{day.getDate()}}</span>
                         <span *ngIf="dayHasPunch(day)" class="dot" [class.exception]="dayHasException(day)"></span>
                     </div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 
 import { Employee, Job, Day } from "../../objects";
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: "day-overview",
@@ -9,27 +10,34 @@ import { Employee, Job, Day } from "../../objects";
   styleUrls: ["./day-overview.component.scss"]
 })
 export class DayOverviewComponent implements OnInit {
-  public emp: Employee;
+  options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
-  private _job: Job;
+  private _emp: BehaviorSubject<Employee>;
+  get emp(): Employee {
+    if (this._emp) {
+      return this._emp.value;
+    }
+
+    return undefined;
+  }
+
   get job(): Job {
-    if (this.jobIdx && this.emp) {
+    if (this.jobIdx >= 0 && this.emp) {
       return this.emp.jobs[this.jobIdx];
     }
 
     return undefined;
   }
 
-  private _day: Day;
   get day(): Day {
-    if (this.dayIdx && this.job) {
+    if (this.dayIdx >= 0 && this.job) {
       return this.job.days[this.dayIdx];
     }
 
     return undefined;
   }
 
-  private jobIdx: number;
+  public jobIdx: number;
   private dayIdx: number;
 
   constructor(private route: ActivatedRoute, private router: Router) {}
@@ -44,8 +52,21 @@ export class DayOverviewComponent implements OnInit {
     });
 
     this.route.data.subscribe(data => {
-      this.emp = data.employee;
+      this._emp = data.employee;
       console.log("employee", this.emp);
     });
+  }
+
+  goBack() {
+    window.history.back();
+  }
+
+  typeToString(type: string): string {
+    if (type === "I") {
+      return "IN";
+    }
+    if (type === "O") {
+      return "OUT";
+    }
   }
 }
