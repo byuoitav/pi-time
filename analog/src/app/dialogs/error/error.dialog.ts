@@ -13,7 +13,13 @@ export class ErrorDialog implements OnInit {
     public data: {
       msg: string;
     }
-  ) {}
+  ) {
+    this.ref.disableClose = true;
+  }
 
   ngOnInit() {}
+
+  close = () => {
+    this.ref.close();
+  };
 }

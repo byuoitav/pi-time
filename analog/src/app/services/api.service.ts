@@ -156,10 +156,14 @@ export class APIService {
       // change the message in this one?
     } else {
       const ref = this.dialog.open(ErrorDialog, {
-        width: "50vw",
+        width: "70vw",
         data: {
           msg: msg
         }
+      });
+
+      ref.afterClosed().subscribe(result => {
+        this.router.navigate([], { queryParams: { error: null } });
       });
     }
   };

@@ -42,7 +42,7 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
             // TODO add an anchor tab to show popup
             this.router.navigate(["/login"], {
               queryParams: {
-                error: err
+                error: "No employee found with the given ID."
               },
               queryParamsHandling: "merge"
             });
