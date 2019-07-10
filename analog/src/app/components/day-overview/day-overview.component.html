@@ -1,47 +1,50 @@
 <mat-toolbar class="header" color="primary">
-  <button mat-button (click)="goBack()">
+    <button mat-button (click)="goBack()">
     <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
   </button>
-  <span>{{ job?.description }}</span> <span class="header-spacer"></span>
-  <span>{{ day?.time | date: "fullDate" }}</span>
-  <span class="header-spacer"></span> <span>{{ emp?.name }}</span>
-  <button (click)="logout()" mat-icon-button>
+    <span>{{ job?.description }}</span> <span class="header-spacer"></span>
+    <span>{{ day?.time | date: "fullDate" }}</span>
+    <span class="header-spacer"></span> <span>{{ emp?.name }}</span>
+    <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
 
 <mat-tab-group mat-stretch-tabs color="primary" backgroundColor="accent">
-  <mat-tab>
-    <ng-template mat-tab-label> <span>Punches</span> </ng-template>
-    <div class="container">
-      <mat-card class="sheet card">
-        <div class="row">
-          <div class="column">
-            <ng-container *ngFor="let punch of day?.punches">
-              <div class="punch">
-                <span class="punch-time">{{
-                  punch?.time | date: "shortTime"
-                }}</span>
-                <span class="punch-type">{{ typeToString(punch?.type) }}</span>
-              </div>
-            </ng-container>
-          </div>
-        </div>
-        <div class="row">
-          <span>Total: {{ day?.punchedHours }}</span>
-        </div>
-        <div class="row">
-          <button class="lunch-punch" color="accent" mat-flat-button>
+    <mat-tab>
+        <ng-template mat-tab-label> <span>Punches</span> </ng-template>
+        <div class="container">
+            <mat-card class="sheet card">
+                <div class="row">
+                    <div class="column">
+                        <ng-container *ngFor="let punch of day?.punches">
+                            <div class="punch">
+                                <span class="punch-time" *ngIf="punch?.time" [class.delete]="punch?.deletablePair > 0">
+                                    {{ punch?.time | date: "shortTime" }}
+                                </span>
+                                <span class="punch-time fix" *ngIf="!punch?.time">
+                                    --:--
+                                </span>
+                                <span class="punch-type" [class.delete]="punch?.deletablePair > 0">{{ typeToString(punch?.type) }}</span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="row">
+                    <span style="font-weight: bold;">Total: {{ day?.punchedHours }}</span>
+                </div>
+                <div class="row">
+                    <button class="lunch-punch" color="accent" mat-flat-button>
             Enter Lunch Punch
           </button>
+                </div>
+            </mat-card>
         </div>
-      </mat-card>
-    </div>
-  </mat-tab>
-  <mat-tab>
-    <ng-template mat-tab-label> <span>WO/SR</span> </ng-template>
-  </mat-tab>
-  <mat-tab>
-    <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
-  </mat-tab>
+    </mat-tab>
+    <mat-tab>
+        <ng-template mat-tab-label> <span>WO/SR</span> </ng-template>
+    </mat-tab>
+    <mat-tab>
+        <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
+    </mat-tab>
 </mat-tab-group>

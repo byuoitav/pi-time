@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 
 import { EmployeeRef } from "../../services/api.service";
 import { Employee, Job, Day, PunchType } from "../../objects";
-import { BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "day-overview",
