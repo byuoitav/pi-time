@@ -3,7 +3,7 @@
     <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
   </button>
   <span>{{ job?.description }}</span> <span class="header-spacer"></span>
-  <span>{{ day?.time?.toLocaleDateString("en-US", options) }}</span>
+  <span>{{ day?.time | date: "fullDate" }}</span>
   <span class="header-spacer"></span> <span>{{ emp?.name }}</span>
   <button mat-icon-button><mat-icon>exit_to_app</mat-icon></button>
 </mat-toolbar>
@@ -18,7 +18,7 @@
             <ng-container *ngFor="let punch of day?.punches">
               <div class="punch">
                 <span class="punch-time">{{
-                  punch?.time?.toLocaleTimeString()
+                  punch?.time | date: "shortTime"
                 }}</span>
                 <span class="punch-type">{{ typeToString(punch?.type) }}</span>
               </div>
