@@ -40,6 +40,7 @@ import { JobSelectComponent } from "./components/job-select/job-select.component
 import { DateSelectComponent } from "./components/date-select/date-select.component";
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
 import { WoSelectComponent } from "./components/wo-select/wo-select.component";
+import { ErrorDialog } from "./dialogs/error/error.dialog";
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { WoSelectComponent } from "./components/wo-select/wo-select.component";
     JobSelectComponent,
     DateSelectComponent,
     DayOverviewComponent,
-    WoSelectComponent
+    WoSelectComponent,
+    ErrorDialog
   ],
   imports: [
     BrowserModule,
@@ -89,7 +91,7 @@ import { WoSelectComponent } from "./components/wo-select/wo-select.component";
       }
     }
   ],
-  entryComponents: [WoTrcDialog, WoSelectComponent],
+  entryComponents: [WoTrcDialog, WoSelectComponent, ErrorDialog],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

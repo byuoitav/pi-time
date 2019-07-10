@@ -40,7 +40,13 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
           },
           err => {
             // TODO add an anchor tab to show popup
-            this.router.navigate(["/login"]);
+            this.router.navigate(["/login"], {
+              queryParams: {
+                error: err
+              },
+              queryParamsHandling: "merge"
+            });
+
             observer.error(err);
             unsubscribe.complete();
           }

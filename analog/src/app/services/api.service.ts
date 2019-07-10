@@ -1,8 +1,11 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Router } from "@angular/router";
+import { Router, ActivationEnd } from "@angular/router";
+import { MatDialog } from "@angular/material";
 import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript";
 import { BehaviorSubject, Observable } from "rxjs";
+
+import { ErrorDialog } from "../dialogs/error/error.dialog";
 import {
   Employee,
   Job,
@@ -58,9 +61,24 @@ export class APIService {
 
   private employee: BehaviorSubject<Employee>;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private dialog: MatDialog
+  ) {
     this.jsonConvert = new JsonConvert();
     this.jsonConvert.ignorePrimitiveChecks = false;
+
+    // watch for route changes to show popups, etc
+    this.router.events.subscribe(event => {
+      if (event instanceof ActivationEnd) {
+        const snapshot = event.snapshot;
+
+        if (snapshot && snapshot.queryParams && snapshot.queryParams.error) {
+          this.error(snapshot.queryParams.error);
+        }
+      }
+    });
 
     this.urlParams = new URLSearchParams(window.location.search);
     if (this.urlParams.has("theme")) {
@@ -127,6 +145,23 @@ export class APIService {
     });
 
     return empRef;
+  };
+
+  error = (msg: string) => {
+    const errorDialogs = this.dialog.openDialogs.filter(dialog => {
+      return dialog.componentInstance instanceof ErrorDialog;
+    });
+
+    if (errorDialogs.length > 0) {
+      // change the message in this one?
+    } else {
+      const ref = this.dialog.open(ErrorDialog, {
+        width: "50vw",
+        data: {
+          msg: msg
+        }
+      });
+    }
   };
 }
 
