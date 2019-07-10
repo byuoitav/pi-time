@@ -2,7 +2,9 @@
   <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
   <span>Y-Time</span> <span class="header-spacer"></span>
   <span>{{ emp?.name }}</span>
-  <button mat-icon-button><mat-icon>exit_to_app</mat-icon></button>
+  <button (click)="logout()" mat-icon-button>
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div class="container">

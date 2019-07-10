@@ -3,7 +3,7 @@
     <span>{{emp?.jobs[jobIdx].description}}</span>
     <span class="header-spacer"></span>
     <span>{{ emp?.name }}</span>
-    <button mat-icon-button><mat-icon>exit_to_app</mat-icon></button>
+    <button (click)="logout()" mat-icon-button><mat-icon>exit_to_app</mat-icon></button>
 </mat-toolbar>
 
 <!-- <button mat-raised-button (click)="selectRandomDay()">Select Random Day</button> -->

@@ -48,6 +48,10 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+	if employee == nil {
+		return
+	}
+
 	employee.ID = byuID
 	employee.Name = timesheet.PersonName
 	employee.TotalTime.PayPeriod = timesheet.PeriodTotal
@@ -96,6 +100,10 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+	if employee == nil {
+		return
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			employee.Jobs[i].WorkOrders = []structs.ClientWorkOrder{}
@@ -118,6 +126,10 @@ func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+	if employee == nil {
+		return
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			//loop through the dates on the and match them up
@@ -175,6 +187,10 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+	if employee == nil {
+		return
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			//now we merge all the days together.....
@@ -220,6 +236,10 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+	if employee == nil {
+		return
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 
@@ -352,6 +372,11 @@ func updateClientDayFromServerOtherHoursDay(clientDay *structs.ClientDay, server
 func GetPunchesForAllJobs(byuID string) {
 	employeeCacheMutex.Lock()
 	employee := employeeCache[byuID]
+	if employee == nil {
+		employeeCacheMutex.Unlock()
+		return
+	}
+
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
@@ -368,6 +393,11 @@ func GetPossibleWorkOrders(byuID string) {
 	//lock the mutex, get the employee record from the cache (read-only)
 	employeeCacheMutex.Lock()
 	employee := employeeCache[byuID]
+	if employee == nil {
+		employeeCacheMutex.Unlock()
+		return
+	}
+
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
@@ -387,6 +417,11 @@ func GetWorkOrderEntries(byuID string) {
 	//lock the mutex, get the employee record from the cache (read-only)
 	employeeCacheMutex.Lock()
 	employee := employeeCache[byuID]
+	if employee == nil {
+		employeeCacheMutex.Unlock()
+		return
+	}
+
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
@@ -406,6 +441,11 @@ func GetOtherHours(byuID string) {
 	//lock the mutex, get the employee record from the cache
 	employeeCacheMutex.Lock()
 	employee := employeeCache[byuID]
+	if employee == nil {
+		employeeCacheMutex.Unlock()
+		return
+	}
+
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {

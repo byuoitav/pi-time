@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material";
 import { BehaviorSubject } from "rxjs";
 
-import { APIService } from "../../services/api.service";
+import { APIService, EmployeeRef } from "../../services/api.service";
 import { Employee, Job, PunchType } from "../../objects";
 import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
 
@@ -15,10 +15,10 @@ import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
 export class ClockComponent implements OnInit {
   public punchType = PunchType;
 
-  private _emp: BehaviorSubject<Employee>;
+  private _empRef: EmployeeRef;
   get emp(): Employee {
-    if (this._emp) {
-      return this._emp.value;
+    if (this._empRef) {
+      return this._empRef.employee;
     }
 
     return undefined;
@@ -33,13 +33,8 @@ export class ClockComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe(data => {
-      this._emp = data.employee;
+      this._empRef = data.empRef;
     });
-
-    // TODO remove
-    setTimeout(() => {
-      this.clockInOut(this.emp.jobs[2], PunchType.In);
-    }, 1500);
   }
 
   clockInOut = (job: Job, state: PunchType) => {
@@ -63,5 +58,9 @@ export class ClockComponent implements OnInit {
   toTimesheet = () => {
     console.log("going to job select");
     this.router.navigate(["./job/"], { relativeTo: this.route });
+  };
+
+  logout = () => {
+    this._empRef.logout();
   };
 }

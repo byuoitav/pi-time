@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Router } from "@angular/router";
 import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import {
   Employee,
   Job,
@@ -14,6 +15,40 @@ import {
   JobType
 } from "../objects";
 
+export class EmployeeRef {
+  private _employee: BehaviorSubject<Employee>;
+  private _logout;
+
+  get employee() {
+    if (this._employee) {
+      return this._employee.value;
+    }
+
+    return undefined;
+  }
+
+  constructor(employee: BehaviorSubject<Employee>, logout: () => void) {
+    this._employee = employee;
+    this._logout = logout;
+  }
+
+  logout = () => {
+    if (this._logout) {
+      return this._logout();
+    }
+
+    return undefined;
+  };
+
+  observable = (): Observable<Employee> => {
+    if (this._employee) {
+      return this._employee.asObservable();
+    }
+
+    return undefined;
+  };
+}
+
 @Injectable({ providedIn: "root" })
 export class APIService {
   public theme = "default";
@@ -23,7 +58,7 @@ export class APIService {
 
   private employee: BehaviorSubject<Employee>;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.jsonConvert = new JsonConvert();
     this.jsonConvert.ignorePrimitiveChecks = false;
 
@@ -45,18 +80,7 @@ export class APIService {
     );
   }
 
-  logout = () => {
-    this.employee.complete();
-    // this.employee = undefined;
-  };
-
-  getEmployee = (id: string | number): BehaviorSubject<Employee> => {
-    // return the current employee if it already exists and has the same id
-    // if (this.employee) {
-    // const val = this.employee.value;
-    // return this.employee;
-    // }
-
+  getEmployee = (id: string | number): EmployeeRef => {
     const employee = new BehaviorSubject<Employee>(undefined);
 
     const endpoint = "ws://" + window.location.host + "/id/" + id;
@@ -89,7 +113,20 @@ export class APIService {
       employee.error("invalid employee id");
     };
 
-    return employee;
+    const empRef = new EmployeeRef(employee, () => {
+      console.log("logging out employee", employee.value.id);
+
+      // clean up the websocket
+      ws.close();
+
+      // no more employee values
+      employee.complete();
+
+      // route to login page
+      this.router.navigate(["/login"], { replaceUrl: true });
+    });
+
+    return empRef;
   };
 }
 

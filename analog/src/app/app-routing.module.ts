@@ -28,7 +28,7 @@ const routes: Routes = [
       {
         path: "employee/:id",
         resolve: {
-          employee: EmployeeResolverService
+          empRef: EmployeeResolverService
         },
         children: [
           {
