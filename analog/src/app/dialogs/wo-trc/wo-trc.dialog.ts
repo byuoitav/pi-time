@@ -13,7 +13,7 @@ import { Job, WorkOrder, TRC, PORTAL_DATA } from "../../objects";
 })
 export class WoTrcDialog implements OnInit {
   selectedWO: WorkOrder;
-  selectedPay: TRC;
+  selectedPay: string;
 
   constructor(
     public ref: MatDialogRef<WoTrcDialog>,
@@ -22,21 +22,17 @@ export class WoTrcDialog implements OnInit {
     @Inject(MAT_DIALOG_DATA) public job: Job
   ) {
     this.selectedWO = job.currentWorkOrder;
-    this.selectedPay = job.currentTRC;
+    this.selectedPay = job.currentTRC.id;
 
     // default to regular pay (or whatever is first in the trc's array
-    if (
-      (!this.selectedPay || this.selectedPay.id.length === 0) &&
-      job.trcs.length > 0
-    ) {
-      this.selectedPay = job.trcs[0];
+    if (!this.selectedPay && job.trcs.length > 0) {
+      this.selectedPay = job.trcs[0].id;
     }
   }
 
   ngOnInit() {}
 
-  onNoClick() {
-    console.log("selected", this.selectedWO);
+  cancel() {
     this.ref.close();
   }
 
@@ -49,12 +45,15 @@ export class WoTrcDialog implements OnInit {
       panelClass: ["overlay", "wo-select-overlay"]
     });
 
-    const portal = new ComponentPortal(
-      WoSelectComponent,
-      null,
-      this.createInjector(overlayRef, this.job.workOrders)
-    );
+    const injector = this.createInjector(overlayRef, {
+      workOrders: this.job.workOrders,
+      selectWorkOrder: (wo: WorkOrder) => {
+        this.selectedWO = wo;
+        overlayRef.dispose();
+      }
+    });
 
+    const portal = new ComponentPortal(WoSelectComponent, null, injector);
     const containerRef = overlayRef.attach(portal);
     return overlayRef;
   };

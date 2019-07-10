@@ -29,8 +29,12 @@
           colspan="1"
           rowspan="1"
         >
-          <button class="mat-elevation-z2" mat-stroked-button>
-            {{ wo?.id }}: {{ wo?.name }}
+          <button
+            class="mat-elevation-z2"
+            (click)="data?.selectWorkOrder(wo)"
+            mat-stroked-button
+          >
+            {{ wo?.toString() }}
           </button>
         </mat-grid-tile>
       </mat-grid-list>

@@ -90,8 +90,8 @@ $card-width: 95%;
 
   .clock-button {
     min-width: 7vw;
-    padding: 0.8vh 1vh;
-    border: 0.4vh solid #b3b3b3;
-    border-radius: 2vh;
+    padding: 0.8vh 0.55vw;
+    border: 0.3vh solid #b3b3b3;
+    border-radius: 50vh; // fully rounded
   }
 }

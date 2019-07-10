@@ -114,6 +114,10 @@ export class WorkOrder {
 
   @JsonProperty("name", String, true)
   name: string = undefined;
+
+  toString = (): string => {
+    return this.id + ": " + this.name;
+  };
 }
 
 @JsonObject("Punch")

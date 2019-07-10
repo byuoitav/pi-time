@@ -27,8 +27,13 @@ export class WoSelectComponent implements OnInit, AfterViewInit {
 
   constructor(
     private ref: OverlayRef,
-    @Inject(PORTAL_DATA) private workOrders: WorkOrder[]
+    @Inject(PORTAL_DATA)
+    private data: {
+      workOrders: WorkOrder[];
+      selectWorkOrder: (WorkOrder) => void;
+    }
   ) {
+    // TODO remove section
     const wo1 = new WorkOrder();
     wo1.id = "QR3924";
     wo1.name = "PPCH Pipe Maintenance";
@@ -46,10 +51,11 @@ export class WoSelectComponent implements OnInit, AfterViewInit {
     wo4.id = "LK1958";
     wo4.name = "Rake Leaves";
 
-    this.workOrders.push(wo1);
-    this.workOrders.push(wo2);
-    this.workOrders.push(wo3);
-    this.workOrders.push(wo4);
+    this.data.workOrders.push(wo1);
+    this.data.workOrders.push(wo2);
+    this.data.workOrders.push(wo3);
+    this.data.workOrders.push(wo4);
+    // TODO end remove section
 
     this.filter();
   }
@@ -91,7 +97,7 @@ export class WoSelectComponent implements OnInit, AfterViewInit {
   };
 
   filter = () => {
-    this.filtered = this.workOrders.filter(wo => {
+    this.filtered = this.data.workOrders.filter(wo => {
       // everything matches the empty string
       if (!this.filterString) {
         return true;
