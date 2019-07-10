@@ -2,7 +2,9 @@
     <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
     <span>Y-Time</span> <span class="header-spacer"></span>
     <span>{{ emp?.name }}</span>
-    <button mat-icon-button><mat-icon>exit_to_app</mat-icon></button>
+    <button (click)="logout()" mat-icon-button>
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div class="container">
@@ -15,14 +17,14 @@
                 Timesheet
             </mat-grid-tile>
 
-            <ng-container *ngFor="let job of emp?.jobs; let i = index;">
+            <ng-container *ngFor="let job of emp?.jobs; let i = index">
                 <mat-grid-tile colspan="1" rowspan="1">
                     {{ job?.description }}
                 </mat-grid-tile>
                 <mat-grid-tile colspan="1" rowspan="1">
                     <button class="view-timesheet" color="accent" (click)="selectJob(i)" mat-raised-button>
-                        View Timesheet
-                    </button>
+            View Timesheet
+          </button>
                 </mat-grid-tile>
             </ng-container>
         </mat-grid-list>

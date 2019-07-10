@@ -31,9 +31,6 @@ export class WoTrcDialog implements OnInit {
     ) {
       this.selectedPay = job.trcs[0];
     }
-
-    // TODO remove
-    this.selectWorkOrder();
   }
 
   ngOnInit() {}

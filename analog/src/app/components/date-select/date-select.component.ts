@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BehaviorSubject } from "rxjs";
 
+import { EmployeeRef } from "../../services/api.service";
 import { Employee } from "../../objects";
 
 @Component({
@@ -29,7 +30,7 @@ export class DateSelectComponent implements OnInit {
     "October",
     "November",
     "December"
-  ]
+  ];
 
   DayNames = [
     "Sunday",
@@ -39,12 +40,12 @@ export class DateSelectComponent implements OnInit {
     "Thursday",
     "Friday",
     "Saturday"
-  ]
+  ];
 
-  private _emp: BehaviorSubject<Employee>;
+  private _empRef: EmployeeRef;
   get emp(): Employee {
-    if (this._emp) {
-      return this._emp.value;
+    if (this._empRef) {
+      return this._empRef.employee;
     }
 
     return undefined;
@@ -59,7 +60,7 @@ export class DateSelectComponent implements OnInit {
     });
 
     this.route.data.subscribe(data => {
-      this._emp = data.employee;
+      this._empRef = data.empRef;
 
       console.log("day select job", this.emp.jobs[this.jobIdx]);
     });
@@ -81,7 +82,7 @@ export class DateSelectComponent implements OnInit {
   }
 
   canMoveMonthForward(): boolean {
-    return (this.viewMonth < this.today.getMonth())
+    return this.viewMonth < this.today.getMonth();
   }
 
   moveMonthBack() {
@@ -130,9 +131,13 @@ export class DateSelectComponent implements OnInit {
     const lastDayOfLastMonth = new Date(this.viewYear, this.viewMonth, 0);
     const start = lastDayOfLastMonth.getDate() - lastDayOfLastMonth.getDay();
     const startDate = new Date(this.viewYear, this.viewMonth - 1, start);
-    
+
     for (let i = 0; i < 42; i++) {
-      const d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const d = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
       d.setDate(startDate.getDate() + i);
       this.viewDays.push(d);
     }
@@ -156,9 +161,13 @@ export class DateSelectComponent implements OnInit {
     );
 
     if (empDay != null) {
-      return empDay.punches.length > 0
+      return empDay.punches.length > 0;
     } else {
       return false;
     }
   }
+
+  logout = () => {
+    this._empRef.logout();
+  };
 }
