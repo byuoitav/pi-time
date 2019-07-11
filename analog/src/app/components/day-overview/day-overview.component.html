@@ -1,50 +1,158 @@
-<mat-toolbar class="header" color="primary">
+<mat-toolbar class="do-header" color="primary">
     <button mat-button (click)="goBack()">
     <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
   </button>
-    <span>{{ job?.description }}</span> <span class="header-spacer"></span>
+    <span>{{ job?.description }}</span> <span class="do-header-spacer"></span>
     <span>{{ day?.time | date: "fullDate" }}</span>
-    <span class="header-spacer"></span> <span>{{ emp?.name }}</span>
+    <span class="do-header-spacer"></span> <span>{{ emp?.name }}</span>
     <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
 
-<mat-tab-group mat-stretch-tabs color="primary" backgroundColor="accent">
+<mat-tab-group mat-stretch-tabs backgroundColor="accent" color="none" [disableRipple]=true [@.disabled]=true>
     <mat-tab>
-        <ng-template mat-tab-label> <span>Punches</span> </ng-template>
-        <div class="container">
-            <mat-card class="sheet card">
-                <div class="row">
-                    <div class="column">
+        <ng-template mat-tab-label>
+            <span *ngIf="!day?.hasPunchException">Punches</span>
+            <span *ngIf="day?.hasPunchException" matBadge="{{getExceptionCount()}}" matBadgeColor="warn" matBadgeOverlap=false matBadgeSize="medium">Punches</span>
+        </ng-template>
+        <div class="do-container">
+            <mat-card class="do-sheet do-card mat-elevation-z3">
+                <div class="do-row">
+                    <div class="do-column">
                         <ng-container *ngFor="let punch of day?.punches">
-                            <div class="punch">
-                                <span class="punch-time" *ngIf="punch?.time" [class.delete]="punch?.deletablePair > 0">
+                            <div class="do-punch">
+                                <span class="do-punch-time" *ngIf="punch?.time" [class.delete]="punch?.deletablePair > 0">
                                     {{ punch?.time | date: "shortTime" }}
                                 </span>
-                                <span class="punch-time fix" *ngIf="!punch?.time">
+                                <span class="do-punch-time do-fix" *ngIf="!punch?.time">
                                     --:--
                                 </span>
-                                <span class="punch-type" [class.delete]="punch?.deletablePair > 0">{{ typeToString(punch?.type) }}</span>
+                                <span class="do-punch-type" [class.delete]="punch?.deletablePair > 0">{{ typeToString(punch?.type) }}</span>
                             </div>
                         </ng-container>
                     </div>
                 </div>
-                <div class="row">
+                <div class="do-row">
                     <span style="font-weight: bold;">Total: {{ day?.punchedHours }}</span>
                 </div>
-                <div class="row">
-                    <button class="lunch-punch" color="accent" mat-flat-button>
+                <div class="do-row">
+                    <button color="accent" mat-flat-button>
             Enter Lunch Punch
           </button>
                 </div>
             </mat-card>
         </div>
     </mat-tab>
-    <mat-tab>
+    <mat-tab *ngIf="job?.isPhysicalFacilities">
         <ng-template mat-tab-label> <span>WO/SR</span> </ng-template>
+        <div class="do-container">
+            <mat-card class="do-sheet do-wosr do-card mat-elevation-z3">
+                <div class="do-row do-top">
+                    <button class="do-button do-top" color="accent" mat-flat-button>
+                        Enter Lunch Punch
+                    </button>
+                    <div class="do-column do-billing">
+                        <div class="do-wo-info">
+                            <span style="font-weight: bold;">
+                                Billed to WO/SR:
+                            </span>
+                            <span *ngIf="day?.billedHours">
+                                {{day?.billedHours}}
+                            </span>
+                            <span *ngIf="!day?.billedHours">
+                                --:--
+                            </span>
+                        </div>
+                        <div class="do-wo-info">
+                            <span style="font-weight: bold;">
+                                Total Hours Worked:
+                            </span>
+                            <span *ngIf="day?.reportedHours">
+                                {{day?.reportedHours}}
+                            </span>
+                            <span *ngIf="!day?.reportedHours">
+                                --:--
+                            </span>
+                        </div>
+                    </div>
+                    <button class="do-button do-top do-action" mat-flat-button color="accent">
+                        New WO/SR
+                    </button>
+                </div>
+                <mat-grid-list cols="5" rowHeight="8vh" gutterSize=".1vh">
+                    <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                        WO/SR
+                    </mat-grid-tile>
+                    <mat-grid-tile colspan="1" rowspan="1">
+                    </mat-grid-tile>
+                    <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                        TRC
+                    </mat-grid-tile>
+                    <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                        Hours
+                    </mat-grid-tile>
+                    <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                        Action
+                    </mat-grid-tile>
+                    <ng-container *ngFor="let entry of day?.workOrderEntries">
+                        <mat-grid-tile colspan="2" rowspan="1">
+                            <span class="do-work-order-id">{{entry?.workOrder?.toString()}}</span>
+                        </mat-grid-tile>
+                        <mat-grid-tile colspan="1" rowspan="1">
+                            {{entry?.trc?.id}}
+                        </mat-grid-tile>
+                        <mat-grid-tile colspan="1" rowspan=1>
+                            {{entry?.hoursBilled}}
+                        </mat-grid-tile>
+                        <mat-grid-tile colspan="1" rowspan="1">
+                            <button mat-flat-button color="accent" class="do-button do-action">Edit</button>
+                        </mat-grid-tile>
+                        <mat-grid-tile colspan="5" rowspan="1">
+                            <mat-divider></mat-divider>
+                        </mat-grid-tile>
+                    </ng-container>
+                    <mat-grid-tile colspan="5" rowspan="1">
+                        <div class="do-row">
+                            <span class="do-message">Billed and Total should be equal</span>
+                        </div>
+                    </mat-grid-tile>
+                </mat-grid-list>
+
+            </mat-card>
+        </div>
     </mat-tab>
-    <mat-tab>
+    <mat-tab *ngIf="jobIsFullTime()">
         <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
+        <div class="do-container">
+            <div class="do-sv-card mat-elevation-z3">
+                <div class="do-row work-order">
+                    <span class="do-sv-card-header">Enter Hours</span>
+                </div>
+                <div class="do-row work-order spread">
+                    <span class="do-sv-label">Sick</span>
+                    <input type="time" class="do-sv-time">
+                </div>
+                <mat-divider></mat-divider>
+                <div class="do-row work-order spread">
+                    <span class="do-sv-label">Vacation</span>
+                    <input type="time" class="do-sv-time">
+                </div>
+            </div>
+            <div class="do-sv-card mat-elevation-z3">
+                <div class="do-row work-order">
+                    <span class="do-sv-card-header">YTD Balance</span>
+                </div>
+                <div class="do-row work-order spread">
+                    <span class="do-sv-label">Sick</span>
+                    <span class="do-sv-time read-only">{{day?.sickHoursYTD}}</span>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="do-row work-order spread">
+                    <span class="do-sv-label">Vacation</span>
+                    <span class="do-sv-time read-only">{{day?.vacationHoursYTD}}</span>
+                </div>
+            </div>
+        </div>
     </mat-tab>
 </mat-tab-group>

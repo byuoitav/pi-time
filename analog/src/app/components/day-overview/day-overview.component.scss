@@ -1,16 +1,16 @@
 $card-width: 95%;
-.header-spacer {
+.do-header-spacer {
     flex: 1 1 auto;
 }
 
-.header {
+.do-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
 
-.container {
+.do-container {
     margin: 0.5em auto;
     width: 98%;
     column-gap: 1em;
@@ -21,24 +21,27 @@ $card-width: 95%;
     flex-direction: column;
     align-items: center;
     padding-top: 1vh;
-    .card {
+    .do-card {
         margin: 0 0 0.5em;
         break-inside: avoid;
     }
 }
 
-.sheet {
+.do-sheet {
     overflow-y: auto;
     height: 64vh;
     width: $card-width;
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-evenly;
-    .card {
+    .do-card {
         height: 100%;
     }
+    &.do-wosr {
+        justify-content: flex-start;
+    }
     .mat-grid-tile {
-        &.header {
+        &.do-header {
             &:after {
                 $width: 45%;
                 position: absolute;
@@ -50,7 +53,7 @@ $card-width: 95%;
                 content: "";
             }
         }
-        .work-order {
+        .do-work-order {
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
@@ -59,19 +62,35 @@ $card-width: 95%;
     }
 }
 
-.row {
+.do-row {
     display: flex;
     flex-flow: row wrap;
-    flex: 0 1 auto;
     width: 100%;
     max-width: 100%;
     justify-content: space-evenly;
     align-items: stretch;
     margin-bottom: 1vh;
     margin-top: 1vh;
+    &.do-top {
+        height: 20vh;
+        max-height: 20vh;
+        align-items: flex-start;
+    }
+    &.work-order {
+        justify-content: flex-start;
+        flex: 1 1 auto;
+        margin-top: 0vh;
+        margin-bottom: 0vh;
+        &.spread {
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2vh;
+            padding-bottom: 2vh;
+        }
+    }
 }
 
-.column {
+.do-column {
     display: flex;
     flex-flow: column nowrap;
     max-height: 38vh;
@@ -91,9 +110,13 @@ $card-width: 95%;
         /* should match background, can't be transparent */
         background-color: rgba(0, 0, 0, .4);
     }
+    &.do-billing {
+        margin-right: 10vw;
+        margin-left: 8vw;
+    }
 }
 
-.punch {
+.do-punch {
     display: flex;
     justify-content: space-between;
     height: 8vh;
@@ -102,21 +125,98 @@ $card-width: 95%;
     margin-bottom: 3vh;
 }
 
-.punch-time {
+.do-punch-time {
     color: #3a3a3a;
     text-align: center;
     width: 9vw;
     margin-left: 2vw;
-    &.fix {
+    &.do-fix {
+        max-height: 4vh;
         background-color: rgb(202, 75, 75);
     }
 }
 
-.punch-type {
+.do-punch-type {
     color: rgba(0, 0, 0, 0.4);
     margin-right: 2.5vw;
 }
 
-.delete {
+.do-delete {
     color: rgb(202, 75, 75);
+}
+
+.do-button {
+    &.do-top {
+        margin-top: 4.5vh;
+    }
+    &.do-action {
+        width: 14vw;
+    }
+}
+
+.do-wo-info {
+    display: flex;
+    justify-content: space-between;
+    height: 6vh;
+    width: 32vw;
+    margin-top: 1vh;
+    margin-bottom: 3vh;
+}
+
+.do-work-order-id {
+    position: absolute;
+    left: 5px;
+}
+
+.do-message {
+    color: #737373;
+    font-weight: bold;
+    margin-bottom: 2vh;
+}
+
+.do-sv-card {
+    display: flex;
+    flex-flow: column nowrap;
+    width: $card-width;
+    margin-bottom: 2vh;
+    margin-top: 2vh;
+}
+
+.do-sv-card-header {
+    height: 100%;
+    width: 100%;
+    font-weight: bold;
+    background-color: #CBCBCB;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    padding-left: 2vw;
+    padding-right: 2vw;
+}
+
+.do-sv-label {
+    margin-left: 5vw;
+}
+
+.do-sv-time {
+    border: solid black 1px;
+    background-color: #9DC9FF;
+    width: 6vw;
+    margin-right: 4vw;
+    padding: 3px;
+    &::-webkit-datetime-edit-ampm-field {
+        display: none;
+    }
+    &.read-only {
+        border: none;
+        background-color: transparent;
+    }
+}
+
+input[type=time]::-webkit-clear-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    margin: -13px;
 }
