@@ -4,5 +4,10 @@
     "secure": false,
     "logLevel": "debug",
     "ws": true
+  },
+  "/punch/*": {
+    "target": "http://localhost:8463",
+    "secure": false,
+    "logLevel": "debug"
   }
 }

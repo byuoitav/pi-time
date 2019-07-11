@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Router, ActivationEnd } from "@angular/router";
 import { MatDialog } from "@angular/material";
 import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, throwError } from "rxjs";
 
 import { ErrorDialog } from "../dialogs/error/error.dialog";
 import {
@@ -15,7 +15,8 @@ import {
   WorkOrderEntry,
   PunchType,
   TRC,
-  JobType
+  JobType,
+  ClientPunchRequest
 } from "../objects";
 
 export class EmployeeRef {
@@ -58,8 +59,6 @@ export class APIService {
 
   private jsonConvert: JsonConvert;
   private urlParams: URLSearchParams;
-
-  private employee: BehaviorSubject<Employee>;
 
   constructor(
     private http: HttpClient,
@@ -116,6 +115,36 @@ export class APIService {
               Employee
             );
 
+            // TODO remove section
+            const wo1 = new WorkOrder();
+            wo1.id = "QR3924";
+            wo1.name = "PPCH Pipe Maintenance";
+
+            const wo2 = new WorkOrder();
+            wo2.id = "QZ3950";
+            wo2.name = "IPF Turf Maintenance";
+
+            const wo3 = new WorkOrder();
+            wo3.id = "FJ3918";
+            wo3.name =
+              "Stand and Do Nothing and Look Really Bored and Yeah. Fun Stuff.";
+
+            const wo4 = new WorkOrder();
+            wo4.id = "LK1958";
+            wo4.name = "Rake Leaves";
+
+            for (const job of emp.jobs) {
+              if (!job.isPhysicalFacilities) {
+                continue;
+              }
+
+              job.workOrders.push(wo1);
+              job.workOrders.push(wo2);
+              job.workOrders.push(wo3);
+              job.workOrders.push(wo4);
+            }
+            // TODO end remove section
+
             console.log("updated employee", emp);
             employee.next(emp);
           } catch (e) {
@@ -127,8 +156,8 @@ export class APIService {
     };
 
     ws.onerror = event => {
-      console.error("error", event);
-      employee.error("invalid employee id");
+      console.error("websocket error", event);
+      employee.error("No employee found with the given ID.");
     };
 
     const empRef = new EmployeeRef(employee, () => {
@@ -145,6 +174,21 @@ export class APIService {
     });
 
     return empRef;
+  };
+
+  clockInOut = (data: ClientPunchRequest): Observable<any> => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      console.log("json body", json);
+      return this.http.post("/punch/" + data.byuID, data, {
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
   };
 
   error = (msg: string) => {

@@ -1,0 +1,248 @@
+<!-- default button -->
+<ng-container *ngIf="!type" [ngSwitch]="color">
+  <button
+    *ngSwitchDefault
+    color="primary"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'accent'"
+    color="accent"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'warn'"
+    color="warn"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+</ng-container>
+
+<!-- mat-raised-button -->
+<ng-container *ngIf="type === 'mat-raised-button'" [ngSwitch]="color">
+  <button
+    *ngSwitchDefault
+    color="primary"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-raised-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'accent'"
+    color="accent"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-raised-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'warn'"
+    color="warn"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-raised-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+</ng-container>
+
+<!-- mat-stroked-button -->
+<ng-container *ngIf="type === 'mat-stroked-button'" [ngSwitch]="color">
+  <button
+    *ngSwitchDefault
+    color="primary"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-stroked-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'accent'"
+    color="accent"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-stroked-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'warn'"
+    color="warn"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-stroked-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+</ng-container>
+
+<!-- mat-flat-button -->
+<ng-container *ngIf="type === 'mat-flat-button'" [ngSwitch]="color">
+  <button
+    *ngSwitchDefault
+    color="primary"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-flat-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'accent'"
+    color="accent"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-flat-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'warn'"
+    color="warn"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-flat-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+</ng-container>
+
+<!-- mat-icon-button -->
+<ng-container *ngIf="type === 'mat-icon-button'" [ngSwitch]="color">
+  <button
+    *ngSwitchDefault
+    color="primary"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-icon-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'accent'"
+    color="accent"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-icon-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+  <button
+    *ngSwitchCase="'warn'"
+    color="warn"
+    class="container"
+    [class.success]="_resolved"
+    [class.error]="_error"
+    [disabled]="disabled"
+    (click)="_do(click)"
+    (press)="_do(press)"
+    mat-icon-button
+  >
+    <ng-container *ngTemplateOutlet="inside"></ng-container>
+  </button>
+</ng-container>
+
+<!-- the inside of every button -->
+<ng-template #inside>
+  <span [class.active]="!_resolving && !_resolved && !_error">
+    <ng-content></ng-content
+  ></span>
+  <ng-container [ngSwitch]="spinnerColor">
+    <mat-spinner
+      *ngSwitchDefault
+      color="primary"
+      class="spinner"
+      [class.active]="_resolving && !_resolved && !_error"
+      [diameter]="20"
+    ></mat-spinner>
+
+    <mat-spinner
+      *ngSwitchCase="'accent'"
+      color="accent"
+      class="spinner"
+      [class.active]="_resolving && !_resolved && !_error"
+      [diameter]="20"
+    ></mat-spinner>
+
+    <mat-spinner
+      *ngSwitchCase="'warn'"
+      color="warn"
+      class="spinner"
+      [class.active]="_resolving && !_resolved && !_error"
+      [diameter]="20"
+    ></mat-spinner>
+  </ng-container>
+  <mat-icon [class.active]="_resolved">check</mat-icon>
+  <mat-icon [class.active]="_error">close</mat-icon>
+</ng-template>

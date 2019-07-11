@@ -19,7 +19,8 @@ import {
   MatNativeDateModule,
   MatDatepickerModule,
   MatTabsModule,
-  MatRadioModule
+  MatRadioModule,
+  MatProgressSpinnerModule
 } from "@angular/material";
 import { OverlayModule } from "@angular/cdk/overlay";
 import "hammerjs";
@@ -27,15 +28,14 @@ import "hammerjs";
 import { AppRoutingModule } from "./app-routing.module";
 
 import { APIService } from "./services/api.service";
-
 import { ByuIDPipe } from "./pipes/byu-id.pipe";
-
 import { AppComponent } from "./components/app.component";
 import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
 import { HoursPipe } from "./pipes/hours.pipe";
 import { WoTrcDialog } from "./dialogs/wo-trc/wo-trc.dialog";
 import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
+import { ActivityButtonComponent } from "./components/activity-button/activity-button.component";
 import { JobSelectComponent } from "./components/job-select/job-select.component";
 import { DateSelectComponent } from "./components/date-select/date-select.component";
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
@@ -51,6 +51,7 @@ import { ErrorDialog } from "./dialogs/error/error.dialog";
     HoursPipe,
     WoTrcDialog,
     WorkOrdersComponent,
+    ActivityButtonComponent,
     // JobTimeSelectComponent,
     JobSelectComponent,
     DateSelectComponent,
@@ -80,7 +81,8 @@ import { ErrorDialog } from "./dialogs/error/error.dialog";
     MatDatepickerModule,
     MatTabsModule,
     MatRadioModule,
-    OverlayModule
+    OverlayModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     APIService,

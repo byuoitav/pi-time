@@ -10,7 +10,7 @@ import { Employee } from "../../objects";
   styleUrls: ["./login.component.scss"]
 })
 export class LoginComponent implements OnInit {
-  public id = "666567890";
+  id = "666567890";
 
   constructor(public api: APIService, private router: Router) {}
 
@@ -28,9 +28,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  login(id: string) {
-    // TODO show some error (somehow?) if this fails
+  login = async (id: string) => {
     console.log("navigating to jobs with id", this.id);
-    this.router.navigate(["/employee/" + this.id]);
-  }
+    const success = await this.router.navigate(["/employee/" + this.id]);
+
+    this.id = ""; // reset the id
+  };
 }

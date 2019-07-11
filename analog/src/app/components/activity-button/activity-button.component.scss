@@ -1,0 +1,35 @@
+.container {
+  overflow: hidden;
+
+  .success {
+    background-color: #5cbb5c;
+  }
+
+  .error {
+    background-color: #d9534f;
+  }
+
+  ::ng-deep.mat-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  * {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+
+    &.active {
+      opacity: 1;
+    }
+  }
+
+  .spinner {
+    position: absolute;
+    top: 25%;
+  }
+
+  .mat-icon {
+    position: absolute;
+  }
+}

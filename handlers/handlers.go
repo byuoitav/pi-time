@@ -13,7 +13,6 @@ import (
 
 // Punch adds an in or out punch as determined by the body sent
 func Punch(context echo.Context) error {
-
 	byuID := context.Param("id")
 
 	var incomingRequest structs.ClientPunchRequest

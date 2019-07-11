@@ -1,17 +1,16 @@
-<h1 *ngIf="job?.currentWorkOrder" mat-dialog-title>Change Work Order</h1>
-<h1 *ngIf="!job?.currentWorkOrder" mat-dialog-title>Select Work Order</h1>
+<h1 *ngIf="data?.title" mat-dialog-title>{{data?.title}}</h1>
 
 <div mat-dialog-content>
-  <mat-form-field *ngIf="job?.trcs?.length > 0" class="form-field">
+  <mat-form-field *ngIf="data?.showTRC" class="form-field">
     <mat-label>Select a TRC</mat-label>
     <mat-select [(value)]="selectedPay">
-      <mat-option *ngFor="let t of job?.trcs" [value]="t?.id">
+      <mat-option *ngFor="let t of data?.job?.trcs" [value]="t?.id">
         {{ t?.description }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field class="form-field">
+  <mat-form-field *ngIf="data?.showWO" class="form-field">
     <input
       placeholder="Enter WO/SR"
       [value]="selectedWO?.toString()"
@@ -25,5 +24,14 @@
   <button color="warn" (click)="cancel()" (press)="cancel()" mat-raised-button>
     Cancel
   </button>
-  <button color="primary" mat-raised-button cdkFocusInitial>Submit</button>
+
+  <activity-button
+    color="primary"
+    type="mat-raised-button"
+    [click]="submit"
+    [click]="submit"
+    (success)="ref.close()"
+    cdkFocusInitial
+    >Submit</activity-button
+  >
 </div>

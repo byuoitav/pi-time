@@ -1,14 +1,21 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material";
-import { BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 
 import { APIService, EmployeeRef } from "../../services/api.service";
-import { Employee, Job, PunchType } from "../../objects";
+import {
+  Employee,
+  Job,
+  PunchType,
+  TRC,
+  WorkOrder,
+  ClientPunchRequest
+} from "../../objects";
 import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
 
 @Component({
-  selector: "jobs",
+  selector: "clock",
   templateUrl: "./clock.component.html",
   styleUrls: ["./clock.component.scss"]
 })
@@ -39,12 +46,40 @@ export class ClockComponent implements OnInit {
 
   clockInOut = (job: Job, state: PunchType) => {
     console.log("clocking job", job.description, "to state", state);
+    const data = new ClientPunchRequest();
+    data.byuID = Number(this.emp.id);
+    data.jobID = job.employeeJobID;
+    data.type = state;
 
     if (job.isPhysicalFacilities && state === PunchType.In) {
       // show work order popup to clock in
       const ref = this.dialog.open(WoTrcDialog, {
         width: "50vw",
-        data: job
+        data: {
+          title: "Select Work Order",
+          job: job,
+          showTRC: job.trcs.length > 0,
+          showWO: job.workOrders.length > 0,
+          showHours: false,
+          submit: (trc: TRC, wo: WorkOrder): Observable<any> => {
+            data.time = new Date();
+            data.trcID = trc.id;
+            data.workOrderID = wo.id;
+
+            const obs = this.api.clockInOut(data);
+
+            obs.subscribe(
+              resp => {
+                console.log("response data", resp);
+              },
+              err => {
+                console.log("response ERROR", err);
+              }
+            );
+
+            return obs;
+          }
+        }
       });
 
       ref.afterClosed().subscribe(result => {

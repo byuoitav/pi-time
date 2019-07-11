@@ -277,3 +277,24 @@ export class Employee {
     return false;
   };
 }
+
+@JsonObject("ClientPunchRequest")
+export class ClientPunchRequest {
+  @JsonProperty("byu-id", Number)
+  byuID: Number;
+
+  @JsonProperty("employee-job-id", Number)
+  jobID: Number;
+
+  @JsonProperty("time", DateConverter)
+  time: Date;
+
+  @JsonProperty("type", String)
+  type: String;
+
+  @JsonProperty("work-order-id", String, true)
+  workOrderID: String;
+
+  @JsonProperty("trc-id", String, true)
+  trcID: String;
+}
