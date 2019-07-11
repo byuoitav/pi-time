@@ -19,7 +19,8 @@ import {
   MatNativeDateModule,
   MatDatepickerModule,
   MatTabsModule,
-  MatRadioModule
+  MatRadioModule,
+  MatBadgeModule
 } from "@angular/material";
 import { OverlayModule } from "@angular/cdk/overlay";
 import "hammerjs";
@@ -80,7 +81,8 @@ import { ErrorDialog } from "./dialogs/error/error.dialog";
     MatDatepickerModule,
     MatTabsModule,
     MatRadioModule,
-    OverlayModule
+    OverlayModule,
+    MatBadgeModule
   ],
   providers: [
     APIService,

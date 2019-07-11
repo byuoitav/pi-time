@@ -2,12 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 
 import { EmployeeRef } from "../../services/api.service";
-import { Employee, Job, Day, PunchType } from "../../objects";
+import { Employee, Job, Day, PunchType, JobType } from "../../objects";
 
 @Component({
   selector: "day-overview",
   templateUrl: "./day-overview.component.html",
-  styleUrls: ["./day-overview.component.scss"]
+  styleUrls: ["./day-overview.component.scss"],
 })
 export class DayOverviewComponent implements OnInit {
   options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
@@ -74,4 +74,24 @@ export class DayOverviewComponent implements OnInit {
   logout = () => {
     this._empRef.logout();
   };
+
+  getExceptionCount() {
+    if (this.day == undefined) {
+      return "";
+    } else if (this.day.hasPunchException) {
+      let count = 0;
+      for (const p of this.day.punches) {
+        if (p.time == undefined) {
+          count++;
+        }
+      }
+      return String(count);
+    }
+  }
+
+  jobIsFullTime() {
+    if (this.job) {
+      return this.job.jobType === JobType.FullTime;
+    }
+  }
 }
