@@ -42,6 +42,7 @@ import { DateSelectComponent } from "./components/date-select/date-select.compon
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
 import { WoSelectComponent } from "./components/wo-select/wo-select.component";
 import { ErrorDialog } from "./dialogs/error/error.dialog";
+import { ScreenSaverComponent } from './components/screen-saver/screen-saver.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { ErrorDialog } from "./dialogs/error/error.dialog";
     DateSelectComponent,
     DayOverviewComponent,
     WoSelectComponent,
-    ErrorDialog
+    ErrorDialog,
+    ScreenSaverComponent
   ],
   imports: [
     BrowserModule,
