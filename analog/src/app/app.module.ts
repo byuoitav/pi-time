@@ -42,9 +42,10 @@ import { DateSelectComponent } from "./components/date-select/date-select.compon
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
 import { WoSelectComponent } from "./components/wo-select/wo-select.component";
 import { ErrorDialog } from "./dialogs/error/error.dialog";
-import { PunchesComponent } from './components/punches/punches.component';
-import { WoSrComponent } from './components/wo-sr/wo-sr.component';
-import { SickVacationComponent } from './components/sick-vacation/sick-vacation.component';
+import { PunchesComponent } from "./components/punches/punches.component";
+import { WoSrComponent } from "./components/wo-sr/wo-sr.component";
+import { SickVacationComponent } from "./components/sick-vacation/sick-vacation.component";
+import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.component";
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import { SickVacationComponent } from './components/sick-vacation/sick-vacation.
     ErrorDialog,
     PunchesComponent,
     WoSrComponent,
-    SickVacationComponent
+    SickVacationComponent,
+    ScreenSaverComponent
   ],
   imports: [
     BrowserModule,

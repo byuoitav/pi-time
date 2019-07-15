@@ -11,8 +11,22 @@ import { Employee } from "../../objects";
 })
 export class LoginComponent implements OnInit {
   id = "666567890";
+  ssCounter = 0;
+  ssTimeoutMax = 30;
+  ssTimer: any;
 
-  constructor(public api: APIService, private router: Router) {}
+  constructor(public api: APIService, private router: Router) {
+    this.ssTimer = setInterval(() => {
+      this.ssCounter++;
+      console.log("counter", this.ssCounter);
+
+      if (this.ssCounter >= this.ssTimeoutMax) {
+        this.ssCounter = 0;
+        clearInterval(this.ssTimer);
+        this.router.navigate(["/screensaver"]);
+      }
+    }, 1000);
+  }
 
   ngOnInit() {}
 
@@ -30,7 +44,11 @@ export class LoginComponent implements OnInit {
 
   login = async (id: string) => {
     console.log("navigating to jobs with id", this.id);
+    this.ssCounter = 0;
     const success = await this.router.navigate(["/employee/" + this.id]);
+    if (success) {
+      clearInterval(this.ssTimer);
+    }
 
     this.id = ""; // reset the id
   };
