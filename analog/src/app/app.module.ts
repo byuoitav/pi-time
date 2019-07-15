@@ -42,6 +42,9 @@ import { DateSelectComponent } from "./components/date-select/date-select.compon
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
 import { WoSelectComponent } from "./components/wo-select/wo-select.component";
 import { ErrorDialog } from "./dialogs/error/error.dialog";
+import { PunchesComponent } from './components/punches/punches.component';
+import { WoSrComponent } from './components/wo-sr/wo-sr.component';
+import { SickVacationComponent } from './components/sick-vacation/sick-vacation.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +61,10 @@ import { ErrorDialog } from "./dialogs/error/error.dialog";
     DateSelectComponent,
     DayOverviewComponent,
     WoSelectComponent,
-    ErrorDialog
+    ErrorDialog,
+    PunchesComponent,
+    WoSrComponent,
+    SickVacationComponent
   ],
   imports: [
     BrowserModule,

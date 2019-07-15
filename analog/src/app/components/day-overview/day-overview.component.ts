@@ -1,15 +1,27 @@
-import { Component, OnInit } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  AfterViewInit
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import Keyboard from "simple-keyboard";
 
 import { EmployeeRef } from "../../services/api.service";
 import { Employee, Job, Day, PunchType, JobType } from "../../objects";
 
 @Component({
   selector: "day-overview",
+  encapsulation: ViewEncapsulation.None,
   templateUrl: "./day-overview.component.html",
-  styleUrls: ["./day-overview.component.scss"],
+  styleUrls: [
+    "./day-overview.component.scss",
+    "../../../../node_modules/simple-keyboard/build/css/index.css"
+  ]
 })
-export class DayOverviewComponent implements OnInit {
+export class DayOverviewComponent implements OnInit, AfterViewInit {
+  private keyboard: Keyboard;
+
   options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
   private _empRef: EmployeeRef;
@@ -55,6 +67,35 @@ export class DayOverviewComponent implements OnInit {
       this._empRef = data.empRef;
     });
   }
+
+  ngAfterViewInit() {
+    /*
+    this.keyboard = new Keyboard({
+      onChange: input => this.onChange(input),
+      onKeyPress: button => this.onKeyPress(button),
+      layout: {
+        default: ["1 2 3", "4 5 6", "7 8 9", "0 {bksp}"]
+      },
+      mergeDisplay: true,
+      display: {
+        "{bksp}": "⌫"
+      },
+      maxLength: {
+        default: 4
+      },
+      useTouchEvents: true
+    });
+
+    console.log("keyboard", this.keyboard);
+    */
+  }
+
+  onChange = (input: string) => {
+    // this.filterString = input;
+    // this.filter();
+  };
+
+  onKeyPress = (button: string) => {};
 
   goBack() {
     window.history.back();

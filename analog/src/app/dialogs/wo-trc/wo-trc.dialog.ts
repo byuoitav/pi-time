@@ -56,11 +56,9 @@ export class WoTrcDialog implements OnInit {
     return new Promise<boolean>((resolve, reject) => {
       this.data.submit(trc, this.selectedWO, this.hours).subscribe(
         data => {
-          console.log("data", data);
           resolve(true);
         },
         err => {
-          console.log("err", err);
           resolve(false);
         }
       );

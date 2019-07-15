@@ -179,7 +179,6 @@ export class APIService {
   clockInOut = (data: ClientPunchRequest): Observable<any> => {
     try {
       const json = this.jsonConvert.serialize(data);
-      console.log("json body", json);
       return this.http.post("/punch/" + data.byuID, data, {
         responseType: "text",
         headers: new HttpHeaders({

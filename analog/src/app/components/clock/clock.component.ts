@@ -81,10 +81,6 @@ export class ClockComponent implements OnInit {
           }
         }
       });
-
-      ref.afterClosed().subscribe(result => {
-        console.log("closed with result", result);
-      });
     } else {
       // clock in/out here
     }
