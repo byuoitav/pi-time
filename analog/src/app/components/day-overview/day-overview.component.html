@@ -37,7 +37,7 @@
     <wo-sr [day]="day"></wo-sr>
   </mat-tab>
 
-  <mat-tab *ngIf="jobIsFullTime()">
+  <mat-tab *ngIf="job?.jobType === jobType.FullTime">
     <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
     <sick-vacation [day]="day"></sick-vacation>
   </mat-tab>

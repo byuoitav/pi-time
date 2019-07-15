@@ -4,6 +4,7 @@
       <div class="do-column">
         <ng-container *ngFor="let punch of punches">
           <div class="do-punch">
+            <!--
             <span
               class="do-punch-time"
               *ngIf="punch?.time"
@@ -11,9 +12,17 @@
             >
               {{ punch?.time | date: "shortTime" }}
             </span>
-            <span class="do-punch-time do-fix" *ngIf="!punch?.time">
-              --:--
-            </span>
+              -->
+
+            <input
+              type="text"
+              class="do-punch-time do-fix"
+              (click)="openKeyboard(punch)"
+              [value]="
+                punch?.editedTime ? punch?.editedTime : punch?.time.toString()
+              "
+            />
+
             <span
               class="do-punch-type"
               [class.delete]="punch?.deletablePair > 0"
@@ -30,4 +39,8 @@
       <button color="accent" mat-flat-button>Enter Lunch Punch</button>
     </div>
   </mat-card>
+</div>
+
+<div class="punches-keyboard-container">
+  <div class="simple-keyboard"></div>
 </div>

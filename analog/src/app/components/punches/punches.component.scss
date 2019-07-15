@@ -1,0 +1,19 @@
+.punches-keyboard-container {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+
+  pointer-events: none;
+
+  .simple-keyboard {
+    width: 50%;
+    background-color: white !important;
+
+    pointer-events: auto;
+  }
+}
