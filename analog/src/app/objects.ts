@@ -14,6 +14,19 @@ export enum PunchType {
   Out = "O"
 }
 
+export namespace PunchType {
+  export function toString(pt: PunchType): string {
+    switch (pt) {
+      case PunchType.In:
+        return "IN";
+      case PunchType.Out:
+        return "OUT";
+      default:
+        return "";
+    }
+  }
+}
+
 export enum JobType {
   FullTime = "F",
   PartTime = "P"

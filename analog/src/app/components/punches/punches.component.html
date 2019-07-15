@@ -1,3 +1,33 @@
-<p>
-  punches works!
-</p>
+<div class="do-container">
+  <mat-card class="do-sheet do-card mat-elevation-z3">
+    <div class="do-row">
+      <div class="do-column">
+        <ng-container *ngFor="let punch of punches">
+          <div class="do-punch">
+            <span
+              class="do-punch-time"
+              *ngIf="punch?.time"
+              [class.delete]="punch?.deletablePair > 0"
+            >
+              {{ punch?.time | date: "shortTime" }}
+            </span>
+            <span class="do-punch-time do-fix" *ngIf="!punch?.time">
+              --:--
+            </span>
+            <span
+              class="do-punch-type"
+              [class.delete]="punch?.deletablePair > 0"
+              >{{ punchType.toString(punch?.type) }}</span
+            >
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="do-row">
+      <span style="font-weight: bold;">Total: {{ day?.punchedHours }}</span>
+    </div>
+    <div class="do-row">
+      <button color="accent" mat-flat-button>Enter Lunch Punch</button>
+    </div>
+  </mat-card>
+</div>
