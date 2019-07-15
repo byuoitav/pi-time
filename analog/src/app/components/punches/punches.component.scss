@@ -1,3 +1,66 @@
+.punches-container {
+  width: 96vw;
+  padding: 2vh 2vw;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+
+  .mat-card {
+    width: 97%;
+  }
+}
+
+.punches-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.punches-punches {
+  width: 40vw;
+  max-height: 40vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  pointer-events: all;
+}
+
+.punches-punch {
+  margin: 0.1vh 0;
+  height: 8vh;
+  width: 37vw;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 1.15em;
+
+  .time {
+    width: 10vw;
+    height: 6vh;
+
+    &.edit {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      background-color: rgba(181, 40, 40, 0.45);
+    }
+  }
+
+  .type {
+  }
+}
+
+.punches-total {
+  margin: 6vh 0;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
 .punches-keyboard-container {
   position: absolute;
   bottom: 0;

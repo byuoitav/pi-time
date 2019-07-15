@@ -29,16 +29,16 @@
         >Punches</span
       >
     </ng-template>
-    <punches [punches]="day?.punches"></punches>
+    <punches class="tab-content" [day]="day"></punches>
   </mat-tab>
 
   <mat-tab *ngIf="job?.isPhysicalFacilities">
     <ng-template mat-tab-label> <span>WO/SR</span> </ng-template>
-    <wo-sr [day]="day"></wo-sr>
+    <wo-sr class="tab-content" [day]="day"></wo-sr>
   </mat-tab>
 
   <mat-tab *ngIf="job?.jobType === jobType.FullTime">
     <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
-    <sick-vacation [day]="day"></sick-vacation>
+    <sick-vacation class="tab-content" [day]="day"></sick-vacation>
   </mat-tab>
 </mat-tab-group>

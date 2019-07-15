@@ -1,10 +1,39 @@
-<div class="do-container">
-  <mat-card class="do-sheet do-card mat-elevation-z3">
-    <div class="do-row">
-      <div class="do-column">
+<div class="punches-container">
+  <mat-card>
+    <div class="punches-card-content">
+      <div class="punches-punches">
+        <div class="punches-punch" *ngFor="let punch of day?.punches">
+          <span
+            class="time"
+            [class.edit]="!punch?.time"
+            (click)="openKeyboard(punch)"
+          >
+            {{
+              punch?.time
+                ? (punch?.time | date: "shortTime")
+                : punch?.editedTime
+            }}
+          </span>
+
+          <span class="type"> {{ punchType.toString(punch?.type) }} </span>
+        </div>
+      </div>
+
+      <span class="punches-total"> Total: {{ day?.punchedHours }} </span>
+
+      <button class="punches-lunch" color="accent" mat-raised-button>
+        Enter Lunch Punch
+      </button>
+    </div>
+  </mat-card>
+
+  <div class="punches-keyboard-container">
+    <div class="simple-keyboard"></div>
+  </div>
+
+  <!-->
         <ng-container *ngFor="let punch of punches">
           <div class="do-punch">
-            <!--
             <span
               class="do-punch-time"
               *ngIf="punch?.time"
@@ -12,7 +41,6 @@
             >
               {{ punch?.time | date: "shortTime" }}
             </span>
-              -->
 
             <input
               type="text"
@@ -29,18 +57,11 @@
               >{{ punchType.toString(punch?.type) }}</span
             >
           </div>
-        </ng-container>
-      </div>
-    </div>
-    <div class="do-row">
-      <span style="font-weight: bold;">Total: {{ day?.punchedHours }}</span>
-    </div>
-    <div class="do-row">
-      <button color="accent" mat-flat-button>Enter Lunch Punch</button>
-    </div>
-  </mat-card>
+        </ng-container>-->
 </div>
 
+<!--
 <div class="punches-keyboard-container">
   <div class="simple-keyboard"></div>
 </div>
+-->

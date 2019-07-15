@@ -1,8 +1,7 @@
 import { Component, OnInit, Input, ViewEncapsulation } from "@angular/core";
 import Keyboard from "simple-keyboard";
 
-import { Punch, PunchType } from "../../objects";
-
+import { Day, PunchType, Punch } from "../../objects";
 @Component({
   selector: "punches",
   encapsulation: ViewEncapsulation.None,
@@ -16,7 +15,7 @@ import { Punch, PunchType } from "../../objects";
 export class PunchesComponent implements OnInit {
   public punchType = PunchType;
 
-  @Input() punches: Punch[] = [];
+  @Input() day: Day;
   keyboardOpen = false;
 
   constructor() {}
@@ -28,8 +27,10 @@ export class PunchesComponent implements OnInit {
       return;
     }
 
+    console.log("opening keyboard for punch", punch);
+
     this.keyboardOpen = true;
-    const backspaceClicks = 0;
+    let backspaceClicks = 0;
 
     const keyboard = new Keyboard({
       onChange: input => {
@@ -53,8 +54,9 @@ export class PunchesComponent implements OnInit {
         switch (button) {
           case "{bksp}":
             if (backspaceClicks == 0) {
-              punch.EditedTime = " ";
+              punch.editedTime = " ";
             }
+
             backspaceClicks++;
             return;
           case "{ampm}":
@@ -62,12 +64,13 @@ export class PunchesComponent implements OnInit {
         }
       },
       layout: {
-        default: ["1 2 3", "4 5 6", "7 8 9", "{ampm} 0 {bksp}"]
+        default: ["1 2 3", "4 5 6", "7 8 9", "0", "{ampm} {done} {bksp}"]
       },
       mergeDisplay: true,
       display: {
         "{bksp}": "⌫",
-        "{ampm}": "AM/PM"
+        "{ampm}": "AM/PM",
+        "{done}": "Done"
       },
       maxLength: {
         default: 4

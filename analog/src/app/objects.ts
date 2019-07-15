@@ -150,7 +150,7 @@ export class Punch {
   @JsonProperty("deletable-pair", Number, true)
   deletablePair: number = undefined;
 
-  editedTime: string = undefined;
+  editedTime: string = "--:--";
 }
 
 @JsonObject("WorkOrderEntry")
