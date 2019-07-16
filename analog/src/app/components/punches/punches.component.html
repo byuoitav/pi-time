@@ -6,13 +6,9 @@
           <span
             class="time"
             [class.edit]="!punch?.time"
-            (click)="openKeyboard(punch)"
+            (click)="openKeyboard(punch, $event)"
           >
-            {{
-              punch?.time
-                ? (punch?.time | date: "shortTime")
-                : punch?.editedTime
-            }}
+            {{ punchTime(punch) }}
           </span>
 
           <span class="type"> {{ punchType.toString(punch?.type) }} </span>

@@ -74,9 +74,15 @@
   pointer-events: none;
 
   .simple-keyboard {
-    width: 50%;
+    width: 75%;
     background-color: white !important;
 
     pointer-events: auto;
   }
+}
+
+.keyboard-button-disabled {
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.45) !important;
+  opacity: 0.45;
 }
