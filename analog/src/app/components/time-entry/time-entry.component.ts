@@ -36,56 +36,10 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.keyboard = new Keyboard({
-      onChange: input => {
-        // if (input.length > 4) {
-        //   return;
-        // }
-        // punch.editedTime = input;
-        // if (!this.validEditTime(punch)) {
-        //   keyboard.addButtonTheme("{done}", "keyboard-button-disabled");
-        // } else {
-        //   keyboard.removeButtonTheme("{done}", "keyboard-button-disabled");
-        // }
-      },
-      onKeyPress: button => {
-        // switch (button) {
-        //   case "{ampm}":
-        //     switch (punch.editedAMPM) {
-        //       case "PM":
-        //         punch.editedAMPM = "AM";
-        //         return;
-        //       case "AM":
-        //         punch.editedAMPM = "PM";
-        //         return;
-        //       default:
-        //         punch.editedAMPM = "AM";
-        //         return;
-        //     }
-        //   case "{done}":
-        //     element.classList.remove("editing");
-        //     if (!punch.editedTime || punch.editedTime.includes("--:--")) {
-        //       punch.editedAMPM = undefined;
-        //     }
-        //     keyboard.destroy();
-        //     this.keyboardOpen = false;
-        //     return;
-        //   case "{cancel}":
-        //     element.classList.remove("editing");
-        //     punch.editedTime = undefined;
-        //     punch.editedAMPM = undefined;
-        //     keyboard.destroy();
-        //     this.keyboardOpen = false;
-        //     return;
-        // }
-      },
+      onChange: this.onChange,
+      onKeyPress: this.onKeyPress,
       layout: {
-        default: [
-          "1 2 3",
-          "4 5 6",
-          "7 8 9",
-          "{ampm} 0 {bksp}",
-          "{cancel} {done}"
-        ]
+        default: ["1 2 3", "4 5 6", "7 8 9", "0 {bksp}"]
       },
       mergeDisplay: true,
       display: {
@@ -98,6 +52,10 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
         {
           buttons: "{done}",
           class: "keyboard-button-disabled"
+        },
+        {
+          buttons: "1 2 3 4 5 6 7 8 9 0 {bksp}",
+          class: "keyboard-tall-button"
         }
       ],
       maxLength: {
@@ -109,9 +67,48 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   onChange = (input: string) => {
     this.value = input;
+    // if (input.length > 4) {
+    //   return;
+    // }
+    // punch.editedTime = input;
+    // if (!this.validEditTime(punch)) {
+    //   keyboard.addButtonTheme("{done}", "keyboard-button-disabled");
+    // } else {
+    //   keyboard.removeButtonTheme("{done}", "keyboard-button-disabled");
+    // }
   };
 
-  onKeyPress = (button: string) => {};
+  onKeyPress = (button: string) => {
+    // switch (button) {
+    //   case "{ampm}":
+    //     switch (punch.editedAMPM) {
+    //       case "PM":
+    //         punch.editedAMPM = "AM";
+    //         return;
+    //       case "AM":
+    //         punch.editedAMPM = "PM";
+    //         return;
+    //       default:
+    //         punch.editedAMPM = "AM";
+    //         return;
+    //     }
+    //   case "{done}":
+    //     element.classList.remove("editing");
+    //     if (!punch.editedTime || punch.editedTime.includes("--:--")) {
+    //       punch.editedAMPM = undefined;
+    //     }
+    //     keyboard.destroy();
+    //     this.keyboardOpen = false;
+    //     return;
+    //   case "{cancel}":
+    //     element.classList.remove("editing");
+    //     punch.editedTime = undefined;
+    //     punch.editedAMPM = undefined;
+    //     keyboard.destroy();
+    //     this.keyboardOpen = false;
+    //     return;
+    // }
+  };
 
   onInputChange = (event: any) => {
     this.keyboard.setInput(event.target.value);

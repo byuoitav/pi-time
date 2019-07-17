@@ -17,6 +17,8 @@ $outputWidth: 30vw;
   font-size: 1.3em;
   margin: 3vh 0;
 
+  text-align: center;
+
   &:focus {
     outline: none;
   }
@@ -56,7 +58,11 @@ $outputWidth: 30vw;
   font-size: 1em;
 }
 
-.keyboard-tall-button {
-  height: 14vh !important;
-  font-size: 1.4em;
+.time-entry-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  height: 100%;
 }
