@@ -68,3 +68,8 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
 .mat-tab-label-active {
     background-color: #002e5d
 }
+
+.keyboard-tall-button {
+  height: 14vh !important;
+  font-size: 1.4em;
+}

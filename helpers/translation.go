@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/byuoitav/pi-time/structs"
@@ -11,8 +10,7 @@ func translateToPunch(start structs.ClientPunchRequest) map[string]structs.Punch
 
 	var req structs.Punch
 	req.PunchType = start.PunchType
-	fmt.Printf("\ntime: %v\n\n", start.Time.Local())
-	req.PunchTime = start.Time.Local().Format("15:04:01")
+	req.PunchTime = start.Time.Local().Format("15:04:05")
 	req.Latitude = structs.String("40.25258")
 	req.Longitude = structs.String("-111.657658")
 	req.LocationDescription = structs.String(os.Getenv("SYSTEM_ID"))
