@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 
@@ -26,19 +27,18 @@ func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 			//not found
 			log.L.Debugf("No cached timesheet found")
 			return timesheet, false, err
-		} else {
-			log.L.Debugf("Cached timesheet found")
-			timesheet := structs.Timesheet{
-				PersonName:           employeeRecord.Name,
-				WeeklyTotal:          "--:--",
-				PeriodTotal:          "--:--",
-				InternationalMessage: "",
-				Jobs:                 employeeRecord.Jobs,
-			}
-
-			return timesheet, true, nil
-
 		}
+
+		log.L.Debugf("Cached timesheet found")
+		timesheet := structs.Timesheet{
+			PersonName:           employeeRecord.Name,
+			WeeklyTotal:          "--:--",
+			PeriodTotal:          "--:--",
+			InternationalMessage: "",
+			Jobs:                 employeeRecord.Jobs,
+		}
+
+		return timesheet, true, nil
 	}
 
 	return timesheet, false, nil
@@ -78,23 +78,26 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 //Punch will do an in or out punch
 func Punch(byuID string, request structs.ClientPunchRequest) error {
 	//translate our body to theirs
-	var WSO2Request structs.Punch
-	WSO2Request.PunchType = request.PunchType
-	WSO2Request.PunchTime = request.Time.Format("15:04")
-	WSO2Request.Latitude = "40.25258"
-	WSO2Request.Longitude = "-111.657658"
-	WSO2Request.LocationDescription = os.Getenv("SYSTEM_ID")
-	WSO2Request.TimeCollectionSource = "CPI"
-	WSO2Request.WorkOrderID = request.WorkOrderID
-	WSO2Request.TRCID = request.TRCID
-	WSO2Request.PunchDate = request.Time.Format("2006-01-02")
-	WSO2Request.EmployeeRecord = request.EmployeeJobID
-	WSO2Request.PunchZone = ""
+	var req structs.Punch
+	req.PunchType = request.PunchType
+	fmt.Printf("\ntime: %v\n\n", request.Time.Local())
+	req.PunchTime = request.Time.Local().Format("15:04:01")
+	req.Latitude = structs.String("40.25258")
+	req.Longitude = structs.String("-111.657658")
+	req.LocationDescription = structs.String(os.Getenv("SYSTEM_ID"))
+	req.TimeCollectionSource = structs.String("CPI")
+	req.WorkOrderID = request.WorkOrderID
+	req.TRCID = request.TRCID
+	req.PunchDate = structs.String(request.Time.Local().Format("2006-01-02"))
+	req.EmployeeRecord = structs.Int(request.EmployeeJobID)
+	req.PunchZone = structs.String(request.Time.Local().Format("-07:00"))
+
+	wrapper := make(map[string]structs.Punch)
+	wrapper["punch"] = req
 
 	var punchResponse structs.Timesheet
 
-	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, WSO2Request, &punchResponse)
-
+	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, wrapper, &punchResponse)
 	if err != nil {
 		log.L.Errorf("Error when making punch %s", err.Error())
 	}

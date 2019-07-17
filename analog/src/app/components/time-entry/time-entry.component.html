@@ -1,0 +1,21 @@
+<div class="time-entry-container">
+  <div class="time-entry-top">
+    <div class="time-entry-output">
+      <input
+        class="time-entry-input mat-elevation-z3"
+        [value]="value"
+        (input)="onInputChange($event)"
+      />
+      <button
+        class="time-entry-cancel"
+        color="accent"
+        (click)="cancel()"
+        mat-raised-button
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <div class="simple-keyboard"></div>
+</div>

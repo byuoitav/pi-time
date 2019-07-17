@@ -1,0 +1,62 @@
+$outputWidth: 30vw;
+
+.time-entry-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-entry-input {
+  width: 95%;
+  height: 9vh;
+  font-size: 1.3em;
+  margin: 3vh 0;
+
+  &:focus {
+    outline: none;
+  }
+
+  border: 1px rgba(0, 0, 0, 0.5) solid;
+}
+
+.simple-keyboard {
+  margin-top: 2vh;
+
+  flex: 1 0 auto;
+  max-width: 100%;
+}
+
+.time-entry-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+
+  margin: 2vh 0;
+  height: 33vh;
+}
+
+.time-entry-output {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  width: $outputWidth - 4vw;
+  padding: 0 2vw;
+}
+
+.time-entry-cancel {
+  padding: 1.3vh 3.3vw;
+  font-size: 1em;
+}
+
+.keyboard-tall-button {
+  height: 14vh !important;
+  font-size: 1.4em;
+}

@@ -271,8 +271,17 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 	for _, serverPunch := range serverDay.Punches {
 		var newPunch structs.ClientPunch
 		var err error
-		newPunch.ID = serverPunch.SequenceNumber
-		newPunch.EmployeeJobID = serverPunch.EmployeeRecord
+
+		if serverPunch.SequenceNumber != nil {
+			newPunch.ID = *serverPunch.SequenceNumber
+		} else {
+			newPunch.ID = 0
+		}
+
+		if serverPunch.EmployeeRecord != nil {
+			newPunch.EmployeeJobID = *serverPunch.EmployeeRecord
+		}
+
 		newPunch.PunchType = serverPunch.PunchType
 
 		if len(serverPunch.PunchTime) > 0 {
