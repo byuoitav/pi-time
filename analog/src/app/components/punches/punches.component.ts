@@ -1,119 +1,146 @@
-import { Component, OnInit, Input, ViewEncapsulation } from "@angular/core";
-import Keyboard from "simple-keyboard";
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewEncapsulation,
+  Inject,
+  Injector
+} from "@angular/core";
+import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
+import { Overlay, OverlayRef } from "@angular/cdk/overlay";
+import { Observable } from "rxjs";
 
-import { Day, PunchType, Punch } from "../../objects";
+import { TimeEntryComponent } from "../time-entry/time-entry.component";
+import { Day, PunchType, Punch, PORTAL_DATA } from "../../objects";
+
 @Component({
   selector: "punches",
-  encapsulation: ViewEncapsulation.None,
   templateUrl: "./punches.component.html",
-  styleUrls: [
-    "./punches.component.scss",
-    "../day-overview/day-overview.component.scss",
-    "../../../../node_modules/simple-keyboard/build/css/index.css"
-  ]
+  styleUrls: ["./punches.component.scss"]
 })
 export class PunchesComponent implements OnInit {
   public punchType = PunchType;
 
   @Input() day: Day;
-  keyboardOpen = false;
 
-  constructor() {}
+  constructor(private _overlay: Overlay, private _injector: Injector) {}
 
   ngOnInit() {}
 
-  openKeyboard = (punch: Punch, event: MouseEvent) => {
-    if (this.keyboardOpen) {
-      return;
-    }
-
-    this.keyboardOpen = true;
-    const element = event.srcElement;
-    element.classList.add("editing");
-
-    const keyboard = new Keyboard({
-      onChange: input => {
-        if (input.length > 4) {
-          return;
-        }
-
-        punch.editedTime = input;
-
-        if (!this.validEditTime(punch)) {
-          keyboard.addButtonTheme("{done}", "keyboard-button-disabled");
-        } else {
-          keyboard.removeButtonTheme("{done}", "keyboard-button-disabled");
-        }
-      },
-      onKeyPress: button => {
-        switch (button) {
-          case "{ampm}":
-            switch (punch.editedAMPM) {
-              case "PM":
-                punch.editedAMPM = "AM";
-                return;
-              case "AM":
-                punch.editedAMPM = "PM";
-                return;
-              default:
-                punch.editedAMPM = "AM";
-                return;
-            }
-          case "{done}":
-            element.classList.remove("editing");
-
-            if (!punch.editedTime || punch.editedTime.includes("--:--")) {
-              punch.editedAMPM = undefined;
-            }
-
-            keyboard.destroy();
-            this.keyboardOpen = false;
-            return;
-          case "{cancel}":
-            element.classList.remove("editing");
-
-            punch.editedTime = undefined;
-            punch.editedAMPM = undefined;
-
-            keyboard.destroy();
-            this.keyboardOpen = false;
-            return;
-        }
-      },
-      layout: {
-        default: [
-          "1 2 3",
-          "4 5 6",
-          "7 8 9",
-          "{ampm} 0 {bksp}",
-          "{cancel} {done}"
-        ]
-      },
-      mergeDisplay: true,
-      display: {
-        "{bksp}": "⌫",
-        "{ampm}": "AM/PM",
-        "{done}": "Done",
-        "{cancel}": "Cancel"
-      },
-      buttonTheme: [
-        {
-          buttons: "{done}",
-          class: "keyboard-button-disabled"
-        }
-      ],
-      maxLength: {
-        default: 4
-      },
-      useTouchEvents: true
+  openKeyboard = (punch: Punch) => {
+    const overlayRef = this._overlay.create({
+      height: "100vh",
+      width: "100vw",
+      disposeOnNavigation: true,
+      hasBackdrop: false,
+      panelClass: ["overlay", "time-entry-overlay"]
     });
 
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "center"
+    const injector = this.createInjector(overlayRef, {
+      save: (time: Date) => {
+        overlayRef.dispose();
+      }
     });
+
+    const portal = new ComponentPortal(TimeEntryComponent, null, injector);
+    const containerRef = overlayRef.attach(portal);
+    return overlayRef;
   };
+
+  private createInjector = (
+    overlayRef: OverlayRef,
+    data: any
+  ): PortalInjector => {
+    const tokens = new WeakMap();
+
+    tokens.set(OverlayRef, overlayRef);
+    tokens.set(PORTAL_DATA, data);
+
+    return new PortalInjector(this._injector, tokens);
+  };
+
+  // if (this.keyboardOpen) {
+  //   return;
+  // }
+  // this.keyboardOpen = true;
+  // const element = event.srcElement;
+  // element.classList.add("editing");
+  // const keyboard = new Keyboard({
+  //   onChange: input => {
+  //     if (input.length > 4) {
+  //       return;
+  //     }
+  //     punch.editedTime = input;
+  //     if (!this.validEditTime(punch)) {
+  //       keyboard.addButtonTheme("{done}", "keyboard-button-disabled");
+  //     } else {
+  //       keyboard.removeButtonTheme("{done}", "keyboard-button-disabled");
+  //     }
+  //   },
+  //   onKeyPress: button => {
+  //     switch (button) {
+  //       case "{ampm}":
+  //         switch (punch.editedAMPM) {
+  //           case "PM":
+  //             punch.editedAMPM = "AM";
+  //             return;
+  //           case "AM":
+  //             punch.editedAMPM = "PM";
+  //             return;
+  //           default:
+  //             punch.editedAMPM = "AM";
+  //             return;
+  //         }
+  //       case "{done}":
+  //         element.classList.remove("editing");
+  //         if (!punch.editedTime || punch.editedTime.includes("--:--")) {
+  //           punch.editedAMPM = undefined;
+  //         }
+  //         keyboard.destroy();
+  //         this.keyboardOpen = false;
+  //         return;
+  //       case "{cancel}":
+  //         element.classList.remove("editing");
+  //         punch.editedTime = undefined;
+  //         punch.editedAMPM = undefined;
+  //         keyboard.destroy();
+  //         this.keyboardOpen = false;
+  //         return;
+  //     }
+  //   },
+  //   layout: {
+  //     default: [
+  //       "1 2 3",
+  //       "4 5 6",
+  //       "7 8 9",
+  //       "{ampm} 0 {bksp}",
+  //       "{cancel} {done}"
+  //     ]
+  //   },
+  //   mergeDisplay: true,
+  //   display: {
+  //     "{bksp}": "⌫",
+  //     "{ampm}": "AM/PM",
+  //     "{done}": "Done",
+  //     "{cancel}": "Cancel"
+  //   },
+  //   buttonTheme: [
+  //     {
+  //       buttons: "{done}",
+  //       class: "keyboard-button-disabled"
+  //     }
+  //   ],
+  //   maxLength: {
+  //     default: 4
+  //   },
+  //   useTouchEvents: true
+  // });
+  // element.scrollIntoView({
+  //   behavior: "smooth",
+  //   block: "center",
+  //   inline: "center"
+  // });
+  // };
 
   punchTime = (punch: Punch): string => {
     if (punch.time) {

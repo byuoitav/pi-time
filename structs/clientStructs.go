@@ -77,7 +77,7 @@ type ClientPunch struct {
 	EmployeeJobID int       `json:"employee-job-id"`
 	Time          time.Time `json:"time"`
 	PunchType     string    `json:"type"`
-	DeletablePair int       `json:"deletable-pair"`
+	DeletablePair *int      `json:"deletable-pair,omitempty"`
 }
 
 //ClientWorkOrderEntry is a work order entry sent to the client
@@ -131,6 +131,6 @@ type ClientPunchRequest struct {
 	EmployeeJobID int       `json:"employee-job-id"`
 	Time          time.Time `json:"time"`
 	PunchType     string    `json:"type"`
-	WorkOrderID   string    `json:"work-order-id"`
-	TRCID         string    `json:"trc-id"`
+	WorkOrderID   *string   `json:"work-order-id,omitempty"`
+	TRCID         *string   `json:"trc-id,omitempty"`
 }

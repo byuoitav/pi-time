@@ -6,7 +6,7 @@
           <span
             class="time"
             [class.edit]="!punch?.time"
-            (click)="openKeyboard(punch, $event)"
+            (click)="openKeyboard(punch)"
           >
             {{ punchTime(punch) }}
           </span>
@@ -22,10 +22,6 @@
       </button>
     </div>
   </mat-card>
-
-  <div class="punches-keyboard-container">
-    <div class="simple-keyboard"></div>
-  </div>
 
   <!-->
         <ng-container *ngFor="let punch of punches">
@@ -55,9 +51,3 @@
           </div>
         </ng-container>-->
 </div>
-
-<!--
-<div class="punches-keyboard-container">
-  <div class="simple-keyboard"></div>
-</div>
--->

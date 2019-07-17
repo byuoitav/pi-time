@@ -1,27 +1,32 @@
 package helpers
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/byuoitav/pi-time/structs"
 )
 
-func translateToPunch(start structs.ClientPunchRequest) structs.Punch {
-	var toReturn structs.Punch
+func translateToPunch(start structs.ClientPunchRequest) map[string]structs.Punch {
 
-	toReturn.PunchType = start.PunchType
-	toReturn.PunchTime = start.Time.Format("15:04")
-	toReturn.Latitude = "40.25258"
-	toReturn.Longitude = "-111.657658"
-	toReturn.LocationDescription = os.Getenv("SYSTEM_ID")
-	toReturn.TimeCollectionSource = "CPI"
-	toReturn.WorkOrderID = start.WorkOrderID
-	toReturn.TRCID = start.TRCID
-	toReturn.PunchDate = start.Time.Format("2006-01-02")
-	toReturn.EmployeeRecord = start.EmployeeJobID
-	toReturn.PunchZone = ""
+	var req structs.Punch
+	req.PunchType = start.PunchType
+	fmt.Printf("\ntime: %v\n\n", start.Time.Local())
+	req.PunchTime = start.Time.Local().Format("15:04:01")
+	req.Latitude = structs.String("40.25258")
+	req.Longitude = structs.String("-111.657658")
+	req.LocationDescription = structs.String(os.Getenv("SYSTEM_ID"))
+	req.TimeCollectionSource = structs.String("CPI")
+	req.WorkOrderID = start.WorkOrderID
+	req.TRCID = start.TRCID
+	req.PunchDate = structs.String(start.Time.Local().Format("2006-01-02"))
+	req.EmployeeRecord = structs.Int(start.EmployeeJobID)
+	req.PunchZone = structs.String(start.Time.Local().Format("-07:00"))
 
-	return toReturn
+	wrapper := make(map[string]structs.Punch)
+	wrapper["punch"] = req
+
+	return wrapper
 }
 
 func translateToLunchPunch(start structs.ClientLunchPunchRequest) structs.LunchPunch {

@@ -11,7 +11,7 @@ import (
 )
 
 // SendPunchRequest sends a punch request to the YTime API and returns the response.
-func SendPunchRequest(byuID string, body structs.Punch) (structs.Timesheet, *nerr.E) {
+func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Timesheet, *nerr.E) {
 	var punchResponse structs.Timesheet
 
 	err := wso2requests.MakeWSO2Request("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse)

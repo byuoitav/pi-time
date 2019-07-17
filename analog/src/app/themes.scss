@@ -59,6 +59,10 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
     &.wo-select-overlay {
         background-color: white;
     }
+
+    &.time-entry-overlay {
+        background-color: white;
+    }
 }
 
 .mat-tab-label-active {
