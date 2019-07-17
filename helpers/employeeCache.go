@@ -125,3 +125,15 @@ func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
 
 	return empRecord, nil
 }
+
+func WatchForOfflinePunchesAndSend() {
+
+}
+
+func StartLogChannel() {
+
+}
+
+funct MonitorLogFiles() {
+	
+}

@@ -20,6 +20,15 @@ func main() {
 	//start a go routine that will pull the cache information for offline mode
 	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
 
+	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
+	go helpers.WatchForOfflinePunchesAndSend()
+
+	//start a go routine that will monitor a channel for some persistent logging that we want to send to a json file
+	go helpers.StartLogChannel()
+
+	//start a go routine that will monitor the log files we've created and clear them out periodically
+	go helpers.MonitorLogFiles()
+
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
 
