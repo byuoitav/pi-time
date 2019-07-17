@@ -87,6 +87,9 @@ $date-diameter: 4.5vw;
         background-color: #1b65bf;
         color: white;
         font-weight: bold;
+        &.exception {
+            background-color: #B52828;
+        }
     }
     &.exception {
         background-color: #B52828;

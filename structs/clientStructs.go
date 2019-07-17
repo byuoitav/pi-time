@@ -99,7 +99,7 @@ type ClientLunchPunchRequest struct {
 //ClientSickRequest .
 type ClientSickRequest struct {
 	Editable bool `json:"editable"`
-	//SequenceNumber int    `json:"sequence-number"`
+	// SequenceNumber int    `json:"sequence-number"`
 	ElapsedHours string `json:"elapsed-hours"`
 }
 

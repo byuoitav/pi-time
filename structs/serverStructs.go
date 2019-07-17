@@ -133,8 +133,8 @@ type ElapsedTimeSummary struct {
 
 //ElapsedTimeDay is the parent structure for sick and vacation hours for a day
 type ElapsedTimeDay struct {
-	PunchDate           string             `json:"punch_date"`
-	ElapstedTimeEntries []ElapsedTimeEntry `json:"punches"`
+	PunchDate          string             `json:"punch_date"`
+	ElapsedTimeEntries []ElapsedTimeEntry `json:"punches"`
 }
 
 //ElapsedTimeEntry is the structure for a single amount of sick or vacation time

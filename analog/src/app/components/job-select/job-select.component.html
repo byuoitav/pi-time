@@ -1,4 +1,7 @@
 <mat-toolbar color="primary">
+    <button mat-button (click)="goBack()">
+                <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
+              </button>
     <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
     <span>Y-Time</span> <span class="header-spacer"></span>
     <span>{{ emp?.name }}</span>

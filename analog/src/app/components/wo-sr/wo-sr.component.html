@@ -1,78 +1,78 @@
 <div class="do-container">
-  <mat-card class="do-sheet do-wosr do-card mat-elevation-z3">
-    <div class="do-row do-top">
-      <button class="do-button do-top" color="accent" mat-flat-button>
+    <mat-card class="do-sheet do-wosr do-card mat-elevation-z3">
+        <div class="do-row do-top">
+            <button class="do-button do-top" color="accent" mat-flat-button>
         Enter Lunch Punch
       </button>
 
-      <div class="do-column do-billing">
-        <div class="do-wo-info">
-          <span style="font-weight: bold;"> Billed to WO/SR: </span>
-          <span *ngIf="day?.billedHours"> {{ day?.billedHours }} </span>
-          <span *ngIf="!day?.billedHours"> --:-- </span>
-        </div>
+            <div class="do-column do-billing">
+                <div class="do-wo-info">
+                    <span style="font-weight: bold;"> Billed to WO/SR: </span>
+                    <span *ngIf="day?.billedHours"> {{ day?.billedHours }} </span>
+                    <span *ngIf="!day?.billedHours"> --:-- </span>
+                </div>
 
-        <div class="do-wo-info">
-          <span style="font-weight: bold;"> Total Hours Worked: </span>
-          <span *ngIf="day?.reportedHours"> {{ day?.reportedHours }} </span>
-          <span *ngIf="!day?.reportedHours"> --:-- </span>
-        </div>
-      </div>
-      <button class="do-button do-top do-action" mat-flat-button color="accent">
+                <div class="do-wo-info">
+                    <span style="font-weight: bold;"> Total Hours Worked: </span>
+                    <span *ngIf="day?.reportedHours"> {{ day?.reportedHours }} </span>
+                    <span *ngIf="!day?.reportedHours"> --:-- </span>
+                </div>
+            </div>
+            <button class="do-button do-top do-action" mat-flat-button color="accent">
         New WO/SR
       </button>
-    </div>
+        </div>
 
-    <mat-grid-list cols="5" rowHeight="8vh" gutterSize=".1vh">
-      <mat-grid-tile colspan="1" rowspan="1" class="do-header">
-        WO/SR
-      </mat-grid-tile>
+        <mat-grid-list cols="5" rowHeight="8vh" gutterSize=".1vh">
+            <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                WO/SR
+            </mat-grid-tile>
 
-      <mat-grid-tile colspan="1" rowspan="1"> </mat-grid-tile>
+            <mat-grid-tile colspan="1" rowspan="1"> </mat-grid-tile>
 
-      <mat-grid-tile colspan="1" rowspan="1" class="do-header">
-        TRC
-      </mat-grid-tile>
+            <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                TRC
+            </mat-grid-tile>
 
-      <mat-grid-tile colspan="1" rowspan="1" class="do-header">
-        Hours
-      </mat-grid-tile>
+            <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                Hours
+            </mat-grid-tile>
 
-      <mat-grid-tile colspan="1" rowspan="1" class="do-header">
-        Action
-      </mat-grid-tile>
+            <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+                Action
+            </mat-grid-tile>
 
-      <ng-container *ngFor="let entry of day?.workOrderEntries">
-        <mat-grid-tile colspan="2" rowspan="1">
-          <span class="do-work-order-id">{{
+            <ng-container *ngFor="let entry of day?.workOrderEntries">
+                <mat-grid-tile colspan="2" rowspan="1">
+                    <span class="do-work-order-id">{{
             entry?.workOrder?.toString()
           }}</span>
-        </mat-grid-tile>
+                </mat-grid-tile>
 
-        <mat-grid-tile colspan="1" rowspan="1">
-          {{ entry?.trc?.id }}
-        </mat-grid-tile>
+                <mat-grid-tile colspan="1" rowspan="1">
+                    {{ entry?.trc?.id }}
+                </mat-grid-tile>
 
-        <mat-grid-tile colspan="1" rowspan="1">
-          {{ entry?.hoursBilled }}
-        </mat-grid-tile>
+                <mat-grid-tile colspan="1" rowspan="1">
+                    {{ entry?.hoursBilled }}
+                </mat-grid-tile>
 
-        <mat-grid-tile colspan="1" rowspan="1">
-          <button mat-flat-button color="accent" class="do-button do-action">
+                <mat-grid-tile colspan="1" rowspan="1">
+                    <button mat-flat-button color="accent" class="do-button do-action" (click)="editWorkOrder()">
             Edit
           </button>
-        </mat-grid-tile>
+                </mat-grid-tile>
 
-        <mat-grid-tile colspan="5" rowspan="1">
-          <mat-divider></mat-divider>
-        </mat-grid-tile>
-      </ng-container>
+                <mat-grid-tile colspan="5" rowspan="1">
+                    <mat-divider></mat-divider>
+                </mat-grid-tile>
+            </ng-container>
 
-      <mat-grid-tile colspan="5" rowspan="1">
-        <div class="do-row">
-          <span class="do-message">Billed and Total should be equal</span>
-        </div>
-      </mat-grid-tile>
-    </mat-grid-list>
-  </mat-card>
+            <mat-grid-tile colspan="5" rowspan="1">
+                <div class="do-row">
+                    <span class="do-message">Billed and Total should be equal</span>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </mat-card>
 </div>

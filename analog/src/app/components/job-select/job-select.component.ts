@@ -42,4 +42,8 @@ export class JobSelectComponent implements OnInit {
   logout = () => {
     this._empRef.logout();
   };
+
+  goBack() {
+    window.history.back();
+  }
 }

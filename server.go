@@ -32,10 +32,9 @@ func main() {
 
 	router.POST("/punch/:id", handlers.Punch) //will send in a ClientPunchRequest in the body
 	router.POST("/lunchpunch/:id", handlers.LunchPunch)
-	router.PUT("/sick/:id", handlers.Sick)
-	router.PUT("/vacation/:id", handlers.Vacation)
-	router.POST("/workorderentry/id", handlers.WorkOrderEntry)
-	router.DELETE("/punch/:jobid/:date/:seqnum", handlers.DeletePunch)
+	router.PUT("/otherhours/:id/:jobid", handlers.OtherHours)
+	router.POST("/workorderentry/:id", handlers.WorkOrderEntry)
+	router.DELETE("/punch/:jobid/:seqnum", handlers.DeletePunch)
 
 	//endpoint for UI events
 	router.POST("/event", handlers.SendEvent)

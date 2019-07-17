@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/byuoitav/pi-time/cache"
+	"github.com/byuoitav/pi-time/ytimeapi"
 
-	"github.com/byuoitav/pi-time/helpers"
 	"github.com/labstack/echo"
 )
 
@@ -17,7 +17,7 @@ func LogInUser(context echo.Context) error {
 	byuID := context.Param("id")
 
 	//get the timesheet for this guy
-	timesheet, isOffline, err := helpers.GetTimesheet(byuID)
+	timesheet, isOffline, err := ytimeapi.GetTimesheet(byuID)
 
 	if err != nil {
 		return context.String(http.StatusForbidden, "invalid BYU ID")

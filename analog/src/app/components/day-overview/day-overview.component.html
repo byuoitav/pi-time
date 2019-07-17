@@ -1,32 +1,20 @@
 <mat-toolbar class="do-header" color="primary">
-  <button mat-button (click)="goBack()">
+    <button mat-button (click)="goBack()">
     <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
   </button>
-  <span>{{ job?.description }}</span> <span class="do-header-spacer"></span>
-  <span>{{ day?.time | date: "fullDate" }}</span>
-  <span class="do-header-spacer"></span> <span>{{ emp?.name }}</span>
-  <button (click)="logout()" mat-icon-button>
+    <span>{{ job?.description }}</span> <span class="do-header-spacer"></span>
+    <span>{{ day?.time | date: "fullDate" }}</span>
+    <span class="do-header-spacer"></span> <span>{{ emp?.name }}</span>
+    <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
 
-<mat-tab-group
-  mat-stretch-tabs
-  backgroundColor="accent"
-  color="none"
-  [disableRipple]="true"
-  [@.disabled]="true"
->
-  <mat-tab>
-    <ng-template mat-tab-label>
-      <span *ngIf="!day?.hasPunchException">Punches</span>
-      <span
-        *ngIf="day?.hasPunchException"
-        matBadge="{{ getExceptionCount() }}"
-        matBadgeColor="warn"
-        matBadgeOverlap="false"
-        matBadgeSize="medium"
-        >Punches</span
+<mat-tab-group mat-stretch-tabs backgroundColor="accent" color="none" [disableRipple]="true" [@.disabled]="true">
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <span *ngIf="!day?.hasPunchException">Punches</span>
+            <span *ngIf="day?.hasPunchException" matBadge="{{ getExceptionCount() }}" matBadgeColor="warn" matBadgeOverlap="false" matBadgeSize="medium">Punches</span
       >
     </ng-template>
     <punches class="tab-content" [day]="day"></punches>
@@ -34,11 +22,11 @@
 
   <mat-tab *ngIf="job?.isPhysicalFacilities">
     <ng-template mat-tab-label> <span>WO/SR</span> </ng-template>
-    <wo-sr class="tab-content" [day]="day"></wo-sr>
-  </mat-tab>
+        <wo-sr class="tab-content" [day]="day" [job]="job" [emp]="emp"></wo-sr>
+    </mat-tab>
 
-  <mat-tab *ngIf="job?.jobType === jobType.FullTime">
-    <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
-    <sick-vacation class="tab-content" [day]="day"></sick-vacation>
-  </mat-tab>
+    <mat-tab *ngIf="job?.jobType === jobType.FullTime">
+        <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
+        <sick-vacation class="tab-content" [day]="day"></sick-vacation>
+    </mat-tab>
 </mat-tab-group>

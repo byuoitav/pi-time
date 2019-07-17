@@ -1,4 +1,4 @@
-package helpers
+package offline
 
 import (
 	"encoding/json"

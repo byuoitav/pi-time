@@ -213,6 +213,20 @@ export class APIService {
       });
     }
   };
+
+  sendWorkOrderEntry = (byuID: string, data: WorkOrderEntry) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      return this.http.post("/workorderentry/" + byuID, data, {
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
+  }
 }
 
 interface Message {

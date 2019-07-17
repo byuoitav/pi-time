@@ -94,4 +94,18 @@ export class ClockComponent implements OnInit {
   logout = () => {
     this._empRef.logout();
   };
+
+  canChangeWorkOrder(job: Job) {
+    if (job === undefined) {
+      return false;
+    }
+
+    if (job.clockStatus === PunchType.In) {
+      if (job.currentWorkOrder !== undefined) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
