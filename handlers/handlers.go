@@ -74,8 +74,30 @@ func OtherHours(context echo.Context) error {
 	return context.String(http.StatusOK, "ok")
 }
 
-//WorkOrderEntry handles adding a new WorkOrderEntry (post)
-func WorkOrderEntry(context echo.Context) error {
+//NewWorkOrderEntry handles adding a new WorkOrderEntry (post)
+func NewWorkOrderEntry(context echo.Context) error {
+	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
+	byuID := context.Param("id")
+	jobIDString := context.Param("jobid")
+
+	jobID, _ := strconv.Atoi(jobIDString)
+
+	var incomingRequest structs.ClientWorkOrderEntry
+	err := context.Bind(&incomingRequest)
+	if err != nil {
+		return context.String(http.StatusBadRequest, err.Error())
+	}
+
+	err = helpers.WorkOrderEntry(byuID, jobID, incomingRequest)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.String(http.StatusOK, "ok")
+}
+
+//EditWorkOrderEntry handles adding a new WorkOrderEntry (post)
+func EditWorkOrderEntry(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
 	byuID := context.Param("id")
 	jobIDString := context.Param("jobid")

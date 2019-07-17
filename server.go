@@ -30,10 +30,25 @@ func main() {
 
 	//all of the functions to call to add / update / delete / do things on the UI
 
+	//clock in
+	//clock out
+	//transfer
+	//add missing punch
 	router.POST("/punch/:id", handlers.Punch) //will send in a ClientPunchRequest in the body
+
+	//lunchpunch
 	router.POST("/lunchpunch/:id", handlers.LunchPunch)
+
+	//add sick or vacation
 	router.PUT("/otherhours/:id/:jobid", handlers.OtherHours)
-	router.POST("/workorderentry/:id", handlers.WorkOrderEntry)
+
+	//edit work order entry
+	router.PUT("/workorderentry/:id", handlers.EditWorkOrderEntry)
+
+	//new work order entry
+	router.POST("/workorderentry/:id", handlers.NewWorkOrderEntry)
+
+	//delete duplicate punch
 	router.DELETE("/punch/:jobid/:seqnum", handlers.DeletePunch)
 
 	//endpoint for UI events
