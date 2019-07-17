@@ -19,6 +19,7 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 	if err != nil {
 		log.L.Error(err.Error())
 		// put it into the cache
+
 	}
 
 	// update the employee timesheet, which also sends it up the websocket

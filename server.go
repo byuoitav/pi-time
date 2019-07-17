@@ -26,6 +26,8 @@ func main() {
 	//start a go routine that will monitor a channel for some persistent logging that we want to send to a json file
 	go helpers.StartLogChannel()
 
+	helpers.LogChannel <- "Starting logging to persistent file"
+
 	//start a go routine that will monitor the log files we've created and clear them out periodically
 	go helpers.MonitorLogFiles()
 

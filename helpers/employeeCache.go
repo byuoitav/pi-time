@@ -2,6 +2,8 @@ package helpers
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	syslog "log"
 	"os"
 	"time"
 
@@ -11,8 +13,14 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
+//LogChannel channel to send log messages
+var LogChannel chan string
+
 func init() {
+	LogChannel = make(chan string)
+
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
+
 	if len(dbLoc) == 0 {
 		log.L.Fatalf("Need CACHE_DATABASE_LOCATION variable")
 	}
@@ -126,14 +134,58 @@ func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
 	return empRecord, nil
 }
 
+//WatchForOfflinePunchesAndSend .
 func WatchForOfflinePunchesAndSend() {
 
 }
 
+//StartLogChannel .
 func StartLogChannel() {
+	logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
+	date := time.Now().Format("2006-01-02")
+	logFileName := date + ".log"
 
+	f, err := os.OpenFile(logLocation+"/"+logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.L.Fatalf("Error creating log file")
+	}
+	defer f.Close()
+
+	logger := syslog.New(f, "pi-time", syslog.LstdFlags)
+
+	for message := range LogChannel {
+		log.L.Debugf(message)
+		logger.Println(message)
+
+		testdate := time.Now().Format("2006-01-02")
+		if date != testdate {
+			go StartLogChannel()
+			break
+		}
+	}
 }
 
-funct MonitorLogFiles() {
-	
+//MonitorLogFiles .
+func MonitorLogFiles() {
+	for {
+		logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
+
+		files, err := ioutil.ReadDir(logLocation)
+		if err != nil {
+			log.L.Fatalf(err.Error())
+		}
+
+		dateToDelete := time.Now().Add(-30 * 24 * time.Hour)
+
+		for _, file := range files {
+			date, err := time.Parse("2006-01-02", file.Name()[:10])
+			if err != nil {
+				if date.Before(dateToDelete) {
+					os.Remove(logLocation + "/" + file.Name())
+				}
+			}
+		}
+
+		time.Sleep(8 * time.Hour)
+	}
 }
