@@ -22,6 +22,7 @@ func translateToPunch(start structs.ClientPunchRequest) map[string]structs.Punch
 	req.PunchDate = structs.String(start.Time.Local().Format("2006-01-02"))
 	req.EmployeeRecord = structs.Int(start.EmployeeJobID)
 	req.PunchZone = structs.String(start.Time.Local().Format("-07:00"))
+	req.InternetAddress = structs.String("")
 
 	wrapper := make(map[string]structs.Punch)
 	wrapper["punch"] = req

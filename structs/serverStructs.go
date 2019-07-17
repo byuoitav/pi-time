@@ -89,6 +89,7 @@ type Punch struct {
 	PunchDate            *string `json:"punch_date,omitempty"`
 	EmployeeRecord       *int    `json:"employee_record,omitempty"`
 	PunchZone            *string `json:"punch_zone,omitempty"`
+	InternetAddress      *string `json:"internet_address,omitempty"`
 }
 
 //LunchPunch is used when posting a lunch punch to the system

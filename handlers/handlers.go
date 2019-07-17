@@ -23,7 +23,6 @@ func Punch(context echo.Context) error {
 	}
 
 	//call the helper
-
 	err = helpers.Punch(byuID, incomingRequest)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
