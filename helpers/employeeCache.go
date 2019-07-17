@@ -134,6 +134,6 @@ func StartLogChannel() {
 
 }
 
-funct MonitorLogFiles() {
-	
+func MonitorLogFiles() {
+
 }
