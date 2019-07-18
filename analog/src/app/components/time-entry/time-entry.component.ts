@@ -10,6 +10,11 @@ import Keyboard from "simple-keyboard";
 
 import { PORTAL_DATA } from "../../objects";
 
+enum AMPM {
+  AM = "AM",
+  PM = "PM"
+}
+
 @Component({
   selector: "time-entry",
   encapsulation: ViewEncapsulation.None,
@@ -20,7 +25,32 @@ import { PORTAL_DATA } from "../../objects";
   ]
 })
 export class TimeEntryComponent implements OnInit, AfterViewInit {
-  public value = "";
+  public time = "";
+  public ampm: AMPM;
+
+  get value(): string {
+    if (!this.time) {
+      if (this.ampm) {
+        return "--:-- " + this.ampm;
+      }
+
+      return "--:--";
+    }
+
+    let sliceIdx = this.time.length === 3 ? 1 : 2;
+    const str =
+      this.time.length >= 3
+        ? this.time.slice(0, sliceIdx) +
+          ":" +
+          this.time.slice(sliceIdx, this.time.length)
+        : this.time;
+
+    if (!this.ampm) {
+      return str;
+    }
+
+    return str + " " + this.ampm;
+  }
 
   private keyboard: Keyboard;
 
@@ -28,6 +58,8 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     private ref: OverlayRef,
     @Inject(PORTAL_DATA)
     private data: {
+      title: string;
+      duration: boolean;
       save: (time: Date) => void;
     }
   ) {}
@@ -43,16 +75,9 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       },
       mergeDisplay: true,
       display: {
-        "{bksp}": "⌫",
-        "{ampm}": "AM/PM",
-        "{done}": "Done",
-        "{cancel}": "Cancel"
+        "{bksp}": "⌫"
       },
       buttonTheme: [
-        {
-          buttons: "{done}",
-          class: "keyboard-button-disabled"
-        },
         {
           buttons: "1 2 3 4 5 6 7 8 9 0 {bksp}",
           class: "keyboard-tall-button"
@@ -63,56 +88,89 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       },
       useTouchEvents: true
     });
+
+    this.updateValidKeys();
   }
 
   onChange = (input: string) => {
-    this.value = input;
-    // if (input.length > 4) {
-    //   return;
-    // }
-    // punch.editedTime = input;
-    // if (!this.validEditTime(punch)) {
-    //   keyboard.addButtonTheme("{done}", "keyboard-button-disabled");
-    // } else {
-    //   keyboard.removeButtonTheme("{done}", "keyboard-button-disabled");
-    // }
+    this.time = input;
+    this.updateValidKeys();
   };
 
-  onKeyPress = (button: string) => {
-    // switch (button) {
-    //   case "{ampm}":
-    //     switch (punch.editedAMPM) {
-    //       case "PM":
-    //         punch.editedAMPM = "AM";
-    //         return;
-    //       case "AM":
-    //         punch.editedAMPM = "PM";
-    //         return;
-    //       default:
-    //         punch.editedAMPM = "AM";
-    //         return;
-    //     }
-    //   case "{done}":
-    //     element.classList.remove("editing");
-    //     if (!punch.editedTime || punch.editedTime.includes("--:--")) {
-    //       punch.editedAMPM = undefined;
-    //     }
-    //     keyboard.destroy();
-    //     this.keyboardOpen = false;
-    //     return;
-    //   case "{cancel}":
-    //     element.classList.remove("editing");
-    //     punch.editedTime = undefined;
-    //     punch.editedAMPM = undefined;
-    //     keyboard.destroy();
-    //     this.keyboardOpen = false;
-    //     return;
-    // }
+  onKeyPress = (button: string) => {};
+
+  // TODO fix for duration
+  updateValidKeys = () => {
+    for (const key of [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]) {
+      let valid = false;
+
+      switch (this.time.length) {
+        case 4:
+          valid = false;
+          break;
+        case 3:
+          const hour = Number(this.time.slice(0, 2));
+          const min = Number(this.time.charAt(2));
+
+          if (hour > 12) {
+            valid = false;
+          } else {
+            if (min >= 6) {
+              valid = false;
+            } else {
+              valid = true;
+            }
+          }
+
+          break;
+        case 2:
+          valid = true;
+          break;
+        case 1:
+          // keys 0-5 are valid
+          valid = key <= 5 ? true : false;
+          break;
+        case 0:
+          // all keys except 0 are valid
+          valid = key === 0 ? false : true;
+          break;
+      }
+
+      if (valid) {
+        this.keyboard.removeButtonTheme(
+          key.toString(),
+          "keyboard-button-disabled"
+        );
+      } else {
+        this.keyboard.addButtonTheme(
+          key.toString(),
+          "keyboard-button-disabled"
+        );
+      }
+    }
+
+    if (this.time.length === 0) {
+      this.keyboard.addButtonTheme("{bksp}", "keyboard-button-disabled");
+    } else {
+      this.keyboard.removeButtonTheme("{bksp}", "keyboard-button-disabled");
+    }
   };
 
   onInputChange = (event: any) => {
     this.keyboard.setInput(event.target.value);
   };
+
+  toggleAMPM = () => {
+    if (this.ampm) {
+      this.ampm = this.ampm === AMPM.AM ? AMPM.PM : AMPM.AM;
+    } else {
+      this.ampm = AMPM.AM;
+    }
+  };
+
+  validTime = () => {};
+
+  save = () => {};
 
   cancel = () => {
     this.ref.dispose();

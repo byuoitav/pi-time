@@ -100,12 +100,18 @@ export class ClockComponent implements OnInit {
       return false;
     }
 
-    if (job.clockStatus === PunchType.In) {
-      if (job.currentWorkOrder !== undefined) {
-        return true;
-      }
+    return job.clockStatus === PunchType.In && job.isPhysicalFacilities;
+  }
+
+  hasTimesheetException = () => {
+    if (
+      this.emp.jobs.some(j =>
+        j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
+      )
+    ) {
+      return "⚠";
     }
 
-    return false;
-  }
+    return "";
+  };
 }
