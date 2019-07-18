@@ -44,7 +44,7 @@ export class ClockComponent implements OnInit {
     });
   }
 
-  clockInOut = (job: Job, state: PunchType) => {
+  clockInOut = (job: Job, state: PunchType, event?) => {
     console.log("clocking job", job.description, "to state", state);
     const data = new ClientPunchRequest();
     data.byuID = Number(this.emp.id);
@@ -53,36 +53,66 @@ export class ClockComponent implements OnInit {
 
     if (job.isPhysicalFacilities && state === PunchType.In) {
       // show work order popup to clock in
-      const ref = this.dialog.open(WoTrcDialog, {
-        width: "50vw",
-        data: {
-          title: "Select Work Order",
-          job: job,
-          showTRC: job.trcs.length > 0,
-          showWO: job.workOrders.length > 0,
-          showHours: false,
-          submit: (trc: TRC, wo: WorkOrder): Observable<any> => {
-            data.time = new Date();
-            data.trcID = trc.id;
-            data.workOrderID = wo.id;
-
-            const obs = this.api.clockInOut(data);
-
-            obs.subscribe(
-              resp => {
-                console.log("response data", resp);
-              },
-              err => {
-                console.log("response ERROR", err);
+      const ref = this.dialog
+        .open(WoTrcDialog, {
+          width: "50vw",
+          data: {
+            title: "Select Work Order",
+            job: job,
+            showTRC: job.trcs.length > 0,
+            showWO: job.workOrders.length > 0,
+            showHours: false,
+            submit: (trc?: TRC, wo?: WorkOrder): Observable<any> => {
+              data.time = new Date();
+              if (trc) {
+                data.trcID = trc.id;
               }
-            );
+              if (wo) {
+                data.workOrderID = wo.id;
+              }
 
-            return obs;
+              const obs = this.api.clockInOut(data);
+
+              obs.subscribe(
+                resp => {
+                  console.log("response data", resp);
+                },
+                err => {
+                  console.log("response ERROR", err);
+                }
+              );
+
+              return obs;
+            }
           }
-        }
-      });
+        })
+        .afterClosed()
+        .subscribe(cancelled => {
+          if (cancelled) {
+            console.log(
+              "reversing punch type:",
+              state,
+              "to",
+              PunchType.reverse(state)
+            );
+            console.log(event);
+            event.source.radioGroup.value = PunchType.reverse(state);
+            // event.source.checked = false;
+          }
+        });
     } else {
       // clock in/out here
+      data.time = new Date();
+      const obs = this.api.clockInOut(data);
+
+      obs.subscribe(
+        resp => {
+          console.log("response data", resp);
+        },
+        err => {
+          console.log("response ERROR", err);
+        }
+      );
     }
   };
 

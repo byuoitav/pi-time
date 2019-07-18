@@ -88,7 +88,7 @@ func NewWorkOrderEntry(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.WorkOrderEntry(byuID, jobID, incomingRequest)
+	err = helpers.NewWorkOrderEntry(byuID, jobID, incomingRequest)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
 	}
@@ -96,7 +96,7 @@ func NewWorkOrderEntry(context echo.Context) error {
 	return context.String(http.StatusOK, "ok")
 }
 
-//EditWorkOrderEntry handles adding a new WorkOrderEntry (post)
+//EditWorkOrderEntry handles editing WorkOrderEntry (put)
 func EditWorkOrderEntry(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
 	byuID := context.Param("id")
@@ -110,7 +110,7 @@ func EditWorkOrderEntry(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.WorkOrderEntry(byuID, jobID, incomingRequest)
+	err = helpers.EditWorkOrderEntry(byuID, jobID, incomingRequest)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
 	}

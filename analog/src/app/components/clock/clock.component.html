@@ -8,12 +8,12 @@
 </mat-toolbar>
 
 <div class="container">
-  <mat-card class="card totals">
+  <mat-card class="card totals mat-elevation-z2">
     <span>Week Total: {{ emp?.totalTime?.week }}</span>
     <span>Pay Period Total: {{ emp?.totalTime?.payPeriod }}</span>
   </mat-card>
 
-  <mat-card class="jobs card">
+  <mat-card class="jobs card mat-elevation-z2">
     <mat-grid-list
       class="grid"
       cols="{{ emp?.showTRC() ? 6 : 5 }}"
@@ -21,7 +21,7 @@
       gutterSize=".2vh"
     >
       <!-- headers -->
-      <mat-grid-tile colspan="1" rowspan="1" class="header">
+      <mat-grid-tile colspan="1" rowspan="1" class="header title">
         Job Title
       </mat-grid-tile>
       <mat-grid-tile colspan="1" rowspan="1" class="header">
@@ -41,7 +41,6 @@
       <mat-grid-tile colspan="2" rowspan="1" class="header"
         >Clock</mat-grid-tile
       >
-
       <ng-container *ngFor="let job of emp?.jobs">
         <!-- name -->
         <mat-grid-tile colspan="1" rowspan="1">
@@ -66,19 +65,19 @@
         <mat-grid-tile colspan="2" rowspan="1">
           <mat-radio-group
             class="clock-group"
-            [value]="job?.clockStatus"
-            (change)="clockInOut(job, $event.value)"
+            [ngModel]="job?.clockStatus"
+            (change)="clockInOut(job, $event.value, $event)"
           >
             <mat-radio-button
-              color="primary"
-              class="clock-button mat-elevation-z2"
+              class="clock-button in mat-elevation-z2"
               [value]="punchType.In"
+              [checked]="job?.clockStatus === punchType.In"
               >IN</mat-radio-button
             >
             <mat-radio-button
-              color="warn"
-              class="clock-button mat-elevation-z2"
+              class="clock-button out mat-elevation-z2"
               [value]="punchType.Out"
+              [checked]="job?.clockStatus === punchType.Out"
               >OUT</mat-radio-button
             >
           </mat-radio-group>

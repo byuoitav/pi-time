@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/ytimeapi"
 
@@ -15,6 +16,7 @@ func LogInUser(context echo.Context) error {
 
 	//get the id
 	byuID := context.Param("id")
+	log.L.Debugf("Logging in " + byuID)
 
 	//get the timesheet for this guy
 	timesheet, isOffline, err := ytimeapi.GetTimesheet(byuID)

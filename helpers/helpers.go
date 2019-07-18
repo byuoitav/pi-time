@@ -19,6 +19,7 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 	if err != nil {
 		log.L.Error(err.Error())
 		// put it into the cache
+
 	}
 
 	// update the employee timesheet, which also sends it up the websocket
@@ -65,13 +66,31 @@ func OtherHours(byuID string, jobID int, request structs.ClientOtherHours) error
 	return nil
 }
 
-// WorkOrderEntry will record a work order entry for the employee and report up the websocket.
-func WorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrderEntry) error {
+// NewWorkOrderEntry will record a work order entry for the employee and report up the websocket.
+func NewWorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrderEntry) error {
 	// build WSO2 request
 	entry := translateToWorkOrderEntry(request)
 
 	// send WSO2 request to the YTime API
-	summary, err := ytimeapi.SendWorkOrderEntryRequest(byuID, entry)
+	summary, err := ytimeapi.SendNewWorkOrderEntryRequest(byuID, entry)
+	if err != nil {
+		return err
+	}
+
+	// update the employee record, which also sends it up the websocket
+	cache.UpdateWorkOrderEntriesForJob(byuID, jobID, []structs.WorkOrderDaySummary{summary})
+
+	// if successful, return nil
+	return nil
+}
+
+// EditWorkOrderEntry will record a work order entry for the employee and report up the websocket.
+func EditWorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrderEntry) error {
+	// build WSO2 request
+	entry := translateToWorkOrderEntry(request)
+
+	// send WSO2 request to the YTime API
+	summary, err := ytimeapi.SendEditWorkOrderEntryRequest(byuID, entry)
 	if err != nil {
 		return err
 	}

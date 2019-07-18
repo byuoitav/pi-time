@@ -12,24 +12,19 @@
 
 <div class="container">
     <mat-card class="jobs card mat-elevation-z3">
-        <mat-grid-list class="grid" cols="2" rowHeight="12vh" gutterSize=".2vh">
-            <mat-grid-tile colspan="1" rowspan="1" class="header">
-                Job Title
-            </mat-grid-tile>
-            <mat-grid-tile colspan="1" rowspan="1" class="header">
-                Timesheet
-            </mat-grid-tile>
-
+        <div class="column">
             <ng-container *ngFor="let job of emp?.jobs; let i = index">
-                <mat-grid-tile colspan="1" rowspan="1">
-                    {{ job?.description }}
-                </mat-grid-tile>
-                <mat-grid-tile colspan="1" rowspan="1">
-                    <button class="view-timesheet" color="accent" (click)="selectJob(i)" mat-raised-button>
-            View Timesheet
-          </button>
-                </mat-grid-tile>
+                <button class="view-timesheet" color="accent" (click)="selectJob(i)" mat-raised-button>
+                    <span class="spaced-button">
+                            <span style="padding-top: 2px; font-size: 12pt;">{{ job?.description }}</span>
+                            <span class="header-spacer"></span>
+                            <mat-icon>keyboard_arrow_right</mat-icon>
+                    </span>
+                                    
+                      </button>
             </ng-container>
-        </mat-grid-list>
+        </div>
+
+
     </mat-card>
 </div>

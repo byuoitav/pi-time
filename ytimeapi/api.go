@@ -55,11 +55,26 @@ func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs
 	return otherResponse, nil
 }
 
-// SendWorkOrderEntryRequest sends a work order entry request to the YTime API and returns the response.
-func SendWorkOrderEntryRequest(byuID string, body structs.WorkOrderEntry) (structs.WorkOrderDaySummary, *nerr.E) {
+// SendNewWorkOrderEntryRequest sends a work order entry request to the YTime API and returns the response.
+func SendNewWorkOrderEntryRequest(byuID string, body structs.WorkOrderEntry) (structs.WorkOrderDaySummary, *nerr.E) {
 	var workOrderResponse structs.WorkOrderDaySummary
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID, body, &workOrderResponse, map[string]string{
+		"Content-Type": "application/json",
+		"Accept":       "application/json",
+	})
+	if err != nil {
+		return workOrderResponse, nerr.Translate(err).Addf("failed to send a work order entry for %s", byuID)
+	}
+
+	return workOrderResponse, nil
+}
+
+// SendEditWorkOrderEntryRequest sends a work order entry request to the YTime API and returns the response.
+func SendEditWorkOrderEntryRequest(byuID string, body structs.WorkOrderEntry) (structs.WorkOrderDaySummary, *nerr.E) {
+	var workOrderResponse structs.WorkOrderDaySummary
+
+	err := wso2requests.MakeWSO2RequestWithHeaders("PUT", "https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID, body, &workOrderResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})

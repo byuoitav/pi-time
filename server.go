@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/byuoitav/pi-time/cache"
+
 	"github.com/labstack/echo"
 
 	"github.com/byuoitav/common"
@@ -16,6 +18,9 @@ var updateCacheNowChannel = make(chan struct{})
 
 func main() {
 	log.SetLevel("debug")
+
+	//start a go routine to go and get the latitude and longitude from the building struct
+	go cache.GetYtimeLocation()
 
 	//start a go routine that will pull the cache information for offline mode
 	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
