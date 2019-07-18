@@ -142,6 +142,14 @@ func WatchForOfflinePunchesAndSend() {
 //StartLogChannel .
 func StartLogChannel() {
 	logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
+
+	if len(logLocation) == 0 {
+		//assume they don't want this logging to a file - just output to console
+		for message := range LogChannel {
+			log.L.Debugf("log - " + message)
+		}
+	}
+
 	date := time.Now().Format("2006-01-02")
 	logFileName := date + ".log"
 
@@ -169,6 +177,11 @@ func StartLogChannel() {
 func MonitorLogFiles() {
 	for {
 		logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
+
+		if len(logLocation) == 0 {
+			//assume they don't want this logging
+			return
+		}
 
 		files, err := ioutil.ReadDir(logLocation)
 		if err != nil {
