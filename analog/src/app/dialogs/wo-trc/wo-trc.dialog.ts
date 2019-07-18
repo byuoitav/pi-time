@@ -28,10 +28,16 @@ export class WoTrcDialog implements OnInit {
       showTRC: boolean;
       showWO: boolean;
       showHours: boolean;
+      chosenWO?: WorkOrder;
       submit: (trc?: TRC, wo?: WorkOrder, hours?: string) => Observable<any>;
     }
   ) {
-    this.selectedWO = data.job.currentWorkOrder;
+    if (data.chosenWO) {
+      this.selectedWO = data.chosenWO;
+    } else {
+      this.selectedWO = data.job.currentWorkOrder;
+    }
+    
     this.selectedPay = data.job.currentTRC.id;
     this.hours = "";
 

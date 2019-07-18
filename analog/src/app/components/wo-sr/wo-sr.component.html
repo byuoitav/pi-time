@@ -18,7 +18,7 @@
                     <span *ngIf="!day?.reportedHours"> --:-- </span>
                 </div>
             </div>
-            <button class="do-button do-top do-action" mat-flat-button color="accent">
+            <button class="do-button do-top do-action" mat-flat-button color="accent" (click)="newWorkOrder()">
         New WO/SR
       </button>
         </div>
@@ -58,7 +58,7 @@
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1">
-                    <button mat-flat-button color="accent" class="do-button do-action" (click)="editWorkOrder()">
+                    <button mat-flat-button color="accent" class="do-button do-action" (click)="editWorkOrder(entry?.workOrder)">
             Edit
           </button>
                 </mat-grid-tile>

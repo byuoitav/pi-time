@@ -10,6 +10,11 @@
         "secure": false,
         "logLevel": "debug"
     },
+    "/lunchpunch/*": {
+        "target": "http://localhost:8463",
+        "secure": false,
+        "logLevel": "debug"
+    },
     "/workorderentry/*": {
         "target": "http://localhost:8463",
         "secure": false,

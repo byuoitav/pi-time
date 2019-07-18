@@ -88,9 +88,7 @@ export class ClockComponent implements OnInit {
       }).afterClosed().subscribe((cancelled) => {
         if (cancelled) {
           console.log("reversing punch type:", state, "to", PunchType.reverse(state));
-          console.log(event);
           event.source.radioGroup.value = PunchType.reverse(state);
-          // event.source.checked = false;
         }
       })
     } else {
@@ -129,14 +127,6 @@ export class ClockComponent implements OnInit {
       }
     }
 
-    return false;
-  }
-
-  clockedIn(job: Job): boolean {
-    if (job) {
-      // console.log(job.clockStatus);
-      return job.clockStatus === PunchType.In;
-    }
     return false;
   }
 }

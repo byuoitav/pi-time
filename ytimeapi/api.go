@@ -74,7 +74,7 @@ func SendNewWorkOrderEntryRequest(byuID string, body structs.WorkOrderEntry) (st
 func SendEditWorkOrderEntryRequest(byuID string, body structs.WorkOrderEntry) (structs.WorkOrderDaySummary, *nerr.E) {
 	var workOrderResponse structs.WorkOrderDaySummary
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("PUT", "https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID, body, &workOrderResponse, map[string]string{
+	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID, body, &workOrderResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})

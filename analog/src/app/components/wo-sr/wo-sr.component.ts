@@ -22,7 +22,47 @@ export class WoSrComponent implements OnInit {
 
   ngOnInit() {}
 
-  editWorkOrder() {
+  newWorkOrder() {
+    const ref = this.dialog.open(WoTrcDialog, {
+      width: "50vw",
+      data: {
+        title: "New Work Order",
+        job: this.job,
+        showTRC: this.showTRCs(),
+        showWO: this.showWO(),
+        showHours: true,
+        submit: (trc?: TRC, wo?: WorkOrder, hours?: string): Observable<any> => {
+          const entry = new WorkOrderEntry();
+
+          if (this.day.workOrderEntries) {
+            entry.id = this.day.workOrderEntries.length + 1;
+          } else {
+            entry.id = 1;
+          }
+
+          entry.trc = trc;
+          entry.workOrder = wo;
+          entry.hoursBilled = hours;
+          entry.editable = true;
+
+          const obs = this.api.newWorkOrderEntry(this.emp.id, entry)
+
+          obs.subscribe(
+            resp => {
+              console.log("response data", resp);
+            },
+            err => {
+              console.log("response ERROR", err);
+            }
+          );
+
+          return obs;
+        }
+      }
+    });
+  }
+
+  editWorkOrder(woToEdit: WorkOrder) {
     const ref = this.dialog.open(WoTrcDialog, {
       width: "50vw",
       data: {
@@ -31,6 +71,7 @@ export class WoSrComponent implements OnInit {
         showTRC: this.showTRCs(),
         showWO: this.showWO(),
         showHours: true,
+        chosenWO: woToEdit,
         submit: (trc?: TRC, wo?: WorkOrder, hours?: string): Observable<any> => {
           const entry = new WorkOrderEntry();
 

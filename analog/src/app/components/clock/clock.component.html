@@ -52,9 +52,9 @@
 
                 <!-- clock in/out -->
                 <mat-grid-tile colspan="2" rowspan="1">
-                    <mat-radio-group class="clock-group" [ngModel]="job?.clockStatus" (change)="clockInOut(job, $event.value, $event)">
-                        <mat-radio-button class="clock-button in mat-elevation-z2" [value]="punchType.In" [checked]="clockedIn(job)">IN</mat-radio-button>
-                        <mat-radio-button class="clock-button out mat-elevation-z2" [value]="punchType.Out" [checked]="!clockedIn(job)">OUT</mat-radio-button>
+                    <mat-radio-group class="clock-group" [value]="job?.clockStatus" (change)="clockInOut(job, $event.value, $event)">
+                        <mat-radio-button class="clock-button in mat-elevation-z2" [value]="punchType.In">IN</mat-radio-button>
+                        <mat-radio-button class="clock-button out mat-elevation-z2" [value]="punchType.Out">OUT</mat-radio-button>
                     </mat-radio-group>
                 </mat-grid-tile>
 
