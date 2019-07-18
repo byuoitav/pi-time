@@ -16,7 +16,10 @@ import {
   PunchType,
   TRC,
   JobType,
-  ClientPunchRequest
+  ClientPunchRequest,
+  LunchPunch,
+  DeletePunch,
+  OtherHours
 } from "../objects";
 
 export class EmployeeRef {
@@ -176,21 +179,6 @@ export class APIService {
     return empRef;
   };
 
-  clockInOut = (data: ClientPunchRequest): Observable<any> => {
-    try {
-      const json = this.jsonConvert.serialize(data);
-
-      return this.http.post("/punch/" + data.byuID, json, {
-        responseType: "text",
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-
   error = (msg: string) => {
     const errorDialogs = this.dialog.openDialogs.filter(dialog => {
       return dialog.componentInstance instanceof ErrorDialog;
@@ -215,10 +203,81 @@ export class APIService {
     }
   };
 
-  sendWorkOrderEntry = (byuID: string, data: WorkOrderEntry) => {
+  clockInOut = (data: ClientPunchRequest): Observable<any> => {
     try {
       const json = this.jsonConvert.serialize(data);
-      return this.http.post("/workorderentry/" + byuID, data, {
+
+      return this.http.post("/punch/" + data.byuID, json, {
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
+  };
+
+  newWorkOrderEntry = (byuID: string, data: WorkOrderEntry) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      return this.http.post("/workorderentry/" + byuID, json, {
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
+  }
+
+  updateWorkOrderEntry = (byuID: string, data: WorkOrderEntry) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      return this.http.put("/workorderentry/" + byuID, json, {
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
+  }
+
+  lunchPunch = (byuID: string, data: LunchPunch) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      return this.http.post("/lunchpunch/" + byuID, json, {
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
+  }
+
+  deletePunch = (jobID: number, data: DeletePunch) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      return this.http.request("delete", "/punch/" + jobID + "/" + data.sequenceNumber, {
+        body: json, 
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e)
+    }
+  }
+
+  sendOtherHours = (byuID: string, jobID: number, data: OtherHours) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      return this.http.put("/otherhours/" + byuID + "/" + jobID, json, {
         responseType: "text",
         headers: new HttpHeaders({
           "content-type": "application/json"

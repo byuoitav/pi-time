@@ -26,25 +26,21 @@ $card-width: 95%;
     .card {
         height: 100%;
     }
-    .grid {}
-    .mat-grid-tile {
-        &.header {
-            &:after {
-                $width: 45%;
-                position: absolute;
-                bottom: 29%;
-                height: 3%;
-                width: $width;
-                margin-left: (100% - $width) / 2;
-                background-color: #c5c5c5;
-                content: "";
-            }
-        }
-        .work-order {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items: center;
-        }
-    }
+}
+
+.column {
+    margin: auto;
+    display: flex;
+    height: 100%;
+    width: 45%;
+    flex-flow: column nowrap;
+    justify-content: space-evenly;
+    align-items: stretch;
+}
+
+.spaced-button {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
 }

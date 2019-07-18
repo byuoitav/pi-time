@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from "@angular/core";
-
 import { Day, Job, TRC, WorkOrderEntry, WorkOrder, Employee } from "../../objects";
 import { MatDialog } from '@angular/material';
 import { WoTrcDialog } from 'src/app/dialogs/wo-trc/wo-trc.dialog';
@@ -46,7 +45,7 @@ export class WoSrComponent implements OnInit {
           entry.hoursBilled = hours;
           entry.editable = true;
 
-          const obs = this.api.sendWorkOrderEntry(this.emp.id, entry)
+          const obs = this.api.updateWorkOrderEntry(this.emp.id, entry)
 
           obs.subscribe(
             resp => {

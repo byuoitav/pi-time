@@ -44,7 +44,7 @@ export class ClockComponent implements OnInit {
     });
   }
 
-  clockInOut = (job: Job, state: PunchType) => {
+  clockInOut = (job: Job, state: PunchType, event?) => {
     console.log("clocking job", job.description, "to state", state);
     const data = new ClientPunchRequest();
     data.byuID = Number(this.emp.id);
@@ -61,10 +61,15 @@ export class ClockComponent implements OnInit {
           showTRC: job.trcs.length > 0,
           showWO: job.workOrders.length > 0,
           showHours: false,
-          submit: (trc: TRC, wo: WorkOrder): Observable<any> => {
+          submit: (trc?: TRC, wo?: WorkOrder): Observable<any> => {
             data.time = new Date();
-            data.trcID = trc.id;
-            data.workOrderID = wo.id;
+            if (trc) {
+              data.trcID = trc.id;
+            }
+            if (wo) {
+              data.workOrderID = wo.id;
+            }
+            
 
             const obs = this.api.clockInOut(data);
 
@@ -80,9 +85,27 @@ export class ClockComponent implements OnInit {
             return obs;
           }
         }
-      });
+      }).afterClosed().subscribe((cancelled) => {
+        if (cancelled) {
+          console.log("reversing punch type:", state, "to", PunchType.reverse(state));
+          console.log(event);
+          event.source.radioGroup.value = PunchType.reverse(state);
+          // event.source.checked = false;
+        }
+      })
     } else {
       // clock in/out here
+      data.time = new Date();
+      const obs = this.api.clockInOut(data);
+
+            obs.subscribe(
+              resp => {
+                console.log("response data", resp);
+              },
+              err => {
+                console.log("response ERROR", err);
+              }
+            );
     }
   };
 
@@ -106,6 +129,14 @@ export class ClockComponent implements OnInit {
       }
     }
 
+    return false;
+  }
+
+  clockedIn(job: Job): boolean {
+    if (job) {
+      // console.log(job.clockStatus);
+      return job.clockStatus === PunchType.In;
+    }
     return false;
   }
 }

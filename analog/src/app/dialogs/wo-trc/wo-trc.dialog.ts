@@ -44,7 +44,7 @@ export class WoTrcDialog implements OnInit {
   ngOnInit() {}
 
   cancel() {
-    this.ref.close();
+    this.ref.close(true);
   }
 
   submit = async (): Promise<boolean> => {

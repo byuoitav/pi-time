@@ -4,7 +4,7 @@ import {
   JsonProperty,
   Any,
   JsonConverter,
-  JsonCustomConvert
+  JsonCustomConvert,
 } from "json2typescript";
 
 export const PORTAL_DATA = new InjectionToken<{}>("PORTAL_DATA");
@@ -23,6 +23,17 @@ export namespace PunchType {
         return "OUT";
       default:
         return "";
+    }
+  }
+
+  export function reverse(pt: PunchType): PunchType {
+    switch(pt) {
+      case PunchType.In:
+        return PunchType.Out;
+      case PunchType.Out:
+        return PunchType.In;
+      default:
+        return pt;
     }
   }
 }
@@ -313,4 +324,55 @@ export class ClientPunchRequest {
 
   @JsonProperty("trc-id", String, true)
   trcID: String;
+}
+
+@JsonObject("LunchPunch")
+export class LunchPunch {
+  @JsonProperty("start_time", String)
+  startTime: string;
+
+  @JsonProperty("duration", String)
+  duration: string;
+
+  @JsonProperty("employee_record", Number)
+  employeeRecord: number;
+
+  @JsonProperty("punch_date", String)
+  punchDate: string;
+
+  @JsonProperty("time_collection_source", String)
+  timeCollectionSource: string;
+
+  @JsonProperty("punch_zone", String)
+  punchZone: string;
+
+  @JsonProperty("location_description", String)
+  locationDescription: string;
+}
+
+@JsonObject("DeletePunch")
+export class DeletePunch {
+  @JsonProperty("punch-type", String)
+  punchType: PunchType;
+
+  @JsonProperty("punch-time", String)
+  punchTime: string;
+
+  @JsonProperty("sequence-number", Number, true)
+  sequenceNumber: number;
+}
+
+@JsonObject("OtherHours")
+export class OtherHours {
+  @JsonProperty("editable", Boolean)
+  editable: boolean;
+
+  @JsonProperty("sequence_number", Number, true)
+  sequenceNumber: number;
+
+  @JsonProperty("time_reporting_code_hours", String)
+  timeReportingCodeHours: string;
+
+  @JsonProperty("trc", TRC)
+  trc: TRC;
 }

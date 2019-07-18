@@ -112,9 +112,9 @@ type ClientVacationRequest struct {
 
 //ClientDeletePunch .
 type ClientDeletePunch struct {
-	PunchType string `json:"punch-type"`
-	PunchTime string `json:"punch-time"`
-	//SequenceNumber int    `json:"sequence-number"`
+	PunchType      string `json:"punch-type"`
+	PunchTime      string `json:"punch-time"`
+	SequenceNumber int    `json:"sequence-number"`
 }
 
 //ClientOtherHours .
