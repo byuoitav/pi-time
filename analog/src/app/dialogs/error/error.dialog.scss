@@ -1,5 +1,6 @@
 .mat-dialog-title {
   text-align: center;
+  font-size: 1.8em;
 }
 
 .mat-dialog-content {
@@ -8,13 +9,17 @@
   justify-content: space-evenly;
   align-items: center;
 
-  .space {
-    height: 3vh;
-  }
+  margin: 5vh 0;
+
+  font-size: 1.5em;
 }
 
 .mat-dialog-actions {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+
+  .mat-raised-button {
+    font-size: 1.2em;
+  }
 }

@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/structs"
+	"github.com/byuoitav/pi-time/ytimeapi"
 )
 
 var (
@@ -136,7 +136,7 @@ func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.
 						//loop through the ElapstedTimeEntries and translate them to ClientOtherHours
 						employee.Jobs[i].Days[x].OtherHours = []structs.ClientOtherHours{}
 
-						for _, elapsedTimeEntry := range elapsedTimeDay.ElapstedTimeEntries {
+						for _, elapsedTimeEntry := range elapsedTimeDay.ElapsedTimeEntries {
 							var newClientOtherHours structs.ClientOtherHours
 							newClientOtherHours.Editable = elapsedTimeEntry.Editable
 							newClientOtherHours.SequenceNumber = elapsedTimeEntry.SequenceNumber
@@ -271,28 +271,27 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 	for _, serverPunch := range serverDay.Punches {
 		var newPunch structs.ClientPunch
 		var err error
-		newPunch.ID = serverPunch.SequenceNumber
-		newPunch.EmployeeJobID = serverPunch.EmployeeRecord
+
+		if serverPunch.SequenceNumber != nil {
+			newPunch.ID = *serverPunch.SequenceNumber
+		} else {
+			newPunch.ID = 0
+		}
+
+		if serverPunch.EmployeeRecord != nil {
+			newPunch.EmployeeJobID = *serverPunch.EmployeeRecord
+		}
+
 		newPunch.PunchType = serverPunch.PunchType
 
 		if len(serverPunch.PunchTime) > 0 {
 			newPunch.Time, err = time.ParseInLocation("2006-01-02 15:04:05", serverDay.Date+" "+serverPunch.PunchTime, time.Local)
-
 			if err != nil {
-				//freak out
 				log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date+" "+serverPunch.PunchTime, err.Error())
-			}
-		} else {
-			newPunch.Time, err = time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
-
-			if err != nil {
-				//freak out
-				log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error())
 			}
 		}
 
 		newPunch.DeletablePair = serverPunch.DeletablePair
-
 		clientDay.Punches = append(clientDay.Punches, newPunch)
 	}
 }
@@ -332,7 +331,7 @@ func updateClientDayFromServerOtherHoursDay(clientDay *structs.ClientDay, server
 	clientDay.OtherHours = []structs.ClientOtherHours{}
 
 	for _, serverElapsedTimeDay := range serverDay.Dates {
-		for _, serverElapsedTimeEntry := range serverElapsedTimeDay.ElapstedTimeEntries {
+		for _, serverElapsedTimeEntry := range serverElapsedTimeDay.ElapsedTimeEntries {
 			var newElapsedTimeEntry structs.ClientOtherHours
 
 			newElapsedTimeEntry.Editable = serverElapsedTimeEntry.Editable
@@ -355,10 +354,10 @@ func GetPunchesForAllJobs(byuID string) {
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
-		//call WSO2 for this job and get the punches
-		punches := helpers.GetPunchesForJob(byuID, job.EmployeeJobID)
+		// call WSO2 for this job and get the punches
+		punches := ytimeapi.GetPunchesForJob(byuID, job.EmployeeJobID)
 
-		//now update
+		// now update
 		UpdateEmployeePunchesForJob(byuID, job.EmployeeJobID, punches)
 	}
 }
@@ -373,7 +372,7 @@ func GetPossibleWorkOrders(byuID string) {
 	for _, job := range employee.Jobs {
 		if job.IsPhysicalFacilities {
 			//call WSO2 to get work orders for job
-			workOrders := helpers.GetWorkOrders(job.OperatingUnit)
+			workOrders := ytimeapi.GetWorkOrders(job.OperatingUnit)
 
 			//update the work orders
 			UpdatePossibleWorkOrders(byuID, job.EmployeeJobID, workOrders)
@@ -392,7 +391,7 @@ func GetWorkOrderEntries(byuID string) {
 	for _, job := range employee.Jobs {
 		if job.IsPhysicalFacilities {
 			//call WSO2 to get work orders for job
-			workOrders := helpers.GetWorkOrderEntries(byuID, job.EmployeeJobID)
+			workOrders := ytimeapi.GetWorkOrderEntries(byuID, job.EmployeeJobID)
 
 			//update the work orders
 			UpdateWorkOrderEntriesForJob(byuID, job.EmployeeJobID, workOrders)
@@ -411,7 +410,7 @@ func GetOtherHours(byuID string) {
 	for _, job := range employee.Jobs {
 		if job.JobType == "F" {
 			//call WSO2 to get other hours for the job
-			otherHours := helpers.GetOtherHours(byuID, job.EmployeeJobID)
+			otherHours := ytimeapi.GetOtherHours(byuID, job.EmployeeJobID)
 
 			//update the other hours
 			UpdateOtherHoursForJob(byuID, job.EmployeeJobID, otherHours)

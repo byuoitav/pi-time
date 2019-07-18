@@ -1,3 +1,4 @@
+import { InjectionToken } from "@angular/core";
 import {
   JsonObject,
   JsonProperty,
@@ -6,9 +7,24 @@ import {
   JsonCustomConvert
 } from "json2typescript";
 
+export const PORTAL_DATA = new InjectionToken<{}>("PORTAL_DATA");
+
 export enum PunchType {
   In = "I",
   Out = "O"
+}
+
+export namespace PunchType {
+  export function toString(pt: PunchType): string {
+    switch (pt) {
+      case PunchType.In:
+        return "IN";
+      case PunchType.Out:
+        return "OUT";
+      default:
+        return "";
+    }
+  }
 }
 
 export enum JobType {
@@ -19,9 +35,13 @@ export enum JobType {
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
   serialize(date: Date): any {
-    function pad(n) {
-      return n < 10 ? "0" + n : n;
+    if (!date) {
+      return "0001-01-01T00:00:00Z";
     }
+
+    const pad = n => {
+      return n < 10 ? "0" + n : n;
+    };
 
     return (
       date.getUTCFullYear() +
@@ -40,7 +60,7 @@ class DateConverter implements JsonCustomConvert<Date> {
   }
 
   deserialize(date: any): Date {
-    if (date == null) {
+    if (!date || date === "0001-01-01T00:00:00Z") {
       return undefined;
     }
 
@@ -107,6 +127,10 @@ export class WorkOrder {
 
   @JsonProperty("name", String, true)
   name: string = undefined;
+
+  toString = (): string => {
+    return this.id + ": " + this.name;
+  };
 }
 
 @JsonObject("Punch")
@@ -125,6 +149,9 @@ export class Punch {
 
   @JsonProperty("deletable-pair", Number, true)
   deletablePair: number = undefined;
+
+  editedTime: string = undefined;
+  editedAMPM: string = undefined;
 }
 
 @JsonObject("WorkOrderEntry")
@@ -231,7 +258,11 @@ export class Job {
   };
 
   showWorkOrder = (): boolean => {
-    return true;
+    if (!this.currentWorkOrder) {
+      return false;
+    }
+
+    return this.clockStatus === PunchType.In;
   };
 }
 
@@ -261,4 +292,25 @@ export class Employee {
 
     return false;
   };
+}
+
+@JsonObject("ClientPunchRequest")
+export class ClientPunchRequest {
+  @JsonProperty("byu-id", Number)
+  byuID: Number;
+
+  @JsonProperty("employee-job-id", Number)
+  jobID: Number;
+
+  @JsonProperty("time", DateConverter)
+  time: Date;
+
+  @JsonProperty("type", String)
+  type: String;
+
+  @JsonProperty("work-order-id", String, true)
+  workOrderID: String;
+
+  @JsonProperty("trc-id", String, true)
+  trcID: String;
 }

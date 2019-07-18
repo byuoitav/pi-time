@@ -5,39 +5,54 @@ import {
   RouterStateSnapshot,
   ActivatedRouteSnapshot
 } from "@angular/router";
-import { Observable, of, EMPTY, Subject } from "rxjs";
-import { map, catchError, takeUntil, take } from "rxjs/operators";
+import { Observable, of, EMPTY, Subject, BehaviorSubject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
-import { APIService } from "./api.service";
+import { APIService, EmployeeRef } from "./api.service";
 import { Employee } from "../objects";
 
 @Injectable({
   providedIn: "root"
 })
-export class EmployeeResolverService implements Resolve<Employee> {
-  private unsubscribe = new Subject();
-
+export class EmployeeResolverService implements Resolve<EmployeeRef> {
   constructor(private api: APIService, private router: Router) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<Employee> | Observable<never> {
+  ): Observable<EmployeeRef> | Observable<never> {
     const id = route.paramMap.get("id");
+    const unsubscribe = new Subject();
 
-    return this.api.getEmployee(id).pipe(
-      take(2), // the first one is always undefined
-      map(val => {
-        if (val instanceof Employee) {
-          return val;
-        }
-      }),
-      catchError(err => {
-        this.router.navigate(["/login"]);
+    const empRef = this.api.getEmployee(id);
 
-        console.warn("error", err);
-        return EMPTY;
-      })
-    );
+    return new Observable(observer => {
+      empRef
+        .observable()
+        .pipe(takeUntil(unsubscribe))
+        .subscribe(
+          val => {
+            if (val instanceof Employee) {
+              observer.next(empRef);
+              observer.complete();
+              unsubscribe.complete();
+            }
+          },
+          err => {
+            // TODO add an anchor tab to show popup
+            this.router.navigate(["/login"], {
+              queryParams: {
+                error: "No employee found with the given ID."
+              },
+              queryParamsHandling: "merge"
+            });
+
+            observer.error(err);
+            unsubscribe.complete();
+          }
+        );
+
+      return { unsubscribe() {} };
+    });
   }
 }

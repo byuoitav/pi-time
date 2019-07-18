@@ -1,0 +1,62 @@
+<mat-toolbar color="primary">
+  <button mat-button (click)="goBack()">
+    <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
+  </button>
+  <span>{{ (emp?.jobs)[jobIdx].description }}</span>
+  <span class="header-spacer"></span> <span>{{ emp?.name }}</span>
+  <button (click)="logout()" mat-icon-button>
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
+</mat-toolbar>
+
+<!-- <button mat-raised-button (click)="selectRandomDay()">Select Random Day</button> -->
+<div class="container">
+  <mat-card class="month card mat-elevation-z3">
+    <button
+      mat-stroked-button
+      class="month-nav"
+      (click)="moveMonthBack()"
+      [class.hide]="!canMoveMonthBack()"
+    >
+      < Prev
+    </button>
+    <span>{{ MonthNames[viewMonth] }} {{ viewYear }}</span>
+    <button
+      mat-stroked-button
+      class="month-nav"
+      (click)="moveMonthForward()"
+      [class.hide]="!canMoveMonthForward()"
+    >
+      Next >
+    </button>
+  </mat-card>
+
+  <mat-card class="calendar card mat-elevation-z3">
+    <mat-grid-list class="grid" cols="7" rowHeight="8.25vh" gutterSize=".3vh">
+      <ng-container *ngFor="let weekday of DayNames">
+        <mat-grid-tile colspan="1" rowspan="1" class="header">
+          {{ weekday }}
+        </mat-grid-tile>
+      </ng-container>
+
+      <ng-container *ngFor="let day of viewDays">
+        <mat-grid-tile colspan="1" rowspan="1">
+          <div
+            (click)="selectDay(day)"
+            class="date"
+            [class.today]="today.toDateString() === day.toDateString()"
+            [class.exception]="dayHasException(day)"
+            [class.outside]="day.getMonth() != viewMonth"
+          >
+            <span style="text-align: center">{{ day.getDate() }}</span>
+            <span
+              *ngIf="dayHasPunch(day)"
+              class="dot"
+              [class.exception]="dayHasException(day)"
+            ></span>
+          </div>
+        </mat-grid-tile>
+      </ng-container>
+    </mat-grid-list>
+  </mat-card>
+</div>

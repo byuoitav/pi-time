@@ -76,19 +76,20 @@ type TimeClockDay struct {
 
 //Punch represents a single punch in or out for an employee
 type Punch struct {
-	PunchType            string `json:"punch_type"`
-	PunchTime            string `json:"punch_time"`
-	SequenceNumber       int    `json:"sequence_number"`
-	DeletablePair        int    `json:"deletable_pair"`
-	Latitude             string `json:"latitude"`
-	Longitude            string `json:"longitude"`
-	LocationDescription  string `json:"location_description"`
-	TimeCollectionSource string `json:"time_collection_source"`
-	WorkOrderID          string `json:"work_order_id"`
-	TRCID                string `json:"trc_id"`
-	PunchDate            string `json:"punch_date"`
-	EmployeeRecord       int    `json:"employee_record"`
-	PunchZone            string `json:"punch_zone"`
+	PunchType            string  `json:"punch_type"`
+	PunchTime            string  `json:"punch_time"`
+	SequenceNumber       *int    `json:"sequence_number,omitempty"`
+	DeletablePair        *int    `json:"deletable_pair,omitempty"`
+	Latitude             *string `json:"latitude,omitempty"`
+	Longitude            *string `json:"longitude,omitempty"`
+	LocationDescription  *string `json:"location_description,omitempty"`
+	TimeCollectionSource *string `json:"time_collection_source,omitempty"`
+	WorkOrderID          *string `json:"work_order_id,omitempty"`
+	TRCID                *string `json:"trc_id,omitempty"`
+	PunchDate            *string `json:"punch_date,omitempty"`
+	EmployeeRecord       *int    `json:"employee_record,omitempty"`
+	PunchZone            *string `json:"punch_zone,omitempty"`
+	InternetAddress      *string `json:"internet_address,omitempty"`
 }
 
 //LunchPunch is used when posting a lunch punch to the system
@@ -133,8 +134,8 @@ type ElapsedTimeSummary struct {
 
 //ElapsedTimeDay is the parent structure for sick and vacation hours for a day
 type ElapsedTimeDay struct {
-	PunchDate           string             `json:"punch_date"`
-	ElapstedTimeEntries []ElapsedTimeEntry `json:"punches"`
+	PunchDate          string             `json:"punch_date"`
+	ElapsedTimeEntries []ElapsedTimeEntry `json:"punches"`
 }
 
 //ElapsedTimeEntry is the structure for a single amount of sick or vacation time

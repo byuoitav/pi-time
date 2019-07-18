@@ -1,0 +1,49 @@
+<div class="wo-select-container">
+  <div class="wo-select-top">
+    <div class="wo-select-output">
+      <input
+        class="wo-select-input mat-elevation-z3"
+        [value]="filterString"
+        (input)="onInputChange($event)"
+      />
+      <button
+        class="wo-select-cancel"
+        color="accent"
+        (click)="cancel()"
+        mat-raised-button
+      >
+        Cancel
+      </button>
+    </div>
+
+    <div class="wo-select-options">
+      <mat-grid-list
+        *ngIf="filtered?.length > 0"
+        cols="2"
+        rowHeight="15vh"
+        gutterSize="3vh"
+      >
+        <mat-grid-tile
+          *ngFor="let wo of (filtered | slice: 0:4)"
+          class="option"
+          colspan="1"
+          rowspan="1"
+        >
+          <button
+            class="mat-elevation-z2"
+            (click)="data?.selectWorkOrder(wo)"
+            mat-stroked-button
+          >
+            {{ wo?.toString() }}
+          </button>
+        </mat-grid-tile>
+      </mat-grid-list>
+
+      <span *ngIf="filtered?.length === 0" class="no-options"
+        >No work orders found matching filter</span
+      >
+    </div>
+  </div>
+
+  <div class="simple-keyboard"></div>
+</div>

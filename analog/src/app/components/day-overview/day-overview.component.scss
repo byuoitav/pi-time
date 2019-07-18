@@ -1,0 +1,227 @@
+$card-width: 95%;
+.do-header-spacer {
+  flex: 1 1 auto;
+}
+
+.tab-content {
+  height: 100%;
+  width: 100%;
+}
+
+.do-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.do-container {
+  margin: 0.5em auto;
+  width: 98%;
+  column-gap: 1em;
+  column-fill: initial;
+  column-count: 1;
+  transition: all 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1vh;
+  .do-card {
+    margin: 0 0 0.5em;
+    break-inside: avoid;
+  }
+}
+
+.do-sheet {
+  overflow-y: auto;
+  height: 64vh;
+  width: $card-width;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-evenly;
+  .do-card {
+    height: 100%;
+  }
+  &.do-wosr {
+    justify-content: flex-start;
+  }
+  .mat-grid-tile {
+    &.do-header {
+      &:after {
+        $width: 45%;
+        position: absolute;
+        bottom: 29%;
+        height: 3%;
+        width: $width;
+        margin-left: (100% - $width) / 2;
+        background-color: #c5c5c5;
+        content: "";
+      }
+    }
+    .do-work-order {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+  }
+}
+
+.do-row {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  max-width: 100%;
+  justify-content: space-evenly;
+  align-items: stretch;
+  margin-bottom: 1vh;
+  margin-top: 1vh;
+  &.do-top {
+    height: 20vh;
+    max-height: 20vh;
+    align-items: flex-start;
+  }
+  &.work-order {
+    justify-content: flex-start;
+    flex: 1 1 auto;
+    margin-top: 0vh;
+    margin-bottom: 0vh;
+    &.spread {
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2vh;
+      padding-bottom: 2vh;
+    }
+  }
+}
+
+.do-column {
+  display: flex;
+  flex-flow: column nowrap;
+  max-height: 38vh;
+  overflow-y: auto;
+  justify-content: space-between;
+  align-items: space-between;
+  align-content: space-evenly;
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+  &::-webkit-scrollbar:vertical {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    border: 2px solid white;
+    /* should match background, can't be transparent */
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  &.do-billing {
+    margin-right: 10vw;
+    margin-left: 8vw;
+  }
+}
+
+.do-punch {
+  display: flex;
+  justify-content: space-between;
+  height: 8vh;
+  width: 32vw;
+  margin-top: 1vh;
+  margin-bottom: 3vh;
+}
+
+.do-punch-time {
+  color: #3a3a3a;
+  text-align: center;
+  width: 9vw;
+  margin-left: 2vw;
+  &.do-fix {
+    max-height: 4vh;
+    background-color: rgb(202, 75, 75);
+  }
+}
+
+.do-punch-type {
+  color: rgba(0, 0, 0, 0.4);
+  margin-right: 2.5vw;
+}
+
+.do-delete {
+  color: rgb(202, 75, 75);
+}
+
+.do-button {
+  &.do-top {
+    margin-top: 4.5vh;
+  }
+  &.do-action {
+    width: 14vw;
+  }
+}
+
+.do-wo-info {
+  display: flex;
+  justify-content: space-between;
+  height: 6vh;
+  width: 32vw;
+  margin-top: 1vh;
+  margin-bottom: 3vh;
+}
+
+.do-work-order-id {
+  position: absolute;
+  left: 5px;
+}
+
+.do-message {
+  color: #737373;
+  font-weight: bold;
+  margin-bottom: 2vh;
+}
+
+.do-sv-card {
+  display: flex;
+  flex-flow: column nowrap;
+  width: $card-width;
+  margin-bottom: 2vh;
+  margin-top: 2vh;
+}
+
+.do-sv-card-header {
+  height: 100%;
+  width: 100%;
+  font-weight: bold;
+  background-color: #cbcbcb;
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
+
+.do-sv-label {
+  margin-left: 5vw;
+}
+
+.do-sv-time {
+  border: solid black 1px;
+  background-color: #9dc9ff;
+  width: 6vw;
+  margin-right: 4vw;
+  padding: 3px;
+  &::-webkit-datetime-edit-ampm-field {
+    display: none;
+  }
+  &.read-only {
+    border: none;
+    background-color: transparent;
+  }
+}
+
+input[type="time"]::-webkit-clear-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  margin: -13px;
+}

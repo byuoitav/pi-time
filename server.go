@@ -25,7 +25,16 @@ func main() {
 	//start a go routine that will pull the cache information for offline mode
 	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
 
-	//start a go routine that will watch for offline punches and send them as soon as possible
+	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
+	go helpers.WatchForOfflinePunchesAndSend()
+
+	//start a go routine that will monitor a channel for some persistent logging that we want to send to a json file
+	go helpers.StartLogChannel()
+
+	helpers.LogChannel <- "Starting logging to persistent file"
+
+	//start a go routine that will monitor the log files we've created and clear them out periodically
+	go helpers.MonitorLogFiles()
 
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
@@ -37,12 +46,26 @@ func main() {
 
 	//all of the functions to call to add / update / delete / do things on the UI
 
+	//clock in
+	//clock out
+	//transfer
+	//add missing punch
 	router.POST("/punch/:id", handlers.Punch) //will send in a ClientPunchRequest in the body
+
+	//lunchpunch
 	router.POST("/lunchpunch/:id", handlers.LunchPunch)
-	router.PUT("/sick/:id", handlers.Sick)
-	router.PUT("/vacation/:id", handlers.Vacation)
-	router.POST("/workorderentry/id", handlers.WorkOrderEntry)
-	router.DELETE("/punch/:jobid/:date/:seqnum", handlers.DeletePunch)
+
+	//add sick or vacation
+	router.PUT("/otherhours/:id/:jobid", handlers.OtherHours)
+
+	//edit work order entry
+	router.PUT("/workorderentry/:id", handlers.EditWorkOrderEntry)
+
+	//new work order entry
+	router.POST("/workorderentry/:id", handlers.NewWorkOrderEntry)
+
+	//delete duplicate punch
+	router.DELETE("/punch/:jobid/:seqnum", handlers.DeletePunch)
 
 	//endpoint for UI events
 	router.POST("/event", handlers.SendEvent)

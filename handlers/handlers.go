@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/byuoitav/common/log"
 	commonEvents "github.com/byuoitav/common/v2/events"
@@ -13,7 +14,6 @@ import (
 
 // Punch adds an in or out punch as determined by the body sent
 func Punch(context echo.Context) error {
-
 	byuID := context.Param("id")
 
 	var incomingRequest structs.ClientPunchRequest
@@ -52,48 +52,35 @@ func LunchPunch(context echo.Context) error {
 	return context.String(http.StatusOK, "ok")
 }
 
-// Sick adds entry to sick time
-func Sick(context echo.Context) error {
+// OtherHours adds entry to sick time
+func OtherHours(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date are all passed in the url
-	//byuID := context.Param("id")
+	byuID := context.Param("id")
+	jobIDString := context.Param("jobid")
 
-	var incomingRequest structs.ClientSickRequest
+	jobID, _ := strconv.Atoi(jobIDString)
+
+	var incomingRequest structs.ClientOtherHours
 	err := context.Bind(incomingRequest)
 	if err != nil {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	// err = helpers.Sick(byuID, incomingRequest)
-	// if err != nil {
-	// 	return contetx.String(http.StatusInternalServerError, err.Error())
-	// }
-
-	return context.String(http.StatusOK, "ok")
-}
-
-// Vacation adds entry to vacation time
-func Vacation(context echo.Context) error {
-	//BYU ID, EmployeeJobID, Punch Date are all passed in the url
-	//byuID := context.Param("id")
-
-	var incomingRequest structs.ClientVacationRequest
-	err := context.Bind(incomingRequest)
+	err = helpers.OtherHours(byuID, jobID, incomingRequest)
 	if err != nil {
-		return context.String(http.StatusBadRequest, err.Error())
+		return context.String(http.StatusInternalServerError, err.Error())
 	}
 
-	// err = helpers.Vacation(byuID, incomingRequest)
-	// if err != nil {
-	// 	return contetx.String(http.StatusInternalServerError, err.Error())
-	// }
-
 	return context.String(http.StatusOK, "ok")
 }
 
-//WorkOrderEntry handles adding a new WorkOrderEntry (post)
-func WorkOrderEntry(context echo.Context) error {
+//NewWorkOrderEntry handles adding a new WorkOrderEntry (post)
+func NewWorkOrderEntry(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
-	//byuID := context.Param("id")
+	byuID := context.Param("id")
+	jobIDString := context.Param("jobid")
+
+	jobID, _ := strconv.Atoi(jobIDString)
 
 	var incomingRequest structs.ClientWorkOrderEntry
 	err := context.Bind(&incomingRequest)
@@ -101,10 +88,32 @@ func WorkOrderEntry(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	// err = helpers.WorkOrderEntry(byuID, incomingRequest)
-	// if err != nil {
-	// 	return context.String(http.StatusInternalServerError, err.Error())
-	// }
+	err = helpers.WorkOrderEntry(byuID, jobID, incomingRequest)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.String(http.StatusOK, "ok")
+}
+
+//EditWorkOrderEntry handles adding a new WorkOrderEntry (post)
+func EditWorkOrderEntry(context echo.Context) error {
+	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
+	byuID := context.Param("id")
+	jobIDString := context.Param("jobid")
+
+	jobID, _ := strconv.Atoi(jobIDString)
+
+	var incomingRequest structs.ClientWorkOrderEntry
+	err := context.Bind(&incomingRequest)
+	if err != nil {
+		return context.String(http.StatusBadRequest, err.Error())
+	}
+
+	err = helpers.WorkOrderEntry(byuID, jobID, incomingRequest)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
 
 	return context.String(http.StatusOK, "ok")
 }
@@ -112,18 +121,22 @@ func WorkOrderEntry(context echo.Context) error {
 // DeletePunch deletes an added punch
 func DeletePunch(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date, Sequence number are all passed in the url
-	//byuID := context.Param("id")
+	byuID := context.Param("id")
+	jobIDString := context.Param("jobid")
 
-	// var incomingRequest = structs.ClientDeletePunch
-	// err := context.Bind(&incomingRequest)
-	// if err != nil {
-	// 	return context.String(http.StatusBadRequest, err.Error())
-	// }
+	jobID, _ := strconv.Atoi(jobIDString)
+	seqNum := context.Param("seqnum")
 
-	// err = helpers.DeletePunch(byuID, incomingRequest)
-	// if err != nil {
-	// 	return context.String(http.StatusInternalServerError, err.Error())
-	// }
+	var incomingRequest structs.ClientDeletePunch
+	err := context.Bind(&incomingRequest)
+	if err != nil {
+		return context.String(http.StatusBadRequest, err.Error())
+	}
+
+	err = helpers.DeletePunch(byuID, jobID, seqNum, incomingRequest)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
 
 	return context.String(http.StatusOK, "ok")
 }

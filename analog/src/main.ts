@@ -9,7 +9,9 @@ import { environment } from "./environments/environment";
     // create iframe, steal its console
     const i = document.createElement("iframe");
     i.style.display = "none";
-    document.body.appendChild(i);
+    if (document.body) {
+      document.body.appendChild(i);
+    }
     (window as any).console = i.contentWindow.console;
 
     console.log("Logging enabled.");

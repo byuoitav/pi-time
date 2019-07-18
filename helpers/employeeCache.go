@@ -2,6 +2,8 @@ package helpers
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	syslog "log"
 	"os"
 	"time"
 
@@ -11,12 +13,17 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
+//LogChannel channel to send log messages
+var LogChannel chan string
+
 func init() {
+	LogChannel = make(chan string)
+
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
+
 	if len(dbLoc) == 0 {
 		log.L.Fatalf("Need CACHE_DATABASE_LOCATION variable")
 	}
-
 }
 
 //WatchForCachedEmployees will start a timer and download the cache every 4 hours
@@ -41,42 +48,42 @@ func DownloadCachedEmployees() error {
 
 	//make a WSO2 request to get the cache
 	log.L.Debugf("Making call to get employee cache")
-	err := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://psws.byu.edu/PSIGW/BYURESTListeningConnector2/PSFT_HR/clock_employees.v1/", "", &cacheList, map[string]string{"sm_user": "timeclock"})
+	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://psws.byu.edu/PSIGW/BYURESTListeningConnector2/PSFT_HR/clock_employees.v1/", "", &cacheList, map[string]string{"sm_user": "timeclock"})
 
-	if err != nil {
-		log.L.Errorf("Unable to get the cache list: %v", err)
-		return err
-	} else {
-		//open our badger db
-		//initialize the badger db
-		log.L.Debugf("Initializing Badger DB")
-		dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-		opts := badger.DefaultOptions(dbLoc)
-
-		db, err := badger.Open(opts)
-		if err != nil {
-			log.L.Fatal(err)
-		}
-
-		log.L.Debugf("Adding %v employees to the cache", len(cacheList.Employees))
-
-		//put it into the badger cache
-		for _, employee := range cacheList.Employees {
-			err := db.Update(func(txn *badger.Txn) error {
-				employeeJSON, _ := json.Marshal(employee)
-
-				err := txn.Set([]byte(employee.BYUID), []byte(employeeJSON))
-				return err
-			})
-
-			if err != nil {
-				log.L.Errorf("Unable to get the add to badgerdb: %v", err)
-				return err
-			}
-		}
-
-		db.Close()
+	if ne != nil {
+		log.L.Errorf("Unable to get the cache list: %v", ne)
+		return ne
 	}
+
+	//open our badger db
+	//initialize the badger db
+	log.L.Debugf("Initializing Badger DB")
+	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
+	opts := badger.DefaultOptions(dbLoc)
+
+	db, err := badger.Open(opts)
+	if err != nil {
+		log.L.Fatal(err)
+	}
+
+	log.L.Debugf("Adding %v employees to the cache", len(cacheList.Employees))
+
+	//put it into the badger cache
+	for _, employee := range cacheList.Employees {
+		err := db.Update(func(txn *badger.Txn) error {
+			employeeJSON, _ := json.Marshal(employee)
+
+			err := txn.Set([]byte(employee.BYUID), []byte(employeeJSON))
+			return err
+		})
+
+		if err != nil {
+			log.L.Errorf("Unable to get the add to badgerdb: %v", err)
+			return err
+		}
+	}
+
+	db.Close()
 
 	return nil
 }
@@ -125,4 +132,60 @@ func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
 	}
 
 	return empRecord, nil
+}
+
+//WatchForOfflinePunchesAndSend .
+func WatchForOfflinePunchesAndSend() {
+
+}
+
+//StartLogChannel .
+func StartLogChannel() {
+	logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
+	date := time.Now().Format("2006-01-02")
+	logFileName := date + ".log"
+
+	f, err := os.OpenFile(logLocation+"/"+logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.L.Fatalf("Error creating log file")
+	}
+	defer f.Close()
+
+	logger := syslog.New(f, "pi-time", syslog.LstdFlags)
+
+	for message := range LogChannel {
+		log.L.Debugf(message)
+		logger.Println(message)
+
+		testdate := time.Now().Format("2006-01-02")
+		if date != testdate {
+			go StartLogChannel()
+			break
+		}
+	}
+}
+
+//MonitorLogFiles .
+func MonitorLogFiles() {
+	for {
+		logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
+
+		files, err := ioutil.ReadDir(logLocation)
+		if err != nil {
+			log.L.Fatalf(err.Error())
+		}
+
+		dateToDelete := time.Now().Add(-30 * 24 * time.Hour)
+
+		for _, file := range files {
+			date, err := time.Parse("2006-01-02", file.Name()[:10])
+			if err != nil {
+				if date.Before(dateToDelete) {
+					os.Remove(logLocation + "/" + file.Name())
+				}
+			}
+		}
+
+		time.Sleep(8 * time.Hour)
+	}
 }

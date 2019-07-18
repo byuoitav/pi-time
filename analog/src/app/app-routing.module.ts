@@ -3,11 +3,14 @@ import { Routes, RouterModule } from "@angular/router";
 import { APP_BASE_HREF } from "@angular/common";
 
 import { AppComponent } from "./components/app.component";
-import { JobsComponent } from "./components/jobs/jobs.component";
+import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
-import { LoggedInComponent } from "./components/logged-in/logged-in.component";
 import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
 import { EmployeeResolverService } from "./services/employee-resolver.service";
+import { JobSelectComponent } from "./components/job-select/job-select.component";
+import { DateSelectComponent } from "./components/date-select/date-select.component";
+import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
+import { ScreenSaverComponent } from './components/screen-saver/screen-saver.component';
 
 const routes: Routes = [
   {
@@ -20,23 +23,44 @@ const routes: Routes = [
     component: AppComponent,
     children: [
       {
+        path: "screensaver",
+        component: ScreenSaverComponent
+      },
+      {
         path: "login",
         component: LoginComponent
       },
       {
-        path: "employees/:id",
-        component: LoggedInComponent,
+        path: "employee/:id",
         resolve: {
-          employee: EmployeeResolverService
+          empRef: EmployeeResolverService
         },
         children: [
           {
-            path: "jobs",
-            component: JobsComponent
+            path: "",
+            component: ClockComponent
           },
           {
-            path: "workorders",
-            component: WorkOrdersComponent
+            path: "job",
+            children: [
+              {
+                path: "",
+                component: JobSelectComponent
+              },
+              {
+                path: ":job/date",
+                children: [
+                  {
+                    path: "",
+                    component: DateSelectComponent
+                  },
+                  {
+                    path: ":date",
+                    component: DayOverviewComponent
+                  }
+                ]
+              }
+            ]
           }
         ]
       }

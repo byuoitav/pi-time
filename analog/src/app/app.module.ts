@@ -17,36 +17,58 @@ import {
   MAT_DIALOG_DEFAULT_OPTIONS,
   MatSelectModule,
   MatNativeDateModule,
-  MatDatepickerModule
+  MatDatepickerModule,
+  MatTabsModule,
+  MatRadioModule,
+  MatProgressSpinnerModule,
+  MatBadgeModule
 } from "@angular/material";
+import { OverlayModule } from "@angular/cdk/overlay";
 import "hammerjs";
 
 import { AppRoutingModule } from "./app-routing.module";
 
 import { APIService } from "./services/api.service";
-
 import { ByuIDPipe } from "./pipes/byu-id.pipe";
-
 import { AppComponent } from "./components/app.component";
-import { JobsComponent } from "./components/jobs/jobs.component";
+import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
-import { LoggedInComponent } from "./components/logged-in/logged-in.component";
 import { HoursPipe } from "./pipes/hours.pipe";
-import { ChangeWoDialog } from "./dialogs/change-wo/change-wo.dialog";
+import { WoTrcDialog } from "./dialogs/wo-trc/wo-trc.dialog";
 import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
-import { JobTimeSelectComponent } from "./components/job-time-select/job-time-select.component";
+import { ActivityButtonComponent } from "./components/activity-button/activity-button.component";
+import { JobSelectComponent } from "./components/job-select/job-select.component";
+import { DateSelectComponent } from "./components/date-select/date-select.component";
+import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
+import { WoSelectComponent } from "./components/wo-select/wo-select.component";
+import { ErrorDialog } from "./dialogs/error/error.dialog";
+import { PunchesComponent } from "./components/punches/punches.component";
+import { WoSrComponent } from "./components/wo-sr/wo-sr.component";
+import { SickVacationComponent } from "./components/sick-vacation/sick-vacation.component";
+import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.component";
+import { TimeEntryComponent } from './components/time-entry/time-entry.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    JobsComponent,
+    ClockComponent,
     ByuIDPipe,
     LoginComponent,
-    LoggedInComponent,
     HoursPipe,
-    ChangeWoDialog,
+    WoTrcDialog,
     WorkOrdersComponent,
-    JobTimeSelectComponent
+    ActivityButtonComponent,
+    // JobTimeSelectComponent,
+    JobSelectComponent,
+    DateSelectComponent,
+    DayOverviewComponent,
+    WoSelectComponent,
+    ErrorDialog,
+    PunchesComponent,
+    WoSrComponent,
+    SickVacationComponent,
+    ScreenSaverComponent,
+    TimeEntryComponent
   ],
   imports: [
     BrowserModule,
@@ -67,7 +89,12 @@ import { JobTimeSelectComponent } from "./components/job-time-select/job-time-se
     MatDialogModule,
     MatSelectModule,
     MatNativeDateModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatTabsModule,
+    MatRadioModule,
+    OverlayModule,
+    MatProgressSpinnerModule,
+    MatBadgeModule
   ],
   providers: [
     APIService,
@@ -78,7 +105,7 @@ import { JobTimeSelectComponent } from "./components/job-time-select/job-time-se
       }
     }
   ],
-  entryComponents: [ChangeWoDialog],
+  entryComponents: [WoTrcDialog, WoSelectComponent, ErrorDialog, TimeEntryComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
