@@ -1,5 +1,30 @@
 <div class="time-entry-container">
   <div class="time-entry-top">
+    <div class="time-entry-left">
+      <span *ngIf="data?.title" class="time-entry-title">
+        {{ data?.title }}
+      </span>
+
+      <div class="time-entry-input-container">
+        <input
+          class="time-entry-input mat-elevation-z3"
+          [class.unfilled]="!time"
+          [value]="value"
+          (input)="onInputChange($event)"
+        />
+
+        <button
+          *ngIf="!data?.duration"
+          class="time-entry-cancel"
+          color="accent"
+          (click)="toggleAMPM()"
+          mat-raised-button
+        >
+          AM/PM
+        </button>
+      </div>
+    </div>
+
     <div class="time-entry-actions">
       <button
         class="time-entry-cancel"
@@ -8,23 +33,6 @@
         mat-raised-button
       >
         Cancel
-      </button>
-    </div>
-
-    <input
-      class="time-entry-input mat-elevation-z3"
-      [value]="value"
-      (input)="onInputChange($event)"
-    />
-
-    <div class="time-entry-actions">
-      <button
-        class="time-entry-cancel"
-        color="accent"
-        (click)="cancel()"
-        mat-raised-button
-      >
-        AM/PM
       </button>
       <button
         class="time-entry-cancel"

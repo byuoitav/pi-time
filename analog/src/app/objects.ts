@@ -4,7 +4,7 @@ import {
   JsonProperty,
   Any,
   JsonConverter,
-  JsonCustomConvert,
+  JsonCustomConvert
 } from "json2typescript";
 
 export const PORTAL_DATA = new InjectionToken<{}>("PORTAL_DATA");
@@ -15,19 +15,19 @@ export enum PunchType {
 }
 
 export namespace PunchType {
-  export function toString(pt: PunchType): string {
+  export function toString(pt: PunchType | String): String {
     switch (pt) {
       case PunchType.In:
         return "IN";
       case PunchType.Out:
         return "OUT";
       default:
-        return "";
+        return pt.toString();
     }
   }
 
   export function reverse(pt: PunchType): PunchType {
-    switch(pt) {
+    switch (pt) {
       case PunchType.In:
         return PunchType.Out;
       case PunchType.Out:
