@@ -15,14 +15,14 @@ export enum PunchType {
 }
 
 export namespace PunchType {
-  export function toString(pt: PunchType | String): string {
+  export function toString(pt: PunchType | String): String {
     switch (pt) {
       case PunchType.In:
         return "IN";
       case PunchType.Out:
         return "OUT";
       default:
-        return pt;
+        return pt.toString();
     }
   }
 
