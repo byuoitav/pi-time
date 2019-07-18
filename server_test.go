@@ -1,26 +1,26 @@
 package main
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
-	"github.com/byuoitav/pi-time/helpers"
 )
 
 func TestAPI(t *testing.T) {
-	byuID := "666567890"
+	//gobyuID := "666567890"
 
 	log.SetLevel("debug")
 
 	//test the cache
 	//helpers.DownloadCachedEmployees()
 
+	cache.GetYtimeLocation()
+
 	//get timesheet
-	timesheet, _, _ := helpers.GetTimesheet(byuID)
-	cache.AddEmployee(byuID)
-	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
+	//timesheet, _, _ := helpers.GetTimesheet(byuID)
+	//cache.AddEmployee(byuID)
+	//cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
 
 	//go get the possible work orders
 	//cache.GetPossibleWorkOrders(byuID)
@@ -29,10 +29,10 @@ func TestAPI(t *testing.T) {
 	//cache.GetPunchesForAllJobs(byuID)
 
 	//cache.GetWorkOrderEntries(byuID)
-	cache.GetOtherHours(byuID)
+	//cache.GetOtherHours(byuID)
 
-	employee := cache.GetEmployeeFromStore(byuID)
-	employeeJSON, _ := json.Marshal(employee)
+	//employee := cache.GetEmployeeFromStore(byuID)
+	//employeeJSON, _ := json.Marshal(employee)
 
-	log.L.Debugf("result: %s", employeeJSON)
+	//log.L.Debugf("result: %s", employeeJSON)
 }

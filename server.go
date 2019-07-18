@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/byuoitav/pi-time/cache"
+
 	"github.com/labstack/echo"
 
 	"github.com/byuoitav/common"
@@ -17,8 +19,13 @@ var updateCacheNowChannel = make(chan struct{})
 func main() {
 	log.SetLevel("debug")
 
+	//start a go routine to go and get the latitude and longitude from the building struct
+	go cache.GetYtimeLocation()
+
 	//start a go routine that will pull the cache information for offline mode
 	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
+
+	//start a go routine that will watch for offline punches and send them as soon as possible
 
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"

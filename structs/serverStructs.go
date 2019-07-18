@@ -151,3 +151,16 @@ type DeletePunch struct {
 	PunchTime      string `json:"punch-time"`
 	SequenceNumber string `json:"sequence-number"`
 }
+
+//YTimeLocation .
+type YTimeLocation struct {
+	YtimeLocation             string      `json:"ytime_location"`
+	UpdatedByName             string      `json:"updated_by_name"`
+	LocationSource            string      `json:"location_source"`
+	YtimeLocationCode         string      `json:"ytime_location_code"`
+	UpdatedDatetime           interface{} `json:"updated_datetime"`
+	Latitude                  float64     `json:"latitude"`
+	YtimeLocationAbbreviation string      `json:"ytime_location_abbreviation"`
+	Status                    string      `json:"status"`
+	Longitude                 float64     `json:"longitude"`
+}
