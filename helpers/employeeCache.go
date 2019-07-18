@@ -147,11 +147,11 @@ func StartLogChannel() {
 
 	f, err := os.OpenFile(logLocation+"/"+logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.L.Fatalf("Error creating log file")
+		log.L.Fatalf("Error creating log file: %v", err.Error())
 	}
 	defer f.Close()
 
-	logger := syslog.New(f, "pi-time", syslog.LstdFlags)
+	logger := syslog.New(f, "pi-time ", syslog.LstdFlags)
 
 	for message := range LogChannel {
 		log.L.Debugf(message)
@@ -178,8 +178,9 @@ func MonitorLogFiles() {
 		dateToDelete := time.Now().Add(-30 * 24 * time.Hour)
 
 		for _, file := range files {
-			date, err := time.Parse("2006-01-02", file.Name()[:10])
-			if err != nil {
+			dateToParse := file.Name()[:10]
+			date, err := time.Parse("2006-01-02", dateToParse)
+			if err == nil {
 				if date.Before(dateToDelete) {
 					os.Remove(logLocation + "/" + file.Name())
 				}
