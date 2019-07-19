@@ -11,7 +11,8 @@ export const PORTAL_DATA = new InjectionToken<{}>("PORTAL_DATA");
 
 export enum PunchType {
   In = "I",
-  Out = "O"
+  Out = "O",
+  Transfer = "T"
 }
 
 export namespace PunchType {
@@ -21,6 +22,8 @@ export namespace PunchType {
         return "IN";
       case PunchType.Out:
         return "OUT";
+      case PunchType.Transfer:
+        return "TRANSFER"
       default:
         return pt.toString();
     }
