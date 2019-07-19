@@ -32,9 +32,9 @@ type EmployeeJob struct {
 	TimeSubtotals         TotalTime         `json:"time-subtotals"`
 	ClockStatus           string            `json:"clock-status"`
 	JobType               string            `json:"job-type"`
-	IsPhysicalFacilities  bool              `json:"is-physical-facilities"`
-	HasPunchException     bool              `json:"has-punch-exception"`
-	HasWorkOrderException bool              `json:"has-work-order-exception"`
+	IsPhysicalFacilities  *bool             `json:"is-physical-facilities,omitempty"`
+	HasPunchException     *bool             `json:"has-punch-exception,omitempty"`
+	HasWorkOrderException *bool             `json:"has-work-order-exception,omitempty"`
 	OperatingUnit         string            `json:"operating_unit"`
 	TRCs                  []ClientTRC       `json:"trcs"`
 	CurrentTRC            ClientTRC         `json:"current-trc"`
@@ -57,8 +57,8 @@ type ClientWorkOrder struct {
 //ClientDay is the day structure sent to the client
 type ClientDay struct {
 	Date                  time.Time     `json:"date"`
-	HasPunchException     bool          `json:"has-punch-exception"`
-	HasWorkOrderException bool          `json:"has-work-order-exception"`
+	HasPunchException     *bool         `json:"has-punch-exception,omitempty"`
+	HasWorkOrderException *bool         `json:"has-work-order-exception,omitempty"`
 	Punches               []ClientPunch `json:"punches"`
 	PunchedHours          string        `json:"punched-hours"`
 

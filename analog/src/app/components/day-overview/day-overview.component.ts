@@ -70,7 +70,7 @@ export class DayOverviewComponent implements OnInit {
     this._empRef.logout();
   };
 
-  getExceptionCount() {
+  getPunchExceptionCount() {
     if (this.day == undefined) {
       return "";
     } else if (this.day.hasPunchException) {
@@ -81,6 +81,22 @@ export class DayOverviewComponent implements OnInit {
         }
       }
       return String(count);
+    }
+  }
+
+  getWOExceptionCount() {
+    if (this.day === undefined) {
+      return "";
+    } else {
+      if (this.day.hasWorkOrderException) {
+        let count = 0;
+        for (const w of this.day.workOrderEntries) {
+          if (w.hoursBilled == undefined) {
+            count++;
+          }
+        }
+        return String(count);
+      }
     }
   }
 }

@@ -11,7 +11,8 @@ export const PORTAL_DATA = new InjectionToken<{}>("PORTAL_DATA");
 
 export enum PunchType {
   In = "I",
-  Out = "O"
+  Out = "O",
+  Transfer = "T"
 }
 
 export namespace PunchType {
@@ -21,6 +22,8 @@ export namespace PunchType {
         return "IN";
       case PunchType.Out:
         return "OUT";
+      case PunchType.Transfer:
+        return "TRANSFER"
       default:
         return pt.toString();
     }
@@ -188,7 +191,7 @@ export class Day {
   @JsonProperty("date", DateConverter, false)
   time: Date = undefined;
 
-  @JsonProperty("has-punch-exception", Boolean, false)
+  @JsonProperty("has-punch-exception", Boolean, true)
   hasPunchException: boolean = undefined;
 
   @JsonProperty("has-work-order-exception", Boolean, true)
@@ -256,6 +259,12 @@ export class Job {
 
   @JsonProperty("current-work-order", WorkOrder, true)
   currentWorkOrder: WorkOrder = undefined;
+
+  @JsonProperty("has-punch-exception", Boolean, true)
+  hasPunchException: boolean = undefined;
+
+  @JsonProperty("has-work-order-exception", Boolean, true)
+  hasWorkOrderException: boolean = undefined;
 
   @JsonProperty("days", [Day], true)
   days: Array<Day> = new Array<Day>();
@@ -334,19 +343,19 @@ export class LunchPunch {
   @JsonProperty("duration", String)
   duration: string;
 
-  @JsonProperty("employee_record", Number)
+  @JsonProperty("employee_record", Number, true)
   employeeRecord: number;
 
-  @JsonProperty("punch_date", String)
+  @JsonProperty("punch_date", String, true)
   punchDate: string;
 
-  @JsonProperty("time_collection_source", String)
+  @JsonProperty("time_collection_source", String, true)
   timeCollectionSource: string;
 
-  @JsonProperty("punch_zone", String)
+  @JsonProperty("punch_zone", String, true)
   punchZone: string;
 
-  @JsonProperty("location_description", String)
+  @JsonProperty("location_description", String, true)
   locationDescription: string;
 }
 

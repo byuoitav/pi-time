@@ -6,19 +6,22 @@ import {
   Inject,
   Injector
 } from "@angular/core";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
+import { MatDialog } from "@angular/material";
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 import { Observable } from "rxjs";
 
 import { APIService } from "../../services/api.service";
 import { TimeEntryComponent } from "../time-entry/time-entry.component";
+import { LunchPunchDialog } from "src/app/dialogs/lunch-punch/lunch-punch.dialog";
 import {
   Day,
   PunchType,
   Punch,
   PORTAL_DATA,
-  ClientPunchRequest
+  ClientPunchRequest,
+  LunchPunch
 } from "../../objects";
 
 @Component({
@@ -35,6 +38,7 @@ export class PunchesComponent implements OnInit {
 
   constructor(
     private api: APIService,
+    private dialog: MatDialog,
     private router: Router,
     private _overlay: Overlay,
     private _injector: Injector
@@ -150,5 +154,33 @@ export class PunchesComponent implements OnInit {
 
       return obs;
     }
+  };
+
+  lunchPunch = () => {
+    console.log("lunch punch for job");
+    const ref = this.dialog.open(LunchPunchDialog, {
+      width: "50vw",
+      data: {
+        submit: (startTime: string, duration: string): Observable<any> => {
+          const body = new LunchPunch();
+          body.startTime = startTime;
+          body.duration = duration;
+          body.punchDate = new Date().toLocaleDateString();
+
+          const obs = this.api.lunchPunch(this.byuID, body);
+
+          obs.subscribe(
+            resp => {
+              console.log("response data", resp);
+            },
+            err => {
+              console.error("response ERROR", err);
+            }
+          );
+
+          return obs;
+        }
+      }
+    });
   };
 }
