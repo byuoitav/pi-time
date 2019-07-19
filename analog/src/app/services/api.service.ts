@@ -32,8 +32,7 @@ export class EmployeeRef {
     }
 
     return undefined;
-  }
-
+  } 
   constructor(employee: BehaviorSubject<Employee>, logout: () => void) {
     this._employee = employee;
     this._logout = logout;
@@ -203,7 +202,7 @@ export class APIService {
     }
   };
 
-  clockInOut = (data: ClientPunchRequest): Observable<any> => {
+  punch = (data: ClientPunchRequest): Observable<any> => {
     try {
       const json = this.jsonConvert.serialize(data);
 

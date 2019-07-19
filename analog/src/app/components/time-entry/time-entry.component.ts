@@ -6,6 +6,7 @@ import {
   AfterViewInit
 } from "@angular/core";
 import { OverlayRef } from "@angular/cdk/overlay";
+import { Observable } from "rxjs";
 import Keyboard from "simple-keyboard";
 
 import { PORTAL_DATA } from "../../objects";
@@ -58,9 +59,11 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     private ref: OverlayRef,
     @Inject(PORTAL_DATA)
     private data: {
+      ref: any;
       title: string;
       duration: boolean;
-      save: (time: Date) => void;
+      save: (ref: any, hour: Number, min: Number) => Observable<any>;
+      error: () => void;
     }
   ) {}
 
@@ -156,6 +159,28 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     }
   };
 
+  getHours = (): Number => {
+    switch (this.time.length) {
+      case 4:
+        return Number(this.time.slice(0, 2));
+      case 3:
+        return Number(this.time.slice(0, 1));
+      default:
+        return 0;
+    }
+  };
+
+  getMinutes = (): Number => {
+    switch (this.time.length) {
+      case 4:
+        return Number(this.time.slice(2, 4));
+      case 3:
+        return Number(this.time.slice(1, 3));
+      default:
+        return 0;
+    }
+  };
+
   onInputChange = (event: any) => {
     this.keyboard.setInput(event.target.value);
   };
@@ -168,11 +193,39 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     }
   };
 
-  validTime = () => {};
+  valid = (): boolean => {
+    return true;
+  };
 
-  save = () => {};
+  save = async (): Promise<boolean> => {
+    if (!this.valid()) {
+      return new Promise<boolean>((resolve, reject) => {
+        resolve(false);
+      });
+    }
+
+    const hour = this.getHours();
+    const minute = this.getMinutes();
+
+    return new Promise<boolean>((resolve, reject) => {
+      this.data.save(this.data.ref, hour, minute).subscribe(
+        data => {
+          resolve(true);
+        },
+        err => {
+          resolve(false);
+        }
+      );
+    });
+  };
 
   cancel = () => {
+    this.ref.dispose();
+  };
+
+  error = () => {
+    this.keyboard.destroy();
+    this.data.error();
     this.ref.dispose();
   };
 }

@@ -35,10 +35,13 @@
         Cancel
       </button>
       <button
-        class="time-entry-cancel"
+        class="time-entry-save"
         color="accent"
-        (click)="cancel()"
-        mat-raised-button
+        [click]="save"
+        (success)="cancel()"
+        (error)="error()"
+        type="mat-raised-button"
+        activity-button
       >
         Save
       </button>

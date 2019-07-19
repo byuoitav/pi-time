@@ -71,7 +71,7 @@ export class ClockComponent implements OnInit {
                 data.workOrderID = wo.id;
               }
 
-              const obs = this.api.clockInOut(data);
+              const obs = this.api.punch(data);
 
               obs.subscribe(
                 resp => {
@@ -103,7 +103,7 @@ export class ClockComponent implements OnInit {
     } else {
       // clock in/out here
       data.time = new Date();
-      const obs = this.api.clockInOut(data);
+      const obs = this.api.punch(data);
 
       obs.subscribe(
         resp => {

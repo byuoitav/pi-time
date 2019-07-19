@@ -17,7 +17,7 @@
             <span *ngIf="day?.hasPunchException" matBadge="{{ getExceptionCount() }}" matBadgeColor="warn" matBadgeOverlap="false" matBadgeSize="medium">Punches</span
       >
     </ng-template>
-    <punches class="tab-content" [day]="day"></punches>
+    <punches class="tab-content" [byuID]="emp?.id" [jobID]="job?.employeeJobID" [day]="day"></punches>
   </mat-tab>
 
   <mat-tab *ngIf="job?.isPhysicalFacilities">
