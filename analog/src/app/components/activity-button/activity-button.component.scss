@@ -1,35 +1,29 @@
-.activity-button-container {
+.mat-button-wrapper {
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  .activity-button-success {
-    background-color: #5cbb5c;
-  }
-
-  .activity-button-error {
-    background-color: #d9534f;
-  }
-
-  ::ng-deep.mat-button-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  * {
-    transition: opacity 0.3s ease-in-out;
+  .mat-button-content,
+  .mat-spinner,
+  .mat-icon {
     opacity: 0;
+    transition: opacity 0s ease-in-out;
 
     &.active {
       opacity: 1;
     }
   }
 
-  .activity-button-spinner {
-    position: absolute;
-    top: 25%;
+  .hidden {
+    display: none;
   }
+}
 
-  .activity-button-mat-icon {
-    position: absolute;
-  }
+.activity-button-success {
+  background-color: #5cbb5c !important;
+}
+
+.activity-button-error {
+  background-color: #d9534f !important;
 }

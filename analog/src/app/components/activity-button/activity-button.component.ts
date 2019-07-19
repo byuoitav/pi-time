@@ -18,7 +18,6 @@ export type Action = () => Promise<boolean>;
   encapsulation: ViewEncapsulation.None,
   styleUrls: ["./activity-button.component.scss"],
   templateUrl: "./activity-button.component.html",
-  inputs: ["type", "color"],
   host: {
     class: "activity-button",
     "[class.mat-button]": "!type || type === 'mat-button'",
@@ -28,7 +27,9 @@ export type Action = () => Promise<boolean>;
     "[class.mat-icon-button]": "type === 'mat-icon-button'",
     "[class.mat-primary]": "color === 'primary'",
     "[class.mat-accent]": "color === 'accent'",
-    "[class.mat-warn]": "color === 'warn'"
+    "[class.mat-warn]": "color === 'warn'",
+    "[class.activity-button-success]": "_resolved",
+    "[class.activity-button-error]": "_error"
   }
 })
 export class ActivityButton extends ActivityButtonBase {
@@ -38,11 +39,12 @@ export class ActivityButton extends ActivityButtonBase {
 
   @Input() disabled: boolean;
   @Input() disableRipple: boolean;
-  // @Input() type: string;
+  @Input() type: string;
   @Input() click: Action;
   @Input() press: Action;
-  // @Input() color: string;
+  @Input() color: string;
   @Input() spinnerColor: string;
+  @Input() spinnerDiameter: number;
 
   @Output() success: EventEmitter<void>;
   @Output() error: EventEmitter<void>;
@@ -56,6 +58,8 @@ export class ActivityButton extends ActivityButtonBase {
   constructor(elementRef: ElementRef) {
     super(elementRef);
     this.reset();
+
+    this.spinnerColor = "warn";
 
     this.success = new EventEmitter<void>();
     this.error = new EventEmitter<void>();
