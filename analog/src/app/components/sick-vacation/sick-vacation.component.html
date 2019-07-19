@@ -1,37 +1,39 @@
 <div class="do-container">
-  <div class="do-sv-card mat-elevation-z3">
-    <div class="do-row work-order">
-      <span class="do-sv-card-header">Enter Hours</span>
+    <div class="do-sv-card mat-elevation-z3">
+        <div class="do-row work-order">
+            <span class="do-sv-card-header">Enter Hours</span>
+        </div>
+
+        <div class="do-row work-order spread">
+            <span class="do-sv-label">Sick</span>
+            <input type="time" class="do-sv-time" />
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="do-row work-order spread">
+            <span class="do-sv-label">Vacation</span>
+            <input type="time" class="do-sv-time" />
+        </div>
     </div>
 
-    <div class="do-row work-order spread">
-      <span class="do-sv-label">Sick</span>
-      <input type="time" class="do-sv-time" />
+    <div class="do-sv-card mat-elevation-z3">
+        <div class="do-row work-order">
+            <span class="do-sv-card-header">YTD Balance</span>
+        </div>
+
+        <div class="do-row work-order spread">
+            <span class="do-sv-label">Sick</span>
+            <span class="do-sv-time read-only" *ngIf="day?.sickHoursYTD"> {{ day?.sickHoursYTD }} </span>
+            <span class="do-sv-time read-only" *ngIf="!day?.sickHoursYTD"> --:-- </span>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="do-row work-order spread">
+            <span class="do-sv-label">Vacation</span>
+            <span class="do-sv-time read-only" *ngIf="day?.vacationHoursYTD"> {{ day?.vacationHoursYTD }} </span>
+            <span class="do-sv-time read-only" *ngIf="!day?.vacationHoursYTD"> --:-- </span>
+        </div>
     </div>
-
-    <mat-divider></mat-divider>
-
-    <div class="do-row work-order spread">
-      <span class="do-sv-label">Vacation</span>
-      <input type="time" class="do-sv-time" />
-    </div>
-  </div>
-
-  <div class="do-sv-card mat-elevation-z3">
-    <div class="do-row work-order">
-      <span class="do-sv-card-header">YTD Balance</span>
-    </div>
-
-    <div class="do-row work-order spread">
-      <span class="do-sv-label">Sick</span>
-      <span class="do-sv-time read-only">{{ day?.sickHoursYTD }}</span>
-    </div>
-
-    <mat-divider></mat-divider>
-
-    <div class="do-row work-order spread">
-      <span class="do-sv-label">Vacation</span>
-      <span class="do-sv-time read-only">{{ day?.vacationHoursYTD }}</span>
-    </div>
-  </div>
 </div>

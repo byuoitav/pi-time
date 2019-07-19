@@ -191,7 +191,7 @@ export class Day {
   @JsonProperty("date", DateConverter, false)
   time: Date = undefined;
 
-  @JsonProperty("has-punch-exception", Boolean, false)
+  @JsonProperty("has-punch-exception", Boolean, true)
   hasPunchException: boolean = undefined;
 
   @JsonProperty("has-work-order-exception", Boolean, true)
@@ -259,6 +259,12 @@ export class Job {
 
   @JsonProperty("current-work-order", WorkOrder, true)
   currentWorkOrder: WorkOrder = undefined;
+
+  @JsonProperty("has-punch-exception", Boolean, true)
+  hasPunchException: boolean = undefined;
+
+  @JsonProperty("has-work-order-exception", Boolean, true)
+  hasWorkOrderException: boolean = undefined;
 
   @JsonProperty("days", [Day], true)
   days: Array<Day> = new Array<Day>();

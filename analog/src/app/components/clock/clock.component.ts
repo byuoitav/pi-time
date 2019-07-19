@@ -139,7 +139,8 @@ export class ClockComponent implements OnInit {
         j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
       )
     ) {
-      return "⚠";
+      // return "⚠";
+      return "!";
     }
 
     return "";

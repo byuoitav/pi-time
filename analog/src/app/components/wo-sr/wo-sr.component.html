@@ -23,14 +23,12 @@
       </button>
         </div>
 
-        <mat-grid-list cols="5" rowHeight="8vh" gutterSize=".1vh">
-            <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+        <mat-grid-list cols="{{ showTRCs() ? 5 : 4 }}" rowHeight="8vh" gutterSize=".1vh">
+            <mat-grid-tile colspan="2" rowspan="1" class="do-header">
                 WO/SR
             </mat-grid-tile>
 
-            <mat-grid-tile colspan="1" rowspan="1"> </mat-grid-tile>
-
-            <mat-grid-tile colspan="1" rowspan="1" class="do-header">
+            <mat-grid-tile *ngIf="showTRCs()" colspan="1" rowspan="1" class="do-header">
                 TRC
             </mat-grid-tile>
 
@@ -49,12 +47,13 @@
           }}</span>
                 </mat-grid-tile>
 
-                <mat-grid-tile colspan="1" rowspan="1">
+                <mat-grid-tile *ngIf="showTRCs()" colspan="1" rowspan="1">
                     {{ entry?.trc?.id }}
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1">
-                    {{ entry?.hoursBilled }}
+                    <span *ngIf="entry?.hoursBilled"> {{ entry?.hoursBilled }} </span>
+                    <span *ngIf="!entry?.hoursBilled"> --:-- </span>
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1">
@@ -63,12 +62,12 @@
           </button>
                 </mat-grid-tile>
 
-                <mat-grid-tile colspan="5" rowspan="1">
+                <mat-grid-tile colspan="{{ showTRCs() ? 5 : 4 }}" rowspan="1">
                     <mat-divider></mat-divider>
                 </mat-grid-tile>
             </ng-container>
 
-            <mat-grid-tile colspan="5" rowspan="1">
+            <mat-grid-tile colspan="{{ showTRCs() ? 5 : 4 }}" rowspan="1">
                 <div class="do-row">
                     <span class="do-message">Billed and Total should be equal</span>
                 </div>

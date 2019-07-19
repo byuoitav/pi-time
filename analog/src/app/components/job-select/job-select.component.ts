@@ -46,4 +46,17 @@ export class JobSelectComponent implements OnInit {
   goBack() {
     window.history.back();
   }
+
+  hasTimesheetException = () => {
+    if (
+      this.emp.jobs.some(j =>
+        j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
+      )
+    ) {
+      // return "⚠";
+      return "!";
+    }
+
+    return "";
+  };
 }
