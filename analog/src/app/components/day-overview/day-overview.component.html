@@ -2,7 +2,7 @@
     <button mat-button (click)="goBack()">
     <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
   </button>
-    <span>{{ job?.description }}</span> <span class="do-header-spacer"></span>
+    <span>{{ (job?.description.length > 10 ? job?.description.substring(0, 10)+'...' : job?.description) }}</span> <span class="do-header-spacer"></span>
     <span>{{ day?.time | date: "fullDate" }}</span>
     <span class="do-header-spacer"></span> <span>{{ emp?.name }}</span>
     <button (click)="logout()" mat-icon-button>
