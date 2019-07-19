@@ -1,28 +1,60 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ElementRef,
+  ViewEncapsulation
+} from "@angular/core";
+
+class ActivityButtonBase {
+  constructor(public _elementRef: ElementRef) {}
+}
 
 export type Action = () => Promise<boolean>;
 
 @Component({
-  selector: "activity-button",
+  selector: `button[activity-button]`,
+  encapsulation: ViewEncapsulation.None,
+  styleUrls: ["./activity-button.component.scss"],
   templateUrl: "./activity-button.component.html",
-  styleUrls: ["./activity-button.component.scss"]
+  inputs: ["type", "color"],
+  host: {
+    class: "activity-button",
+    "[class.mat-button]": "!type || type === 'mat-button'",
+    "[class.mat-raised-button]": "type === 'mat-raised-button'",
+    "[class.mat-stroked-button]": "type === 'mat-stroked-button'",
+    "[class.mat-flat-button]": "type === 'mat-flat-button'",
+    "[class.mat-icon-button]": "type === 'mat-icon-button'",
+    "[class.mat-primary]": "color === 'primary'",
+    "[class.mat-accent]": "color === 'accent'",
+    "[class.mat-warn]": "color === 'warn'"
+  }
 })
-export class ActivityButtonComponent {
+export class ActivityButton extends ActivityButtonBase {
   _resolving: boolean;
   _resolved: boolean;
   _error: boolean;
 
   @Input() disabled: boolean;
-  @Input() type: string;
+  @Input() disableRipple: boolean;
+  // @Input() type: string;
   @Input() click: Action;
   @Input() press: Action;
-  @Input() color: string;
+  // @Input() color: string;
   @Input() spinnerColor: string;
 
   @Output() success: EventEmitter<void>;
   @Output() error: EventEmitter<void>;
 
-  constructor() {
+  readonly isRoundButton: boolean = this._hasHostAttributes(
+    "mat-fab",
+    "mat-mini-fab"
+  );
+  readonly isIconButton: boolean = this._hasHostAttributes("mat-icon-button");
+
+  constructor(elementRef: ElementRef) {
+    super(elementRef);
     this.reset();
 
     this.success = new EventEmitter<void>();
@@ -37,6 +69,20 @@ export class ActivityButtonComponent {
 
   resolving(): boolean {
     return this._resolving;
+  }
+
+  _getHostElement() {
+    return this._elementRef.nativeElement;
+  }
+
+  _isRippleDisabled() {
+    return this.disableRipple || this.disabled;
+  }
+
+  _hasHostAttributes(...attributes: string[]) {
+    return attributes.some(attribute =>
+      this._getHostElement().hasAttribute(attribute)
+    );
   }
 
   async _do(f: Action) {
@@ -66,7 +112,7 @@ export class ActivityButtonComponent {
       setTimeout(() => {
         this.reset();
         this.error.emit();
-      }, 2000);
+      }, 750);
     }
   }
 }

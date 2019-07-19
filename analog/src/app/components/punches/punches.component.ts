@@ -6,16 +6,23 @@ import {
   Inject,
   Injector
 } from "@angular/core";
+import { Router, ActivatedRoute } from "@angular/router";
 import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
+import { MatDialog } from "@angular/material";
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 import { Observable } from "rxjs";
 
+import { APIService } from "../../services/api.service";
 import { TimeEntryComponent } from "../time-entry/time-entry.component";
-import { Day, PunchType, Punch, PORTAL_DATA, LunchPunch } from "../../objects";
-import { MatDialog } from '@angular/material';
-import { LunchPunchDialog } from 'src/app/dialogs/lunch-punch/lunch-punch.dialog';
-import { APIService } from 'src/app/services/api.service';
-import { ActivatedRoute } from '@angular/router';
+import { LunchPunchDialog } from "src/app/dialogs/lunch-punch/lunch-punch.dialog";
+import {
+  Day,
+  PunchType,
+  Punch,
+  PORTAL_DATA,
+  ClientPunchRequest,
+  LunchPunch
+} from "../../objects";
 
 @Component({
   selector: "punches",
@@ -24,19 +31,18 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class PunchesComponent implements OnInit {
   public punchType = PunchType;
-  employeeID: string;
+
+  @Input() byuID: string;
+  @Input() jobID: number;
   @Input() day: Day;
 
   constructor(
-    private _overlay: Overlay, 
-    private _injector: Injector, 
-    private dialog: MatDialog, 
     private api: APIService,
-    private route: ActivatedRoute) {
-      this.route.params.subscribe(params => {
-        this.employeeID = params["id"];
-      });
-    }
+    private dialog: MatDialog,
+    private router: Router,
+    private _overlay: Overlay,
+    private _injector: Injector
+  ) {}
 
   ngOnInit() {}
 
@@ -49,11 +55,21 @@ export class PunchesComponent implements OnInit {
       panelClass: ["overlay", "time-entry-overlay"]
     });
 
+    // set the time on the punch to the correct date
+    punch.time = new Date(this.day.time);
+
     const injector = this.createInjector(overlayRef, {
       title: "Enter time for " + PunchType.toString(punch.type) + " punch.",
       duration: false,
-      save: (time: Date) => {
-        overlayRef.dispose();
+      ref: punch,
+      save: this.submitUpdatedTime,
+      error: () => {
+        this.router.navigate([], {
+          queryParams: {
+            error: "Unable to update punch. Please try again."
+          },
+          queryParamsHandling: "merge"
+        });
       }
     });
 
@@ -108,34 +124,63 @@ export class PunchesComponent implements OnInit {
     return "--:--";
   };
 
+  submitUpdatedTime = (
+    punch: any,
+    hour: Number,
+    min: Number
+  ): Observable<any> => {
+    if (punch instanceof Punch) {
+      const req = new ClientPunchRequest();
+      req.byuID = Number(this.byuID);
+      req.jobID = this.jobID;
+      req.type = punch.type;
+
+      const date = new Date(punch.time);
+      date.setHours(hour.valueOf());
+      date.setMinutes(min.valueOf());
+      date.setSeconds(0);
+
+      req.time = date;
+      const obs = this.api.punch(req);
+
+      obs.subscribe(
+        resp => {
+          console.log("response data", resp);
+        },
+        err => {
+          console.log("response ERROR", err);
+        }
+      );
+
+      return obs;
+    }
+  };
+
   lunchPunch = () => {
     console.log("lunch punch for job");
-    const ref = this.dialog.open(
-      LunchPunchDialog,
-      {
-        width: "50vw",
-        data: {
-         submit: (startTime: string, duration: string): Observable<any> => {
-           const body = new LunchPunch();
-           body.startTime = startTime;
-           body.duration = duration;
-           body.punchDate = new Date().toLocaleDateString();
-           
-           const obs = this.api.lunchPunch(this.employeeID, body);
+    const ref = this.dialog.open(LunchPunchDialog, {
+      width: "50vw",
+      data: {
+        submit: (startTime: string, duration: string): Observable<any> => {
+          const body = new LunchPunch();
+          body.startTime = startTime;
+          body.duration = duration;
+          body.punchDate = new Date().toLocaleDateString();
 
-           obs.subscribe(
-             resp => {
-               console.log("response data", resp);
-             },
-             err => {
-               console.error("response ERROR", err);
-             }
-           );
+          const obs = this.api.lunchPunch(this.byuID, body);
 
-           return obs;
-         } 
+          obs.subscribe(
+            resp => {
+              console.log("response data", resp);
+            },
+            err => {
+              console.error("response ERROR", err);
+            }
+          );
+
+          return obs;
         }
       }
-    )
-  }
+    });
+  };
 }

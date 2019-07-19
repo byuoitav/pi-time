@@ -1,11 +1,11 @@
-<!-- default button -->
+<!--
 <ng-container *ngIf="!type" [ngSwitch]="color">
   <button
     *ngSwitchDefault
     color="primary"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -16,9 +16,9 @@
   <button
     *ngSwitchCase="'accent'"
     color="accent"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -29,9 +29,9 @@
   <button
     *ngSwitchCase="'warn'"
     color="warn"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -41,14 +41,13 @@
   </button>
 </ng-container>
 
-<!-- mat-raised-button -->
 <ng-container *ngIf="type === 'mat-raised-button'" [ngSwitch]="color">
   <button
     *ngSwitchDefault
     color="primary"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -59,9 +58,9 @@
   <button
     *ngSwitchCase="'accent'"
     color="accent"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -72,9 +71,9 @@
   <button
     *ngSwitchCase="'warn'"
     color="warn"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -84,14 +83,13 @@
   </button>
 </ng-container>
 
-<!-- mat-stroked-button -->
 <ng-container *ngIf="type === 'mat-stroked-button'" [ngSwitch]="color">
   <button
     *ngSwitchDefault
     color="primary"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -102,9 +100,9 @@
   <button
     *ngSwitchCase="'accent'"
     color="accent"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -115,9 +113,9 @@
   <button
     *ngSwitchCase="'warn'"
     color="warn"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -127,14 +125,13 @@
   </button>
 </ng-container>
 
-<!-- mat-flat-button -->
 <ng-container *ngIf="type === 'mat-flat-button'" [ngSwitch]="color">
   <button
     *ngSwitchDefault
     color="primary"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -145,9 +142,9 @@
   <button
     *ngSwitchCase="'accent'"
     color="accent"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -158,9 +155,9 @@
   <button
     *ngSwitchCase="'warn'"
     color="warn"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -170,14 +167,13 @@
   </button>
 </ng-container>
 
-<!-- mat-icon-button -->
 <ng-container *ngIf="type === 'mat-icon-button'" [ngSwitch]="color">
   <button
     *ngSwitchDefault
     color="primary"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -188,9 +184,9 @@
   <button
     *ngSwitchCase="'accent'"
     color="accent"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -201,9 +197,9 @@
   <button
     *ngSwitchCase="'warn'"
     color="warn"
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
+    class="activity-button-container"
+    [class.activity-button-success]="_resolved"
+    [class.activity-button-error]="_error"
     [disabled]="disabled"
     (click)="_do(click)"
     (press)="_do(press)"
@@ -213,7 +209,9 @@
   </button>
 </ng-container>
 
-<!-- the inside of every button -->
+the inside of every button
+
+
 <ng-template #inside>
   <span [class.active]="!_resolving && !_resolved && !_error">
     <ng-content></ng-content
@@ -246,3 +244,15 @@
   <mat-icon [class.active]="_resolved">check</mat-icon>
   <mat-icon [class.active]="_error">close</mat-icon>
 </ng-template>
+-->
+
+<span class="mat-button-wrapper"><ng-content></ng-content></span>
+<div
+  matRipple
+  class="mat-button-ripple"
+  [class.mat-button-ripple-round]="isRoundButton || isIconButton"
+  [matRippleDisabled]="_isRippleDisabled()"
+  [matRippleCentered]="isIconButton"
+  [matRippleTrigger]="_getHostElement()"
+></div>
+<div class="mat-button-focus-overlay"></div>

@@ -2,11 +2,11 @@
 
 <div mat-dialog-content>
     <mat-form-field class="form-field">
-        <input placeholder="Enter Start Time" [(ngModel)]="selectedStartTime" matInput type="time">
+        <input placeholder="Enter Start Time" [(ngModel)]="selectedStartTime" matInput type="time" />
     </mat-form-field>
 
     <mat-form-field class="form-field">
-        <input placeholder="Duration" [(ngModel)]="selectedDuration" matInput type="time">
+        <input placeholder="Duration" [(ngModel)]="selectedDuration" matInput type="time" />
     </mat-form-field>
 </div>
 
@@ -15,5 +15,7 @@
     Cancel
   </button>
 
-    <activity-button color="primary" type="mat-raised-button" [click]="submit" [click]="submit" (success)="success()" cdkFocusInitial>Submit</activity-button>
+    <button color="primary" type="mat-raised-button" [click]="submit" [click]="submit" (success)="success()" cdkFocusInitial activity-button>
+    Submit
+  </button>
 </div>

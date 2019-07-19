@@ -1,11 +1,11 @@
-.container {
+.activity-button-container {
   overflow: hidden;
 
-  .success {
+  .activity-button-success {
     background-color: #5cbb5c;
   }
 
-  .error {
+  .activity-button-error {
     background-color: #d9534f;
   }
 
@@ -24,12 +24,12 @@
     }
   }
 
-  .spinner {
+  .activity-button-spinner {
     position: absolute;
     top: 25%;
   }
 
-  .mat-icon {
+  .activity-button-mat-icon {
     position: absolute;
   }
 }

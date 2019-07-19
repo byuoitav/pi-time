@@ -1,5 +1,9 @@
 $outputWidth: 30vw;
 
+.activity-button {
+  background-color: red;
+}
+
 .time-entry-container {
   position: absolute;
   height: 100%;
@@ -80,6 +84,11 @@ $outputWidth: 30vw;
 }
 
 .time-entry-cancel {
+  padding: 1.3vh 3.3vw;
+  font-size: 1em;
+}
+
+.time-entry-save {
   padding: 1.3vh 3.3vw;
   font-size: 1em;
 }
