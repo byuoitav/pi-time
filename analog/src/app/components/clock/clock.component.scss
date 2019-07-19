@@ -35,18 +35,27 @@ $card-width: 95%;
     overflow-y: auto;
     height: 53vh;
     width: $card-width;
+    &::-webkit-scrollbar {
+        width: 7px;
+    }
+    &::-webkit-scrollbar-track {
+        background: #ffffff;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #969595;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background: #aaaaaa;
+    }
     .card {
         height: 100%;
     }
     .grid {
-        width: 100%;
+        width: $card-width;
         margin-left: 3vw;
     }
     .mat-grid-tile {
         &.header {
-            &.title {
-                justify-content: flex-start;
-            }
             &:after {
                 $width: 45%;
                 position: absolute;
@@ -75,16 +84,19 @@ $card-width: 95%;
 
 .clock-group {
     height: 100%;
-    width: 80%;
+    width: 90%;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
     .clock-button {
+        display: flex;
+        align-items: center;
+        min-height: 6vh;
         min-width: 7vw;
         padding: 0.8vh 0.55vw;
         border: 0.3vh solid #b3b3b3;
-        border-radius: 50vh; // fully rounded
+        border-radius: 12px; // fully rounded
         &.in {
             /deep/.mat-radio-outer-circle {
                 border-color: #009245 !important;
@@ -102,4 +114,13 @@ $card-width: 95%;
             }
         }
     }
+}
+
+.change-wo {
+    width: 80%;
+}
+
+.title {
+    display: flex;
+    justify-content: flex-start;
 }

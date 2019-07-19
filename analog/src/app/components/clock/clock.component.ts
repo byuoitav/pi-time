@@ -144,4 +144,48 @@ export class ClockComponent implements OnInit {
 
     return "";
   };
+
+  changeWorkOrder = (job: Job) => {
+    console.log("changing work order for job ", job);
+    const data = new ClientPunchRequest();
+    data.byuID = Number(this.emp.id);
+    data.jobID = job.employeeJobID;
+    data.type = PunchType.Transfer;
+
+    // if (job.isPhysicalFacilities && state === PunchType.In) {
+      // show work order popup to clock in
+      const ref = this.dialog
+        .open(WoTrcDialog, {
+          width: "50vw",
+          data: {
+            title: "Change Work Order",
+            job: job,
+            showTRC: job.trcs.length > 0,
+            showWO: job.workOrders.length > 0,
+            showHours: false,
+            submit: (trc?: TRC, wo?: WorkOrder): Observable<any> => {
+              data.time = new Date();
+              if (trc) {
+                data.trcID = trc.id;
+              }
+              if (wo) {
+                data.workOrderID = wo.id;
+              }
+
+              const obs = this.api.clockInOut(data);
+
+              obs.subscribe(
+                resp => {
+                  console.log("response data", resp);
+                },
+                err => {
+                  console.log("response ERROR", err);
+                }
+              );
+
+              return obs;
+            }
+          }
+        });
+  };
 }
