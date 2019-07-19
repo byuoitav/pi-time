@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, Injector } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Overlay } from '@angular/cdk/overlay';
 import { Observable } from 'rxjs';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'lunch-punch-dialog',
@@ -19,7 +20,8 @@ export class LunchPunchDialog implements OnInit {
     @Inject(MAT_DIALOG_DATA)
     public data: {
       submit: (startTime: string, duration: string) => Observable<any>;
-    }
+    },
+    private _toast: ToastService
   ) { }
 
   ngOnInit() {
@@ -42,4 +44,9 @@ export class LunchPunchDialog implements OnInit {
       );
     });
   };
+
+  success = () => {
+    this.ref.close();
+    this._toast.toast("Lunch Punch Recorded", "dismiss", 2000);
+  }
 }

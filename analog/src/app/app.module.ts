@@ -21,7 +21,8 @@ import {
   MatTabsModule,
   MatRadioModule,
   MatProgressSpinnerModule,
-  MatBadgeModule
+  MatBadgeModule,
+  MatSnackBarModule
 } from "@angular/material";
 import { OverlayModule } from "@angular/cdk/overlay";
 import "hammerjs";
@@ -48,6 +49,7 @@ import { SickVacationComponent } from "./components/sick-vacation/sick-vacation.
 import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.component";
 import { TimeEntryComponent } from './components/time-entry/time-entry.component';
 import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
+import { ToastService } from "./services/toast.service";
 
 @NgModule({
   declarations: [
@@ -96,7 +98,8 @@ import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
     MatRadioModule,
     OverlayModule,
     MatProgressSpinnerModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatSnackBarModule
   ],
   providers: [
     APIService,
@@ -105,7 +108,8 @@ import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
       useValue: {
         hasBackdrop: true
       }
-    }
+    },
+    ToastService
   ],
   entryComponents: [WoTrcDialog, WoSelectComponent, ErrorDialog, TimeEntryComponent, LunchPunchDialog],
   bootstrap: [AppComponent]
