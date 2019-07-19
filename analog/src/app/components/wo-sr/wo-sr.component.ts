@@ -1,9 +1,11 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { Day, Job, TRC, WorkOrderEntry, WorkOrder, Employee } from "../../objects";
+import { Day, Job, TRC, WorkOrderEntry, WorkOrder, Employee, LunchPunch } from "../../objects";
 import { MatDialog } from '@angular/material';
 import { WoTrcDialog } from 'src/app/dialogs/wo-trc/wo-trc.dialog';
 import { APIService } from 'src/app/services/api.service';
 import { Observable } from 'rxjs';
+import { LunchPunchDialog } from 'src/app/dialogs/lunch-punch/lunch-punch.dialog';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: "wo-sr",
@@ -18,7 +20,9 @@ export class WoSrComponent implements OnInit {
   @Input() job: Job;
   @Input() emp: Employee;
 
-  constructor(private api: APIService, private dialog: MatDialog) {}
+  constructor(private api: APIService, private dialog: MatDialog) {
+
+  }
 
   ngOnInit() {}
 
@@ -117,5 +121,36 @@ export class WoSrComponent implements OnInit {
     } else {
       return false;
     }
+  }
+
+  lunchPunch = () => {
+    console.log("lunch punch for job");
+    const ref = this.dialog.open(
+      LunchPunchDialog,
+      {
+        width: "50vw",
+        data: {
+         submit: (startTime: string, duration: string): Observable<any> => {
+           const body = new LunchPunch();
+           body.startTime = startTime;
+           body.duration = duration;
+           body.punchDate = new Date().toLocaleDateString();
+           
+           const obs = this.api.lunchPunch(this.emp.id, body);
+
+           obs.subscribe(
+             resp => {
+               console.log("response data", resp);
+             },
+             err => {
+               console.error("response ERROR", err);
+             }
+           );
+
+           return obs;
+         } 
+        }
+      }
+    )
   }
 }
