@@ -2,33 +2,16 @@
 @include mat-core();
 // mixin for any of my themes for custom templates
 @mixin custom($theme) {
-  @include mat-card-theme($theme);
+    @include mat-card-theme($theme);
 }
 
-$byu-blue: (
-  300: #3c568b,
-  500: #002e5d,
-  700: #000333,
-  contrast: (
-    300: #ffffff,
-    500: #ffffff,
-    700: #ffffff
-  )
-);
-$light-blue: (
-  300: #6092f2,
-  500: #1b65bf,
-  700: #003c8e,
-  contrast: (
-    300: #000000,
-    500: #ffffff,
-    700: #ffffff
-  )
-);
+$byu-blue: ( 300: #3c568b, 500: #002e5d, 700: #000333, contrast: ( 300: #ffffff, 500: #ffffff, 700: #ffffff));
+$light-blue: ( 300: #6092f2, 500: #1b65bf, 700: #003c8e, contrast: ( 300: #000000, 500: #ffffff, 700: #ffffff));
+$warning-red: ( 300: #e53935, 500: #C1272D, 700: #b71c1c, contrast: ( 300: #000000, 500: #ffffff, 700: #ffffff));
 // default (light) theme
 $default-primary: mat-palette($byu-blue, 500, 300, 700);
 $default-accent: mat-palette($light-blue, 500, 300, 700);
-$default-warn: mat-palette($mat-pink);
+$default-warn: mat-palette($warning-red, 500, 300, 700);
 $default: mat-light-theme($default-primary, $default-accent, $default-warn);
 @include angular-material-theme($default);
 @include custom($default);
@@ -38,61 +21,61 @@ $status-accent: mat-palette($mat-yellow);
 $status-warn: mat-palette($mat-red);
 $status: mat-light-theme($status-primary, $status-accent, $status-warn);
 .status-theme {
-  @include angular-material-theme($status);
-  @include custom($status);
+    @include angular-material-theme($status);
+    @include custom($status);
 }
 
 // dark theme :)
 $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
 .dark-theme {
-  @include angular-material-theme($dark);
-  @include custom($dark);
+    @include angular-material-theme($dark);
+    @include custom($dark);
 }
+
 
 /* custom templates */
 
 // mat-card
 @mixin mat-card-theme($theme) {
-  // get the colors i need
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, warn);
-  $warn: map-get($theme, accent);
-  .mat-card {
-    background-color: mat-color($primary);
-  }
+    // get the colors i need
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, warn);
+    $warn: map-get($theme, accent);
+    .mat-card {
+        background-color: mat-color($primary);
+    }
 }
 
 @mixin mat-card-theme($config) {
-  .mat-card {
-    font {
-      family: mat-font-family($config, body-1);
-      size: mat-font-size($config, body-1);
-      weight: mat-font-weight($config, body-1);
+    .mat-card {
+        font {
+            family: mat-font-family($config, body-1);
+            size: mat-font-size($config, body-1);
+            weight: mat-font-weight($config, body-1);
+        }
     }
-  }
 }
 
 .overlay {
-  &.wo-select-overlay {
-    background-color: white;
-  }
-
-  &.time-entry-overlay {
-    background-color: white;
-  }
+    &.wo-select-overlay {
+        background-color: white;
+    }
+    &.time-entry-overlay {
+        background-color: white;
+    }
 }
 
 .mat-tab-label-active {
-  background-color: #002e5d;
+    background-color: #002e5d;
 }
 
 .keyboard-tall-button {
-  height: 14vh !important;
-  font-size: 1.4em;
+    height: 14vh !important;
+    font-size: 1.4em;
 }
 
 .keyboard-button-disabled {
-  pointer-events: none;
-  background-color: rgba(0, 0, 0, 0.45) !important;
-  opacity: 0.45;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.45) !important;
+    opacity: 0.45;
 }
