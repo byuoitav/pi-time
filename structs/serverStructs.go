@@ -43,14 +43,14 @@ type Job struct {
 	EmployeeRecord        int       `json:"employee_record"`
 	WeeklySubtotal        string    `json:"weekly_subtotal"`
 	PeriodSubtotal        string    `json:"period_subtotal"`
-	PhysicalFacilities    bool      `json:"physical_facilities"`
+	PhysicalFacilities    *bool     `json:"physical_facilities,omitempty"`
 	OperatingUnit         string    `json:"operating_unit"`
 	TRCs                  []TRC     `json:"trcs"`
 	CurrentWorkOrder      WorkOrder `json:"current_work_order"`
 	CurrentTRC            TRC       `json:"current_trc"`
 	FullPartTime          string    `json:"full_part_time"`
-	HasPunchException     bool      `json:"has_punch_exception"`
-	HasWorkOrderException bool      `json:"has_work_order_exception"`
+	HasPunchException     *bool     `json:"has_punch_exception,omitempty"`
+	HasWorkOrderException *bool     `json:"has_work_order_exception,omitempty"`
 }
 
 //TRC is a code for the type of hours that an employee can punch in under
@@ -68,8 +68,8 @@ type WorkOrder struct {
 //TimeClockDay represents a day with activity on the clock
 type TimeClockDay struct {
 	Date                  string  `json:"date"`
-	HasPunchException     bool    `json:"has_punch_exception"`
-	HasWorkOrderException bool    `json:"has_work_order_exception"`
+	HasPunchException     *bool   `json:"has_punch_exception,omitempty"`
+	HasWorkOrderException *bool   `json:"has_work_order_exception,omitempty"`
 	Punches               []Punch `json:"punches"`
 	PunchedHours          string  `json:"punched_hours"`
 }
@@ -109,8 +109,8 @@ type WorkOrderDaySummary struct {
 	WorkOrderEntries        []WorkOrderEntry `json:"work_order_entries"`
 	PunchHours              string           `json:"punch_hours"`
 	PhysicalFacilitiesHours string           `json:"physical_facilities_hours"`
-	HasPunchException       bool             `json:"has_punch_exception"`
-	HasWorkOrderException   bool             `json:"has_work_order_exception"`
+	HasPunchException       *bool            `json:"has_punch_exception,omitempty"`
+	HasWorkOrderException   *bool            `json:"has_work_order_exception,omitempty"`
 }
 
 //WorkOrderEntry represents a single work order logged for part of a day
