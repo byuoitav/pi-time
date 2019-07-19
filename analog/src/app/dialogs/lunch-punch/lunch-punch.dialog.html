@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Enter Lunch Punch</h1>
+
+<div mat-dialog-content>
+    <mat-form-field class="form-field">
+        <input placeholder="Enter Start Time" [(ngModel)]="selectedStartTime" matInput type="time">
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+        <input placeholder="Duration" [(ngModel)]="selectedDuration" matInput type="time">
+    </mat-form-field>
+</div>
+
+<div mat-dialog-actions>
+    <button color="warn" (click)="cancel()" (press)="cancel()" mat-raised-button>
+    Cancel
+  </button>
+
+    <activity-button color="primary" type="mat-raised-button" [click]="submit" [click]="submit" (success)="ref.close()" cdkFocusInitial>Submit</activity-button>
+</div>

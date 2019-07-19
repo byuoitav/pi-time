@@ -47,6 +47,7 @@ import { WoSrComponent } from "./components/wo-sr/wo-sr.component";
 import { SickVacationComponent } from "./components/sick-vacation/sick-vacation.component";
 import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.component";
 import { TimeEntryComponent } from './components/time-entry/time-entry.component';
+import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { TimeEntryComponent } from './components/time-entry/time-entry.component
     WoSrComponent,
     SickVacationComponent,
     ScreenSaverComponent,
-    TimeEntryComponent
+    TimeEntryComponent,
+    LunchPunchDialog
   ],
   imports: [
     BrowserModule,
@@ -105,7 +107,7 @@ import { TimeEntryComponent } from './components/time-entry/time-entry.component
       }
     }
   ],
-  entryComponents: [WoTrcDialog, WoSelectComponent, ErrorDialog, TimeEntryComponent],
+  entryComponents: [WoTrcDialog, WoSelectComponent, ErrorDialog, TimeEntryComponent, LunchPunchDialog],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

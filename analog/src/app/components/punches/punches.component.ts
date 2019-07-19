@@ -11,7 +11,11 @@ import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 import { Observable } from "rxjs";
 
 import { TimeEntryComponent } from "../time-entry/time-entry.component";
-import { Day, PunchType, Punch, PORTAL_DATA } from "../../objects";
+import { Day, PunchType, Punch, PORTAL_DATA, LunchPunch } from "../../objects";
+import { MatDialog } from '@angular/material';
+import { LunchPunchDialog } from 'src/app/dialogs/lunch-punch/lunch-punch.dialog';
+import { APIService } from 'src/app/services/api.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: "punches",
@@ -20,10 +24,19 @@ import { Day, PunchType, Punch, PORTAL_DATA } from "../../objects";
 })
 export class PunchesComponent implements OnInit {
   public punchType = PunchType;
-
+  employeeID: string;
   @Input() day: Day;
 
-  constructor(private _overlay: Overlay, private _injector: Injector) {}
+  constructor(
+    private _overlay: Overlay, 
+    private _injector: Injector, 
+    private dialog: MatDialog, 
+    private api: APIService,
+    private route: ActivatedRoute) {
+      this.route.params.subscribe(params => {
+        this.employeeID = params["id"];
+      });
+    }
 
   ngOnInit() {}
 
@@ -94,4 +107,35 @@ export class PunchesComponent implements OnInit {
 
     return "--:--";
   };
+
+  lunchPunch = () => {
+    console.log("lunch punch for job");
+    const ref = this.dialog.open(
+      LunchPunchDialog,
+      {
+        width: "50vw",
+        data: {
+         submit: (startTime: string, duration: string): Observable<any> => {
+           const body = new LunchPunch();
+           body.startTime = startTime;
+           body.duration = duration;
+           body.punchDate = new Date().toLocaleDateString();
+           
+           const obs = this.api.lunchPunch(this.employeeID, body);
+
+           obs.subscribe(
+             resp => {
+               console.log("response data", resp);
+             },
+             err => {
+               console.error("response ERROR", err);
+             }
+           );
+
+           return obs;
+         } 
+        }
+      }
+    )
+  }
 }

@@ -343,19 +343,19 @@ export class LunchPunch {
   @JsonProperty("duration", String)
   duration: string;
 
-  @JsonProperty("employee_record", Number)
+  @JsonProperty("employee_record", Number, true)
   employeeRecord: number;
 
-  @JsonProperty("punch_date", String)
+  @JsonProperty("punch_date", String, true)
   punchDate: string;
 
-  @JsonProperty("time_collection_source", String)
+  @JsonProperty("time_collection_source", String, true)
   timeCollectionSource: string;
 
-  @JsonProperty("punch_zone", String)
+  @JsonProperty("punch_zone", String, true)
   punchZone: string;
 
-  @JsonProperty("location_description", String)
+  @JsonProperty("location_description", String, true)
   locationDescription: string;
 }
 
