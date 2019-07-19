@@ -262,7 +262,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 
 func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverDay *structs.TimeClockDay) {
 	clientDay.HasPunchException = serverDay.HasPunchException
-	clientDay.HasWorkOrderException = serverDay.HasWorkOrderException
+	//clientDay.HasWorkOrderException = serverDay.HasWorkOrderException
 	clientDay.PunchedHours = serverDay.PunchedHours
 
 	//replace the punches in this clientDay with the translated punches from the serverDay
@@ -297,7 +297,7 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 }
 
 func updateClientDayFromServerWorkOrderDay(clientDay *structs.ClientDay, serverDay *structs.WorkOrderDaySummary) {
-	clientDay.HasPunchException = serverDay.HasPunchException
+	//clientDay.HasPunchException = serverDay.HasPunchException
 	clientDay.HasWorkOrderException = serverDay.HasWorkOrderException
 	clientDay.PunchHours = serverDay.PunchHours
 	clientDay.PhysicalFacilitiesHours = serverDay.PhysicalFacilitiesHours
@@ -370,7 +370,7 @@ func GetPossibleWorkOrders(byuID string) {
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
-		if job.IsPhysicalFacilities {
+		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
 			//call WSO2 to get work orders for job
 			workOrders := ytimeapi.GetWorkOrders(job.OperatingUnit)
 
@@ -389,7 +389,7 @@ func GetWorkOrderEntries(byuID string) {
 	employeeCacheMutex.Unlock()
 
 	for _, job := range employee.Jobs {
-		if job.IsPhysicalFacilities {
+		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
 			//call WSO2 to get work orders for job
 			workOrders := ytimeapi.GetWorkOrderEntries(byuID, job.EmployeeJobID)
 
