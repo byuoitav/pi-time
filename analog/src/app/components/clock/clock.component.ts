@@ -15,6 +15,7 @@ import {
 } from "../../objects";
 import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
 import { ToastService } from "src/app/services/toast.service";
+import { ConfirmDialog } from 'src/app/dialogs/confirm/confirm.dialog';
 
 @Component({
   selector: "clock",
@@ -47,7 +48,22 @@ export class ClockComponent implements OnInit {
     });
   }
 
+  doubleClockConfirm(job: Job, state: PunchType) {
+    if (job.clockStatus === state as string) {
+      console.log("confirming...");
+      this.dialog.open(
+        ConfirmDialog, { data: { state: PunchType.toNormalString(state) } }
+      ).afterClosed().subscribe((confirmed) => {
+        if (confirmed === "confirmed") {
+          this.clockInOut(job, state, null);
+        }
+      });
+    }
+  }
+
   clockInOut = (job: Job, state: PunchType, event?) => {
+    
+
     console.log("clocking job", job.description, "to state", state);
     const data = new ClientPunchRequest();
     data.byuID = Number(this.emp.id);
@@ -91,14 +107,17 @@ export class ClockComponent implements OnInit {
         .afterClosed()
         .subscribe(cancelled => {
           if (cancelled) {
-            console.log(
-              "reversing punch type:",
-              state,
-              "to",
-              PunchType.reverse(state)
-            );
-            console.log(event);
-            event.source.radioGroup.value = PunchType.reverse(state);
+            if (event != null) {
+              console.log(
+                "reversing punch type:",
+                state,
+                "to",
+                PunchType.reverse(state)
+              );
+              console.log(event);
+              event.source.radioGroup.value = PunchType.reverse(state);
+            }
+            
           }
         });
     } else {

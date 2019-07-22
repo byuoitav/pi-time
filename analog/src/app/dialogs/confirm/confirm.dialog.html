@@ -1,0 +1,13 @@
+<div mat-dialog-content>
+    <span class="mat-h3">You are already clocked {{data.state.toLowerCase()}}. Please confirm that you would like to clock {{data.state.toLowerCase()}} again.</span>
+</div>
+
+<div mat-dialog-actions>
+    <button color="warn" (click)="close()" (press)="close()" mat-flat-button>
+  Cancel
+</button>
+
+    <button color="accent" mat-flat-button (click)="confirmed()" cdkFocusInitial>
+  Confirm
+</button>
+</div>

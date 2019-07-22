@@ -50,6 +50,7 @@ import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.com
 import { TimeEntryComponent } from "./components/time-entry/time-entry.component";
 import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
 import { ToastService } from "./services/toast.service";
+import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { ToastService } from "./services/toast.service";
     ScreenSaverComponent,
     TimeEntryComponent,
     LunchPunchDialog,
+    ConfirmDialog,
   ],
   imports: [
     BrowserModule,
@@ -115,7 +117,8 @@ import { ToastService } from "./services/toast.service";
     WoSelectComponent,
     ErrorDialog,
     TimeEntryComponent,
-    LunchPunchDialog
+    LunchPunchDialog,
+    ConfirmDialog
   ],
   bootstrap: [AppComponent]
 })
