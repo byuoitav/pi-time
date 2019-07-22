@@ -15,7 +15,7 @@
   </button>
 </mat-toolbar>
 
-<mat-tab-group mat-stretch-tabs backgroundColor="accent" color="none" [disableRipple]="true" [@.disabled]="true" [selectedIndex]="0">
+<mat-tab-group mat-stretch-tabs backgroundColor="accent" color="none" [(selectedIndex)]="selectedTab" [disableRipple]="true" [@.disabled]="true">
     <mat-tab>
         <ng-template mat-tab-label>
             <span *ngIf="!day?.hasPunchException">Punches</span>

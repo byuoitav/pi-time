@@ -44,7 +44,10 @@ export class JobSelectComponent implements OnInit {
   };
 
   goBack() {
-    window.history.back();
+    this.router.navigate(["../"], {
+      relativeTo: this.route,
+      queryParamsHandling: "preserve"
+    });
   }
 
   hasTimesheetException = () => {

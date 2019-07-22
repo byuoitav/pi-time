@@ -73,7 +73,10 @@ export class DateSelectComponent implements OnInit {
   }
 
   goBack() {
-    window.history.back();
+    this.router.navigate(["../"], {
+      relativeTo: this.route,
+      queryParamsHandling: "preserve"
+    });
   }
 
   canMoveMonthBack(): boolean {
@@ -110,7 +113,10 @@ export class DateSelectComponent implements OnInit {
   selectDay = (day: Date) => {
     let idx = -1;
     for (let i = 0; i < this.emp.jobs[this.jobIdx].days.length; i++) {
-      if (this.emp.jobs[this.jobIdx].days[i].time.toDateString() === day.toDateString()) {
+      if (
+        this.emp.jobs[this.jobIdx].days[i].time.toDateString() ===
+        day.toDateString()
+      ) {
         idx = i;
         break;
       }

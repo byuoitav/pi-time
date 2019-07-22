@@ -30,9 +30,14 @@ func AddEmployee(byuID string) {
 
 //RemoveEmployeeFromStore removes the employee record from the cache
 func RemoveEmployeeFromStore(byuID string) {
-	employeeCacheMutex.Lock()
-	defer employeeCacheMutex.Unlock()
-	delete(employeeCache, byuID)
+	//wait for 30 seconds and then if the byuid is still closed in the web socket, get rid of it
+	time.Sleep(30 * time.Second)
+
+	if !WebSocketExists(byuID) {
+		employeeCacheMutex.Lock()
+		defer employeeCacheMutex.Unlock()
+		delete(employeeCache, byuID)
+	}
 }
 
 //GetEmployeeFromStore to retrieve the cached employee record

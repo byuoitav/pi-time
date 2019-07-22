@@ -73,20 +73,7 @@ export class ClockComponent implements OnInit {
                 data.workOrderID = wo.id;
               }
 
-              const obs = this.api.punch(data);
-
-              obs.subscribe(
-                resp => {
-                  console.log("response data", resp);
-                  const msg = "Clocked " + PunchType.toNormalString(state) + " successfully!";
-                  this.toast.show(msg, "DISMISS", 2000);
-                },
-                err => {
-                  console.log("response ERROR", err);
-                }
-              );
-
-              return obs;
+              return this.api.punch(data);
             }
           }
         })
