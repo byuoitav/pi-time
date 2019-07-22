@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, BehaviorSubject } from "rxjs";
 
 import { EmployeeRef } from "../../services/api.service";
-import { Employee } from "../../objects";
+import { Employee, Day } from "../../objects";
 
 @Component({
   selector: "date-select",
@@ -16,6 +16,9 @@ export class DateSelectComponent implements OnInit {
   viewMonth: number;
   viewYear: number;
   viewDays: Date[];
+
+  minDay: Day;
+  maxDay: Day;
 
   MonthNames = [
     "January",
@@ -57,12 +60,18 @@ export class DateSelectComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.jobIdx = +params.get("job");
       console.log("jobidx", this.jobIdx);
-      this.getViewDays();
+      
     });
 
     this.route.data.subscribe(data => {
       this._empRef = data.empRef;
       this._empRef.subject().subscribe(emp => {
+        this.minDay = Day.minDay(this.emp.jobs[this.jobIdx].days);
+        this.maxDay = Day.maxDay(this.emp.jobs[this.jobIdx].days);
+
+        console.log("minimum day", this.minDay);
+        console.log("maximum day", this.maxDay);
+
         this.getViewDays();
       });
 
@@ -79,15 +88,21 @@ export class DateSelectComponent implements OnInit {
   }
 
   canMoveMonthBack(): boolean {
-    // return (this.viewMonth < this.today.getMonth())
-    return true;
+    // if (this.minDay != null) {
+    //   return this.viewMonth > this.minDay.time.getMonth();
+    // }
+    return this.viewMonth >= this.today.getMonth();
   }
 
   canMoveMonthForward(): boolean {
-    return this.viewMonth < this.today.getMonth();
+    // if (this.maxDay != null) {
+    //   return this.viewMonth < (this.maxDay.time.getMonth() + 1);
+    // }
+    return this.viewMonth <= this.today.getMonth();
   }
 
   moveMonthBack() {
+    console.log("moving month back...");
     if (this.viewMonth === 0) {
       this.viewMonth = 11;
       this.viewYear--;
@@ -99,6 +114,7 @@ export class DateSelectComponent implements OnInit {
   }
 
   moveMonthForward() {
+    console.log("moving month forward...");
     if (this.viewMonth === 11) {
       this.viewMonth = 0;
       this.viewYear++;
@@ -129,8 +145,13 @@ export class DateSelectComponent implements OnInit {
   getViewDays() {
     this.today = new Date();
 
-    this.viewMonth = this.today.getMonth();
-    this.viewYear = this.today.getFullYear();
+    if (this.viewMonth == null) {
+      this.viewMonth = this.today.getMonth();
+    }
+    if (this.viewYear == null) {
+      this.viewYear = this.today.getFullYear();
+    }
+    
 
     this.viewDays = [];
     const lastDayOfLastMonth = new Date(this.viewYear, this.viewMonth, 0);
