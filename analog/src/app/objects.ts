@@ -248,6 +248,56 @@ export class Day {
 
   @JsonProperty("vacation-hours-ytd", String, true)
   vacationHoursYTD: string = undefined;
+
+  public static minDay<T extends Day>(
+    days: T[]
+  ): Day {
+    if (days == null) {
+      return;
+    }
+
+    let minimum: Day;
+    const today = new Day();
+    today.time = new Date();
+    minimum = today;
+
+    for (const d of days) {
+      if (d.time.getTime() < minimum.time.getTime()) {
+        minimum = d;
+      }
+    }
+
+    if (minimum.time.getTime() === today.time.getTime()) {
+      return days[0];
+    }
+
+    return minimum;
+  }
+
+  public static maxDay<T extends Day>(
+    days: T[]
+  ): Day {
+    if (days == null) {
+      return;
+    }
+
+    let maximum: Day;
+    const today = new Day();
+    today.time = new Date();
+    maximum = today;
+  
+    for (const d of days) {
+      if (d.time.getTime() > maximum.time.getTime()) {
+        maximum = d;
+      }
+    }
+
+    if (maximum.time.getTime() === today.time.getTime()) {
+      return days[days.length - 1];
+    }
+
+    return maximum;
+  }
 }
 
 @JsonObject("Job")
