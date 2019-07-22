@@ -1,0 +1,87 @@
+$card-width: 95%;
+
+.do-container {
+  margin: 0.5em auto;
+  width: 98%;
+  column-gap: 1em;
+  column-fill: initial;
+  column-count: 1;
+  transition: all 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1vh;
+
+  .do-card {
+    margin: 0 0 0.5em;
+    break-inside: avoid;
+  }
+}
+
+.do-sv-card {
+  display: flex;
+  flex-flow: column nowrap;
+  width: $card-width;
+  margin-bottom: 2vh;
+  margin-top: 2vh;
+}
+
+.do-sv-card-header {
+  height: 100%;
+  width: 100%;
+  font-weight: bold;
+  font-size: 14pt;
+  background-color: #cbcbcb;
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
+
+.do-row {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  max-width: 100%;
+  justify-content: space-evenly;
+  align-items: stretch;
+  margin-bottom: 1vh;
+  margin-top: 1vh;
+  &.do-top {
+    height: 20vh;
+    max-height: 20vh;
+    align-items: flex-start;
+  }
+  &.work-order {
+    justify-content: flex-start;
+    flex: 1 1 auto;
+    margin-top: 0vh;
+    margin-bottom: 0vh;
+    &.spread {
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2vh;
+      padding-bottom: 2vh;
+    }
+  }
+}
+
+.do-sv-time {
+  border: solid black 1px;
+  background-color: #9dc9ff;
+  width: 6vw;
+  margin-right: 4vw;
+  padding: 3px;
+  &::-webkit-datetime-edit-ampm-field {
+    display: none;
+  }
+  &.read-only {
+    border: none;
+    background-color: transparent;
+  }
+}
+
+.do-sv-label {
+  margin-left: 5vw;
+  font-size: 14pt;
+}

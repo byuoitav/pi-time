@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material";
 import { Observable, BehaviorSubject } from "rxjs";
+import { share } from "rxjs/operators";
 
 import { APIService, EmployeeRef } from "../../services/api.service";
 import {
@@ -13,7 +14,7 @@ import {
   ClientPunchRequest
 } from "../../objects";
 import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from "src/app/services/toast.service";
 
 @Component({
   selector: "clock",
@@ -73,7 +74,17 @@ export class ClockComponent implements OnInit {
                 data.workOrderID = wo.id;
               }
 
-              return this.api.punch(data);
+              const obs = this.api.punch(data).pipe(share());
+              obs.subscribe(
+                resp => {
+                  console.log("response data", data);
+                },
+                err => {
+                  console.warn("response ERROR", err);
+                }
+              );
+
+              return obs;
             }
           }
         })
@@ -93,16 +104,17 @@ export class ClockComponent implements OnInit {
     } else {
       // clock in/out here
       data.time = new Date();
-      const obs = this.api.punch(data);
 
+      const obs = this.api.punch(data).pipe(share());
       obs.subscribe(
         resp => {
           console.log("response data", resp);
-          const msg = "Clocked " + PunchType.toNormalString(state) + " successfully!";
+          const msg =
+            "Clocked " + PunchType.toNormalString(state) + " successfully!";
           this.toast.show(msg, "DISMISS", 2000);
         },
         err => {
-          console.log("response ERROR", err);
+          console.warn("response ERROR", err);
         }
       );
     }
@@ -145,8 +157,6 @@ export class ClockComponent implements OnInit {
     data.jobID = job.employeeJobID;
     data.type = PunchType.Transfer;
 
-    // if (job.isPhysicalFacilities && state === PunchType.In) {
-    // show work order popup to clock in
     const ref = this.dialog.open(WoTrcDialog, {
       width: "50vw",
       data: {
@@ -164,8 +174,7 @@ export class ClockComponent implements OnInit {
             data.workOrderID = wo.id;
           }
 
-          const obs = this.api.punch(data);
-
+          const obs = this.api.punch(data).pipe(share());
           obs.subscribe(
             resp => {
               console.log("response data", resp);
@@ -173,7 +182,7 @@ export class ClockComponent implements OnInit {
               this.toast.show(msg, "DISMISS", 2000);
             },
             err => {
-              console.log("response ERROR", err);
+              console.warn("response ERROR", err);
             }
           );
 

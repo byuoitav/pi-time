@@ -11,6 +11,7 @@ import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
 import { MatDialog } from "@angular/material";
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 import { Observable } from "rxjs";
+import { share } from "rxjs/operators";
 
 import { APIService } from "../../services/api.service";
 import { TimeEntryComponent } from "../time-entry/time-entry.component";
@@ -23,6 +24,7 @@ import {
   ClientPunchRequest,
   LunchPunch
 } from "../../objects";
+import { ToastService } from "src/app/services/toast.service";
 
 @Component({
   selector: "punches",
@@ -41,7 +43,8 @@ export class PunchesComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private _overlay: Overlay,
-    private _injector: Injector
+    private _injector: Injector,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {}
@@ -141,7 +144,20 @@ export class PunchesComponent implements OnInit {
       date.setSeconds(0);
 
       req.time = date;
-      return this.api.punch(req);
+
+      const obs = this.api.punch(req).pipe(share());
+      obs.subscribe(
+        resp => {
+          console.log("response data", resp);
+          const msg = "Successfully updated punch.";
+          this.toast.show(msg, "DISMISS", 2000);
+        },
+        err => {
+          console.warn("response ERROR", err);
+        }
+      );
+
+      return obs;
     }
   };
 
