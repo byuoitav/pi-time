@@ -20,6 +20,7 @@ export type Action = () => Promise<boolean>;
   templateUrl: "./activity-button.component.html",
   host: {
     class: "activity-button",
+    "[attr.disabled]": "disabled || null",
     "[class.mat-button]": "!type || type === 'mat-button'",
     "[class.mat-raised-button]": "type === 'mat-raised-button'",
     "[class.mat-stroked-button]": "type === 'mat-stroked-button'",
@@ -88,7 +89,7 @@ export class ActivityButton extends ActivityButtonBase {
   }
 
   async _do(f: Action) {
-    if (this._resolving) {
+    if (this.disabled || this._resolving) {
       return;
     }
 

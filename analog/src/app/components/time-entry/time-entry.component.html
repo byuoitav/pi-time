@@ -37,6 +37,7 @@
       <button
         class="time-entry-save"
         color="accent"
+        [disabled]="!valid()"
         [click]="save"
         (success)="cancel()"
         (error)="error()"

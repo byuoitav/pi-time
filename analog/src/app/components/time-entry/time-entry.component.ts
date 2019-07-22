@@ -194,6 +194,14 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   };
 
   valid = (): boolean => {
+    if (this.data.duration) {
+    } else {
+      // normal time
+      if (this.time.length <= 2 || !this.ampm) {
+        return false;
+      }
+    }
+
     return true;
   };
 
