@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 
 import { EmployeeRef } from "../../services/api.service";
 import { Employee } from "../../objects";
@@ -62,9 +62,11 @@ export class DateSelectComponent implements OnInit {
 
     this.route.data.subscribe(data => {
       this._empRef = data.empRef;
+      this._empRef.subject().subscribe(emp => {
+        this.getViewDays();
+      });
 
       console.log("day select job", this.emp.jobs[this.jobIdx]);
-      this.getViewDays();
     });
   }
 

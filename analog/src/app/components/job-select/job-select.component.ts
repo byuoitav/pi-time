@@ -26,7 +26,7 @@ export class JobSelectComponent implements OnInit {
     this.route.data.subscribe(data => {
       this._empRef = data.empRef;
 
-      this._empRef.observable().subscribe(emp => {
+      this._empRef.subject().subscribe(emp => {
         if (emp && emp.jobs.length === 1) {
           this.selectJob(0);
         }

@@ -46,12 +46,8 @@ export class EmployeeRef {
     return undefined;
   };
 
-  observable = (): Observable<Employee> => {
-    if (this._employee) {
-      return this._employee.asObservable();
-    }
-
-    return undefined;
+  subject = (): BehaviorSubject<Employee> => {
+    return this._employee;
   };
 }
 

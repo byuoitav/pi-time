@@ -10,13 +10,17 @@ import { takeUntil } from "rxjs/operators";
 
 import { APIService, EmployeeRef } from "./api.service";
 import { Employee } from "../objects";
-import { ToastService } from './toast.service';
+import { ToastService } from "./toast.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class EmployeeResolverService implements Resolve<EmployeeRef> {
-  constructor(private api: APIService, private router: Router, private toast: ToastService) {}
+  constructor(
+    private api: APIService,
+    private router: Router,
+    private toast: ToastService
+  ) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
@@ -29,7 +33,7 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
 
     return new Observable(observer => {
       empRef
-        .observable()
+        .subject()
         .pipe(takeUntil(unsubscribe))
         .subscribe(
           val => {
