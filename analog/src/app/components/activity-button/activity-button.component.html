@@ -15,8 +15,20 @@
   >
   </mat-spinner>
 
-  <mat-icon *ngIf="_resolved" [class.active]="_resolved">check</mat-icon>
-  <mat-icon *ngIf="_error" [class.active]="_error">close</mat-icon>
+  <mat-icon
+    *ngIf="_resolved"
+    [class.active]="_resolved"
+    [style.height]="spinnerDiameter ? spinnerDiameter + 'px' : '20px'"
+    [style.width]="spinnerDiameter ? spinnerDiameter + 'px' : '20px'"
+    >check</mat-icon
+  >
+  <mat-icon
+    *ngIf="_error"
+    [class.active]="_error"
+    [style.height]="spinnerDiameter ? spinnerDiameter + 'px' : '20px'"
+    [style.width]="spinnerDiameter ? spinnerDiameter + 'px' : '20px'"
+    >close</mat-icon
+  >
 </span>
 
 <div

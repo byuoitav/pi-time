@@ -9,6 +9,7 @@
   .mat-icon {
     opacity: 0;
     transition: opacity 0s ease-in-out;
+    line-height: unset;
 
     &.active {
       opacity: 1;

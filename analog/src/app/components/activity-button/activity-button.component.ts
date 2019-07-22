@@ -59,8 +59,6 @@ export class ActivityButton extends ActivityButtonBase {
     super(elementRef);
     this.reset();
 
-    this.spinnerColor = "warn";
-
     this.success = new EventEmitter<void>();
     this.error = new EventEmitter<void>();
   }
