@@ -16,8 +16,6 @@ import { Employee, Job, Day, JobType } from "../../objects";
 export class DayOverviewComponent implements OnInit {
   public jobType = JobType;
 
-  options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-
   private _empRef: EmployeeRef;
   get emp(): Employee {
     if (this._empRef) {
@@ -27,6 +25,7 @@ export class DayOverviewComponent implements OnInit {
     return undefined;
   }
 
+  private jobIdx: number;
   get job(): Job {
     if (this.jobIdx >= 0 && this.emp) {
       return this.emp.jobs[this.jobIdx];
@@ -35,6 +34,7 @@ export class DayOverviewComponent implements OnInit {
     return undefined;
   }
 
+  private dayIdx: number;
   get day(): Day {
     if (this.dayIdx >= 0 && this.job) {
       return this.job.days[this.dayIdx];
@@ -43,8 +43,45 @@ export class DayOverviewComponent implements OnInit {
     return undefined;
   }
 
-  public jobIdx: number;
-  private dayIdx: number;
+  private _selectedTab: string;
+  get selectedTab(): int {
+    switch (this._selectedTab) {
+      case "punches":
+        return 0;
+      case "wo/sr":
+        return 1;
+      case "other-hours":
+        return 2;
+      default:
+        return 0;
+    }
+  }
+
+  set selectedTab(tab: string | number) {
+    if (typeof tab === "number") {
+      switch (tab) {
+        case 0:
+          tab = "punches";
+          break;
+        case 1:
+          tab = "wo/sr";
+          break;
+        case 2:
+          tab = "other-hours";
+          break;
+        default:
+          tab = "punches";
+          break;
+      }
+    }
+
+    this._selectedTab = tab;
+
+    this.router.navigate([], {
+      queryParamsHandling: "preserve",
+      fragment: this._selectedTab
+    });
+  }
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -59,6 +96,10 @@ export class DayOverviewComponent implements OnInit {
 
     this.route.data.subscribe(data => {
       this._empRef = data.empRef;
+    });
+
+    this.route.fragment.subscribe(frag => {
+      this.selectedTab = frag;
     });
   }
 
