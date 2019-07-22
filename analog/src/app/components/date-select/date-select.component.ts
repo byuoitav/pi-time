@@ -73,7 +73,8 @@ export class DateSelectComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(["../"], {
+    console.log("navigating");
+    this.router.navigate(["../../../../../"], {
       relativeTo: this.route,
       queryParamsHandling: "preserve"
     });
