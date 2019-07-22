@@ -5,7 +5,6 @@ import { APP_BASE_HREF } from "@angular/common";
 import { AppComponent } from "./components/app.component";
 import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
-import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
 import { EmployeeResolverService } from "./services/employee-resolver.service";
 import { JobSelectComponent } from "./components/job-select/job-select.component";
 import { DateSelectComponent } from "./components/date-select/date-select.component";
