@@ -29,6 +29,19 @@ export namespace PunchType {
     }
   }
 
+  export function toNormalString(pt: PunchType | String): String {
+    switch (pt) {
+      case PunchType.In:
+        return "In";
+      case PunchType.Out:
+        return "Out";
+      case PunchType.Transfer:
+        return "Transfer"
+      default:
+        return pt.toString();
+    }
+  }
+
   export function reverse(pt: PunchType): PunchType {
     switch (pt) {
       case PunchType.In:

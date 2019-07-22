@@ -48,7 +48,7 @@ build-x86:
 	env GOOS=linux CGO_ENABLED=0 $(GOBUILD) -o $(NAME)-bin -v
 
 build-arm: 
-	env GOOS=linux GOARCH=arm $(GOBUILD) -o $(NAME)-arm -v
+	env GOOS=linux GOARCH=arm64 $(GOBUILD) -o $(NAME)-arm -v
 
 build-web: $(NG1)
 	# ng1

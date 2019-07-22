@@ -32,7 +32,7 @@ export class EmployeeRef {
     }
 
     return undefined;
-  } 
+  }
   constructor(employee: BehaviorSubject<Employee>, logout: () => void) {
     this._employee = employee;
     this._logout = logout;
@@ -117,36 +117,6 @@ export class APIService {
               Employee
             );
 
-            // TODO remove section
-            const wo1 = new WorkOrder();
-            wo1.id = "QR3924";
-            wo1.name = "PPCH Pipe Maintenance";
-
-            const wo2 = new WorkOrder();
-            wo2.id = "QZ3950";
-            wo2.name = "IPF Turf Maintenance";
-
-            const wo3 = new WorkOrder();
-            wo3.id = "FJ3918";
-            wo3.name =
-              "Stand and Do Nothing and Look Really Bored and Yeah. Fun Stuff.";
-
-            const wo4 = new WorkOrder();
-            wo4.id = "LK1958";
-            wo4.name = "Rake Leaves";
-
-            for (const job of emp.jobs) {
-              if (!job.isPhysicalFacilities) {
-                continue;
-              }
-
-              job.workOrders.push(wo1);
-              job.workOrders.push(wo2);
-              job.workOrders.push(wo3);
-              job.workOrders.push(wo4);
-            }
-            // TODO end remove section
-
             console.log("updated employee", emp);
             employee.next(emp);
           } catch (e) {
@@ -229,7 +199,7 @@ export class APIService {
     } catch (e) {
       return throwError(e);
     }
-  }
+  };
 
   updateWorkOrderEntry = (byuID: string, data: WorkOrderEntry) => {
     try {
@@ -243,7 +213,7 @@ export class APIService {
     } catch (e) {
       return throwError(e);
     }
-  }
+  };
 
   lunchPunch = (byuID: string, data: LunchPunch) => {
     try {
@@ -257,21 +227,25 @@ export class APIService {
     } catch (e) {
       return throwError(e);
     }
-  }
+  };
 
   deletePunch = (jobID: number, data: DeletePunch) => {
     try {
       const json = this.jsonConvert.serialize(data);
-      return this.http.request("delete", "/punch/" + jobID + "/" + data.sequenceNumber, {
-        body: json, 
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
+      return this.http.request(
+        "delete",
+        "/punch/" + jobID + "/" + data.sequenceNumber,
+        {
+          body: json,
+          headers: new HttpHeaders({
+            "content-type": "application/json"
+          })
+        }
+      );
     } catch (e) {
-      return throwError(e)
+      return throwError(e);
     }
-  }
+  };
 
   sendOtherHours = (byuID: string, jobID: number, data: OtherHours) => {
     try {
@@ -285,7 +259,7 @@ export class APIService {
     } catch (e) {
       return throwError(e);
     }
-  }
+  };
 }
 
 interface Message {

@@ -49,18 +49,7 @@ export class WoSrComponent implements OnInit {
           entry.hoursBilled = hours;
           entry.editable = true;
 
-          const obs = this.api.newWorkOrderEntry(this.emp.id, entry)
-
-          obs.subscribe(
-            resp => {
-              console.log("response data", resp);
-            },
-            err => {
-              console.log("response ERROR", err);
-            }
-          );
-
-          return obs;
+          return this.api.newWorkOrderEntry(this.emp.id, entry);
         }
       }
     });
@@ -90,18 +79,7 @@ export class WoSrComponent implements OnInit {
           entry.hoursBilled = hours;
           entry.editable = true;
 
-          const obs = this.api.updateWorkOrderEntry(this.emp.id, entry)
-
-          obs.subscribe(
-            resp => {
-              console.log("response data", resp);
-            },
-            err => {
-              console.log("response ERROR", err);
-            }
-          );
-
-          return obs;
+          return this.api.updateWorkOrderEntry(this.emp.id, entry);
         }
       }
     });
@@ -136,18 +114,7 @@ export class WoSrComponent implements OnInit {
            body.duration = duration;
            body.punchDate = new Date().toLocaleDateString();
            
-           const obs = this.api.lunchPunch(this.emp.id, body);
-
-           obs.subscribe(
-             resp => {
-               console.log("response data", resp);
-             },
-             err => {
-               console.error("response ERROR", err);
-             }
-           );
-
-           return obs;
+           return this.api.lunchPunch(this.emp.id, body);
          } 
         }
       }
