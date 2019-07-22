@@ -62,8 +62,8 @@ type ClientDay struct {
 	Punches               []ClientPunch `json:"punches"`
 	PunchedHours          string        `json:"punched-hours"`
 
-	ReportedHours           string                 `json:"reported_hours"`
-	PhysicalFacilitiesHours string                 `json:"physical_facilities_hours"`
+	ReportedHours           string                 `json:"reported-hours"`
+	PhysicalFacilitiesHours string                 `json:"physical-facilities-hours"`
 	WorkOrderEntries        []ClientWorkOrderEntry `json:"work-order-entries"`
 
 	SickHoursYTD     string             `json:"sick-hours-ytd"`
@@ -106,8 +106,8 @@ type ClientDeletePunch struct {
 //ClientOtherHours .
 type ClientOtherHours struct {
 	Editable               bool      `json:"editable"`
-	SequenceNumber         int       `json:"sequence_number"`
-	TimeReportingCodeHours string    `json:"time_reporting_code_hours"`
+	SequenceNumber         int       `json:"sequence-number"`
+	TimeReportingCodeHours string    `json:"time-reporting-code-hours"`
 	TRC                    ClientTRC `json:"trc"`
 }
 

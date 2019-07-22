@@ -137,12 +137,12 @@ export class DayOverviewComponent implements OnInit {
       return "";
     } else {
       if (this.day.hasWorkOrderException) {
-        let count = 0;
-        for (const w of this.day.workOrderEntries) {
-          if (w.hoursBilled == undefined) {
-            count++;
-          }
-        }
+        let count = 1;
+        // for (const w of this.day.workOrderEntries) {
+        //   if (w.hoursBilled == undefined) {
+        //     count++;
+        //   }
+        // }
         return String(count);
       }
     }

@@ -189,8 +189,8 @@ export class WorkOrderEntry {
   @JsonProperty("work-order", WorkOrder, true)
   workOrder: WorkOrder = undefined;
 
-  @JsonProperty("hours-billed", String, true)
-  hoursBilled: string = undefined;
+  @JsonProperty("time-reporting-code-hours", String, true)
+  timeReportingCodeHours: string = undefined;
 
   @JsonProperty("trc", TRC, true)
   trc: TRC = undefined;
@@ -204,10 +204,10 @@ export class OtherHour {
   @JsonProperty("editable", Boolean)
   editable: boolean = undefined;
 
-  @JsonProperty("sequence_number", Number)
+  @JsonProperty("sequence-number", Number)
   sequenceNumber: number = undefined;
 
-  @JsonProperty("time_reporting_code_hours", String)
+  @JsonProperty("time-reporting-code-hours", String)
   timeReportingCodeHours: string = undefined;
 
   @JsonProperty("trc", TRC)
@@ -228,8 +228,8 @@ export class Day {
   @JsonProperty("punched-hours", String, false)
   punchedHours: string = undefined;
 
-  @JsonProperty("billed-hours", String, true)
-  billedHours: string = undefined;
+  @JsonProperty("physical-facilities-hours", String, true)
+  physicalFacilitiesHours: string = undefined;
 
   @JsonProperty("reported-hours", String, true)
   reportedHours: string = undefined;

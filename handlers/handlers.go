@@ -162,7 +162,12 @@ func GetSickAndVacationForJobAndDate(context echo.Context) error {
 	dateString := context.Param("date")
 
 	jobID, _ := strconv.Atoi(jobIDString)
-	date, _ := time.ParseInLocation("2006-01-02", dateString, time.Local)
+	date, err := time.ParseInLocation("2006-1-2", dateString, time.Local)
+
+	if err != nil {
+		log.L.Debugf("Invalid date sent %v", dateString)
+		return context.String(http.StatusInternalServerError, "invalid date")
+	}
 
 	cache.GetOtherHoursForJobAndDate(byuID, jobID, date)
 
