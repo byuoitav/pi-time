@@ -222,6 +222,7 @@ func UpdateOtherHoursForJobAndDate(byuID string, jobID int, date time.Time, elap
 		log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error())
 	}
 
+	log.L.Debugf("server date: %v, date: %v", serverDate, date)
 	if serverDate != date {
 		log.L.Fatalf("ElapsedTimeSummary date does not match the date passed in")
 	}
