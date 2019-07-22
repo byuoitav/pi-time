@@ -16,6 +16,17 @@ func init() {
 	openConnections = make(map[string]*Client)
 }
 
+//WebSocketExists checks to see if there is an open connection for the BYUID
+func WebSocketExists(byuID string) bool {
+	openConnectionMutex.Lock()
+	defer openConnectionMutex.Unlock()
+	if _, ok := openConnections[byuID]; ok {
+		return true
+	}
+
+	return false
+}
+
 //AddConnection adds the websocket to the store
 func AddConnection(byuID string, connectionToAdd *Client) {
 	//put it in the map
@@ -31,7 +42,7 @@ func AddConnection(byuID string, connectionToAdd *Client) {
 			delete(openConnections, byuID)
 
 			//also get rid of the cached employee record
-			RemoveEmployeeFromStore(byuID)
+			go RemoveEmployeeFromStore(byuID)
 			return nil
 		})
 }
