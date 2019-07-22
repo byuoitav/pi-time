@@ -38,7 +38,7 @@ PASS=$(shell echo $(DOCKER_PASSWORD))
 # angular
 NPM=npm
 NPM_INSTALL=$(NPM) install
-NPM_BUILD=$(NPM) build
+NPM_BUILD=$(NPM) run-script build
 NG_BUILD=ng build --prod --aot --build-optimizer 
 NG1=analog
 
