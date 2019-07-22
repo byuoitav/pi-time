@@ -53,7 +53,7 @@ func SendMessageToClient(byuID string, messageType string, toSend interface{}) e
 
 	if toSend == nil {
 		log.L.Debugf("Nothing to send down web socket")
-		return
+		return fmt.Errorf("Nothing to send down web socket for %v", byuID)
 	}
 
 	openConnectionMutex.Lock()
