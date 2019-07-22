@@ -13,6 +13,7 @@ import {
   ClientPunchRequest
 } from "../../objects";
 import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: "clock",
@@ -35,7 +36,8 @@ export class ClockComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private api: APIService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -76,6 +78,8 @@ export class ClockComponent implements OnInit {
               obs.subscribe(
                 resp => {
                   console.log("response data", resp);
+                  const msg = "Clocked " + PunchType.toNormalString(state) + " successfully!";
+                  this.toast.show(msg, "DISMISS", 2000);
                 },
                 err => {
                   console.log("response ERROR", err);
@@ -97,7 +101,6 @@ export class ClockComponent implements OnInit {
             );
             console.log(event);
             event.source.radioGroup.value = PunchType.reverse(state);
-            // event.source.checked = false;
           }
         });
     } else {
@@ -108,6 +111,8 @@ export class ClockComponent implements OnInit {
       obs.subscribe(
         resp => {
           console.log("response data", resp);
+          const msg = "Clocked " + PunchType.toNormalString(state) + " successfully!";
+          this.toast.show(msg, "DISMISS", 2000);
         },
         err => {
           console.log("response ERROR", err);
@@ -177,6 +182,8 @@ export class ClockComponent implements OnInit {
           obs.subscribe(
             resp => {
               console.log("response data", resp);
+              const msg = "Transferred punch successfully!";
+              this.toast.show(msg, "DISMISS", 2000);
             },
             err => {
               console.log("response ERROR", err);

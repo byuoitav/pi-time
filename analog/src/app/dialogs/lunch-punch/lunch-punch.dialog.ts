@@ -47,6 +47,6 @@ export class LunchPunchDialog implements OnInit {
 
   success = () => {
     this.ref.close();
-    this._toast.toast("Lunch Punch Recorded", "dismiss", 2000);
+    this._toast.show("Lunch Punch Recorded", "DISMISS", 2000);
   }
 }

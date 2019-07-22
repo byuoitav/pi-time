@@ -8,12 +8,22 @@ export class ToastService {
 
   constructor(private _snackbar: MatSnackBar) { }
 
-  toast = (message: string, action: string, duration: number) => {
+  show = (message: string, action: string, duration: number) => {
     this._snackbar.open(
       message,
       action,
       {
         duration: duration,
+        verticalPosition: "bottom"
+      }
+    )
+  }
+
+  showIndefinitely = (message: string, action: string) => {
+    this._snackbar.open(
+      message,
+      action,
+      {
         verticalPosition: "bottom"
       }
     )

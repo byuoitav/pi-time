@@ -101,4 +101,18 @@ export class WoTrcDialog implements OnInit {
 
     return new PortalInjector(this._injector, tokens);
   }
+
+  stopSubmit = (): boolean => {
+    if (this.data.showTRC && (this.selectedPay == null || this.selectedPay.length == 0)) {
+      return true;
+    }
+    if (this.data.showWO && (this.selectedWO == null)) {
+      return true;
+    }
+    if (this.data.showHours && (this.hours == null || this.hours.length == 0)) {
+      return true;
+    }
+
+    return false;
+  }
 }

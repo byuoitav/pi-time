@@ -239,3 +239,8 @@ input[type="time"]::-webkit-clear-button {
     appearance: none;
     margin: -13px;
 }
+
+.mat-tab-label-active {
+    background-color: #002e5d !important;
+    opacity: 1 !important;
+}

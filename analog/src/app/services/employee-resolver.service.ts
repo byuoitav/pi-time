@@ -10,12 +10,13 @@ import { takeUntil } from "rxjs/operators";
 
 import { APIService, EmployeeRef } from "./api.service";
 import { Employee } from "../objects";
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: "root"
 })
 export class EmployeeResolverService implements Resolve<EmployeeRef> {
-  constructor(private api: APIService, private router: Router) {}
+  constructor(private api: APIService, private router: Router, private toast: ToastService) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
@@ -33,13 +34,15 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
         .subscribe(
           val => {
             if (val instanceof Employee) {
+              if (val.message !== undefined && val.message.length > 0) {
+                this.toast.showIndefinitely(val.message as string, "DISMISS");
+              }
               observer.next(empRef);
               observer.complete();
               unsubscribe.complete();
             }
           },
           err => {
-            // TODO add an anchor tab to show popup
             this.router.navigate(["/login"], {
               queryParams: {
                 error: "No employee found with the given ID."
