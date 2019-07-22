@@ -33,30 +33,6 @@ export class WoSelectComponent implements OnInit, AfterViewInit {
       selectWorkOrder: (WorkOrder) => void;
     }
   ) {
-    // TODO remove section
-    const wo1 = new WorkOrder();
-    wo1.id = "QR3924";
-    wo1.name = "PPCH Pipe Maintenance";
-
-    const wo2 = new WorkOrder();
-    wo2.id = "QZ3950";
-    wo2.name = "IPF Turf Maintenance";
-
-    const wo3 = new WorkOrder();
-    wo3.id = "FJ3918";
-    wo3.name =
-      "Stand and Do Nothing and Look Really Bored and Yeah. Fun Stuff.";
-
-    const wo4 = new WorkOrder();
-    wo4.id = "LK1958";
-    wo4.name = "Rake Leaves";
-
-    this.data.workOrders.push(wo1);
-    this.data.workOrders.push(wo2);
-    this.data.workOrders.push(wo3);
-    this.data.workOrders.push(wo4);
-    // TODO end remove section
-
     this.filter();
   }
 
