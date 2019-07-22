@@ -1,8 +1,8 @@
-<div class="punches-container">
+<div class="container">
   <mat-card>
-    <div class="punches-card-content">
-      <div class="punches-punches">
-        <div class="punches-punch" *ngFor="let punch of day?.punches">
+    <div class="card-content">
+      <div class="punches">
+        <div class="punch" *ngFor="let punch of day?.punches">
           <span
             class="time"
             [class.edit]="!punch?.time"
@@ -15,10 +15,10 @@
         </div>
       </div>
 
-      <span class="punches-total"> Total: {{ day?.punchedHours }} </span>
+      <span class="total"> Total: {{ day?.punchedHours }} </span>
 
       <button
-        class="punches-lunch"
+        class="lunch"
         color="accent"
         mat-raised-button
         (click)="lunchPunch()"

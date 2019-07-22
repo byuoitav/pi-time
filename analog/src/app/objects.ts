@@ -23,7 +23,7 @@ export namespace PunchType {
       case PunchType.Out:
         return "OUT";
       case PunchType.Transfer:
-        return "TRANSFER"
+        return "TRANSFER";
       default:
         return pt.toString();
     }
@@ -36,7 +36,7 @@ export namespace PunchType {
       case PunchType.Out:
         return "Out";
       case PunchType.Transfer:
-        return "Transfer"
+        return "Transfer";
       default:
         return pt.toString();
     }
@@ -189,14 +189,29 @@ export class WorkOrderEntry {
   @JsonProperty("work-order", WorkOrder, true)
   workOrder: WorkOrder = undefined;
 
-  @JsonProperty("hours-billed", String, true)
-  hoursBilled: string = undefined;
+  @JsonProperty("time-reporting-code-hours", String, true)
+  timeReportingCodeHours: string = undefined;
 
   @JsonProperty("trc", TRC, true)
   trc: TRC = undefined;
 
   @JsonProperty("editable", Boolean, true)
   editable: boolean = undefined;
+}
+
+@JsonObject("OtherHour")
+export class OtherHour {
+  @JsonProperty("editable", Boolean)
+  editable: boolean = undefined;
+
+  @JsonProperty("sequence-number", Number)
+  sequenceNumber: number = undefined;
+
+  @JsonProperty("time-reporting-code-hours", String)
+  timeReportingCodeHours: string = undefined;
+
+  @JsonProperty("trc", TRC)
+  trc: TRC = undefined;
 }
 
 @JsonObject("Day")
@@ -213,8 +228,8 @@ export class Day {
   @JsonProperty("punched-hours", String, false)
   punchedHours: string = undefined;
 
-  @JsonProperty("billed-hours", String, true)
-  billedHours: string = undefined;
+  @JsonProperty("physical-facilities-hours", String, true)
+  physicalFacilitiesHours: string = undefined;
 
   @JsonProperty("reported-hours", String, true)
   reportedHours: string = undefined;
@@ -225,12 +240,8 @@ export class Day {
   @JsonProperty("work-order-entries", [WorkOrderEntry], true)
   workOrderEntries: Array<WorkOrderEntry> = new Array<WorkOrderEntry>();
 
-  // sick/vacation, YTD sick/vacation
-  @JsonProperty("sick-hours", String, true)
-  sickHours: string = undefined;
-
-  @JsonProperty("vacation-hours", String, true)
-  vacationHours: string = undefined;
+  @JsonProperty("other-hours", [OtherHour], true)
+  otherHours: Array<OtherHour> = new Array<OtherHour>();
 
   @JsonProperty("sick-hours-ytd", String, true)
   sickHoursYTD: string = undefined;
@@ -432,19 +443,4 @@ export class DeletePunch {
 
   @JsonProperty("sequence-number", Number, true)
   sequenceNumber: number;
-}
-
-@JsonObject("OtherHours")
-export class OtherHours {
-  @JsonProperty("editable", Boolean)
-  editable: boolean;
-
-  @JsonProperty("sequence_number", Number, true)
-  sequenceNumber: number;
-
-  @JsonProperty("time_reporting_code_hours", String)
-  timeReportingCodeHours: string;
-
-  @JsonProperty("trc", TRC)
-  trc: TRC;
 }

@@ -8,8 +8,8 @@
             <div class="do-column do-billing">
                 <div class="do-wo-info">
                     <span style="font-weight: bold;"> Billed to WO/SR: </span>
-                    <span *ngIf="day?.billedHours"> {{ day?.billedHours }} </span>
-                    <span *ngIf="!day?.billedHours"> --:-- </span>
+                    <span *ngIf="day?.physicalFacilitiesHours"> {{ day?.physicalFacilitiesHours }} </span>
+                    <span *ngIf="!day?.physicalFacilitiesHours"> --:-- </span>
                 </div>
 
                 <div class="do-wo-info">
@@ -52,8 +52,8 @@
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1">
-                    <span *ngIf="entry?.hoursBilled"> {{ entry?.hoursBilled }} </span>
-                    <span *ngIf="!entry?.hoursBilled"> --:-- </span>
+                    <span *ngIf="entry?.timeReportingCodeHours"> {{ entry?.timeReportingCodeHours }} </span>
+                    <span *ngIf="!entry?.timeReportingCodeHours"> --:-- </span>
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1">

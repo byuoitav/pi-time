@@ -46,7 +46,7 @@ export class WoSrComponent implements OnInit {
 
           entry.trc = trc;
           entry.workOrder = wo;
-          entry.hoursBilled = hours;
+          entry.timeReportingCodeHours = hours;
           entry.editable = true;
 
           return this.api.newWorkOrderEntry(this.emp.id, entry);
@@ -76,7 +76,7 @@ export class WoSrComponent implements OnInit {
 
           entry.trc = trc;
           entry.workOrder = wo;
-          entry.hoursBilled = hours;
+          entry.timeReportingCodeHours = hours;
           entry.editable = true;
 
           return this.api.updateWorkOrderEntry(this.emp.id, entry);

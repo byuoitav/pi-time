@@ -19,7 +19,7 @@ import {
   ClientPunchRequest,
   LunchPunch,
   DeletePunch,
-  OtherHours
+  OtherHour
 } from "../objects";
 
 export class EmployeeRef {
@@ -243,10 +243,23 @@ export class APIService {
     }
   };
 
-  sendOtherHours = (byuID: string, jobID: number, data: OtherHours) => {
+  sendOtherHour = (byuID: string, jobID: number, data: OtherHour) => {
     try {
       const json = this.jsonConvert.serialize(data);
       return this.http.put("/otherhours/" + byuID + "/" + jobID, json, {
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
+  };
+
+  getOtherHours = (byuID: string, jobID: number, date: string) => {
+    try {
+      return this.http.get("/otherhours/" + byuID + "/" + jobID + "/" + date, {
         responseType: "text",
         headers: new HttpHeaders({
           "content-type": "application/json"
