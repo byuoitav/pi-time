@@ -72,7 +72,7 @@ func OtherHours(byuID string, request structs.ClientOtherHoursRequest) error {
 	}
 
 	//parse the date
-	date, _ := time.Parse(summary.Dates[0].PunchDate, "2006-01-02")
+	date, _ := time.ParseInLocation(summary.Dates[0].PunchDate, "2006-01-02", time.Local)
 
 	// update the employee record, which also sends it up the websocket
 	cache.UpdateOtherHoursForJobAndDate(byuID, request.EmployeeJobID, date, summary)

@@ -162,7 +162,7 @@ func GetSickAndVacationForJobAndDate(context echo.Context) error {
 	dateString := context.Param("date")
 
 	jobID, _ := strconv.Atoi(jobIDString)
-	date, _ := time.Parse("2006-01-02", dateString)
+	date, _ := time.ParseInLocation("2006-01-02", dateString, time.Local)
 
 	cache.GetOtherHoursForJobAndDate(byuID, jobID, date)
 

@@ -192,7 +192,7 @@ func MonitorLogFiles() {
 
 		for _, file := range files {
 			dateToParse := file.Name()[:10]
-			date, err := time.Parse("2006-01-02", dateToParse)
+			date, err := time.ParseInLocation("2006-01-02", dateToParse, time.Local)
 			if err == nil {
 				if date.Before(dateToDelete) {
 					os.Remove(logLocation + "/" + file.Name())
