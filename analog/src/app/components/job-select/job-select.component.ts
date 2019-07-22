@@ -34,9 +34,8 @@ export class JobSelectComponent implements OnInit {
     });
   }
 
-  selectJob = (idx: number) => {
-    console.log("selecting job", idx);
-    this.router.navigate(["./" + idx + "/date/"], { relativeTo: this.route });
+  selectJob = (jobID: number) => {
+    this.router.navigate(["./" + jobID + "/date/"], { relativeTo: this.route });
   };
 
   logout = () => {

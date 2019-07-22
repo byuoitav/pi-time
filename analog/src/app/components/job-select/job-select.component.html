@@ -1,32 +1,47 @@
 <mat-toolbar color="primary">
-    <button mat-button (click)="goBack()">
-                <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
-              </button>
-    <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
-    <span>Y-Time</span> <span class="header-spacer"></span>
-    <span>{{ emp?.name }}</span>
-    <button (click)="logout()" mat-icon-button>
+  <button mat-button (click)="goBack()">
+    <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
+  </button>
+  <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
+  <span>Y-Time</span> <span class="header-spacer"></span>
+  <span>{{ emp?.name }}</span>
+  <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
 
 <div class="container">
-    <mat-card class="jobs card mat-elevation-z3">
-        <mat-grid-list class="grid" cols="1" rowHeight="12vh" gutterSize="2vh">
-            <mat-grid-tile colspan="1" rowspan="1" class="header"><span class="mat-h1">Select a Job</span>
-            </mat-grid-tile>
-            <ng-container *ngFor="let job of emp?.jobs; let i = index">
-                <mat-grid-tile style="padding-top: 2vh; padding-bottom: 2vh;" colspan="1" rowspan="1">
-                    <button class="full-button" color="accent" (click)="selectJob(i)" mat-flat-button [matBadge]="hasTimesheetException()" matBadgeColor="warn" matBadgeSize="medium" matBadgeOverlap=true>
-                        <span class="spaced-button">
-                            <span style="padding-top: 2px; font-size: 14pt;">{{ job?.description }}</span>
-                            <span class="header-spacer"></span>
-                            <mat-icon>keyboard_arrow_right</mat-icon>
-                        </span>
-                    </button>
-                </mat-grid-tile>
-            </ng-container>
-        </mat-grid-list>
-
-    </mat-card>
+  <mat-card class="jobs card mat-elevation-z3">
+    <mat-grid-list class="grid" cols="1" rowHeight="12vh" gutterSize="2vh">
+      <mat-grid-tile colspan="1" rowspan="1" class="header"
+        ><span class="mat-h1">Select a Job</span>
+      </mat-grid-tile>
+      <ng-container *ngFor="let job of emp?.jobs">
+        <mat-grid-tile
+          style="padding-top: 2vh; padding-bottom: 2vh;"
+          colspan="1"
+          rowspan="1"
+        >
+          <button
+            class="full-button"
+            color="accent"
+            (click)="selectJob(job?.employeeJobID)"
+            mat-flat-button
+            [matBadge]="hasTimesheetException()"
+            matBadgeColor="warn"
+            matBadgeSize="medium"
+            matBadgeOverlap="true"
+          >
+            <span class="spaced-button">
+              <span style="padding-top: 2px; font-size: 14pt;">{{
+                job?.description
+              }}</span>
+              <span class="header-spacer"></span>
+              <mat-icon>keyboard_arrow_right</mat-icon>
+            </span>
+          </button>
+        </mat-grid-tile>
+      </ng-container>
+    </mat-grid-list>
+  </mat-card>
 </div>

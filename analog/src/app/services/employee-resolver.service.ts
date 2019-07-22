@@ -32,8 +32,7 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
     const empRef = this.api.getEmployee(id);
 
     return new Observable(observer => {
-      empRef
-        .subject()
+      empRef .subject()
         .pipe(takeUntil(unsubscribe))
         .subscribe(
           val => {

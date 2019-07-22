@@ -6,6 +6,7 @@ import { AppComponent } from "./components/app.component";
 import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
 import { EmployeeResolverService } from "./services/employee-resolver.service";
+import { DateResolverService } from "./services/date-resolver.service";
 import { JobSelectComponent } from "./components/job-select/job-select.component";
 import { DateSelectComponent } from "./components/date-select/date-select.component";
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
@@ -47,7 +48,7 @@ const routes: Routes = [
                 component: JobSelectComponent
               },
               {
-                path: ":job/date",
+                path: ":jobid/date",
                 children: [
                   {
                     path: "",
@@ -55,7 +56,10 @@ const routes: Routes = [
                   },
                   {
                     path: ":date",
-                    component: DayOverviewComponent
+                    component: DayOverviewComponent,
+                    resolve: {
+                      date: DateResolverService
+                    }
                   }
                 ]
               }

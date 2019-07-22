@@ -1,24 +1,41 @@
-$card-width: 95%;
+.container {
+  width: 96vw;
 
-.do-container {
-  margin: 0.5em auto;
-  width: 98%;
-  column-gap: 1em;
-  column-fill: initial;
-  column-count: 1;
-  transition: all 0.5s ease-in-out;
+  padding: 2vh 2vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 1vh;
+  justify-content: space-evenly;
+}
 
-  .do-card {
-    margin: 0 0 0.5em;
-    break-inside: avoid;
+.mat-card {
+  width: 97%;
+
+  .mat-card-title {
+    font-size: 2em;
   }
 }
 
-.do-sv-card {
+.entry {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  height: 10vh;
+
+  font-size: 2em;
+
+  .label {
+  }
+
+  .hours {
+  }
+}
+
+/*
+.sv-card {
   display: flex;
   flex-flow: column nowrap;
   width: $card-width;
@@ -26,7 +43,7 @@ $card-width: 95%;
   margin-top: 2vh;
 }
 
-.do-sv-card-header {
+.sv-card-header {
   height: 100%;
   width: 100%;
   font-weight: bold;
@@ -38,7 +55,7 @@ $card-width: 95%;
   padding-right: 2vw;
 }
 
-.do-row {
+.row {
   display: flex;
   flex-flow: row wrap;
   width: 100%;
@@ -47,16 +64,13 @@ $card-width: 95%;
   align-items: stretch;
   margin-bottom: 1vh;
   margin-top: 1vh;
-  &.do-top {
-    height: 20vh;
-    max-height: 20vh;
-    align-items: flex-start;
-  }
+
   &.work-order {
     justify-content: flex-start;
     flex: 1 1 auto;
     margin-top: 0vh;
     margin-bottom: 0vh;
+
     &.spread {
       justify-content: space-between;
       align-items: center;
@@ -66,22 +80,25 @@ $card-width: 95%;
   }
 }
 
-.do-sv-time {
+.sv-time {
   border: solid black 1px;
   background-color: #9dc9ff;
   width: 6vw;
   margin-right: 4vw;
   padding: 3px;
+
   &::-webkit-datetime-edit-ampm-field {
     display: none;
   }
+
   &.read-only {
     border: none;
     background-color: transparent;
   }
 }
 
-.do-sv-label {
+.sv-label {
   margin-left: 5vw;
   font-size: 14pt;
 }
+*/

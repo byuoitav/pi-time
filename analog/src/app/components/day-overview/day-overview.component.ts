@@ -25,19 +25,25 @@ export class DayOverviewComponent implements OnInit {
     return undefined;
   }
 
-  private jobIdx: number;
+  private _jobID: number;
   get job(): Job {
-    if (this.jobIdx >= 0 && this.emp) {
-      return this.emp.jobs[this.jobIdx];
+    if (this.emp) {
+      return this.emp.jobs.find(j => j.employeeJobID === this._jobID);
     }
 
     return undefined;
   }
 
-  private dayIdx: number;
+  private _date: string;
   get day(): Day {
-    if (this.dayIdx >= 0 && this.job) {
-      return this.job.days[this.dayIdx];
+    if (this.job) {
+      const date = new Date(this._date);
+      return this.job.days.find(
+        d =>
+          d.time.getFullYear() === date.getFullYear() &&
+          d.time.getMonth() === date.getMonth() &&
+          d.time.getDate() === date.getDate()
+      );
     }
 
     return undefined;
@@ -87,11 +93,8 @@ export class DayOverviewComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.jobIdx = +params.get("job");
-      console.log("jobidx", this.jobIdx);
-
-      this.dayIdx = +params.get("date");
-      console.log("dayidx", this.dayIdx);
+      this._jobID = +params.get("jobid");
+      this._date = params.get("date");
     });
 
     this.route.data.subscribe(data => {

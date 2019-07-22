@@ -23,7 +23,7 @@ export namespace PunchType {
       case PunchType.Out:
         return "OUT";
       case PunchType.Transfer:
-        return "TRANSFER"
+        return "TRANSFER";
       default:
         return pt.toString();
     }
@@ -36,7 +36,7 @@ export namespace PunchType {
       case PunchType.Out:
         return "Out";
       case PunchType.Transfer:
-        return "Transfer"
+        return "Transfer";
       default:
         return pt.toString();
     }
@@ -199,6 +199,21 @@ export class WorkOrderEntry {
   editable: boolean = undefined;
 }
 
+@JsonObject("OtherHour")
+export class OtherHour {
+  @JsonProperty("editable", Boolean)
+  editable: boolean = undefined;
+
+  @JsonProperty("sequence_number", Number)
+  sequenceNumber: number = undefined;
+
+  @JsonProperty("time_reporting_code_hours", String)
+  timeReportingCodeHours: string = undefined;
+
+  @JsonProperty("trc", TRC)
+  trc: TRC = undefined;
+}
+
 @JsonObject("Day")
 export class Day {
   @JsonProperty("date", DateConverter, false)
@@ -225,12 +240,8 @@ export class Day {
   @JsonProperty("work-order-entries", [WorkOrderEntry], true)
   workOrderEntries: Array<WorkOrderEntry> = new Array<WorkOrderEntry>();
 
-  // sick/vacation, YTD sick/vacation
-  @JsonProperty("sick-hours", String, true)
-  sickHours: string = undefined;
-
-  @JsonProperty("vacation-hours", String, true)
-  vacationHours: string = undefined;
+  @JsonProperty("other-hours", [OtherHour], true)
+  otherHours: Array<OtherHour> = new Array<OtherHour>();
 
   @JsonProperty("sick-hours-ytd", String, true)
   sickHoursYTD: string = undefined;
@@ -382,19 +393,4 @@ export class DeletePunch {
 
   @JsonProperty("sequence-number", Number, true)
   sequenceNumber: number;
-}
-
-@JsonObject("OtherHours")
-export class OtherHours {
-  @JsonProperty("editable", Boolean)
-  editable: boolean;
-
-  @JsonProperty("sequence_number", Number, true)
-  sequenceNumber: number;
-
-  @JsonProperty("time_reporting_code_hours", String)
-  timeReportingCodeHours: string;
-
-  @JsonProperty("trc", TRC)
-  trc: TRC;
 }

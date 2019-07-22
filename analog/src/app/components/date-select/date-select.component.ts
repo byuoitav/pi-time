@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, BehaviorSubject } from "rxjs";
 
 import { EmployeeRef } from "../../services/api.service";
-import { Employee } from "../../objects";
+import { Employee, Job } from "../../objects";
 
 @Component({
   selector: "date-select",
@@ -11,7 +11,6 @@ import { Employee } from "../../objects";
   styleUrls: ["./date-select.component.scss"]
 })
 export class DateSelectComponent implements OnInit {
-  jobIdx: number;
   today: Date;
   viewMonth: number;
   viewYear: number;
@@ -42,6 +41,15 @@ export class DateSelectComponent implements OnInit {
     "Saturday"
   ];
 
+  private _jobID: number;
+  get job(): Job {
+    if (this.emp) {
+      return this.emp.jobs.find(j => j.employeeJobID === this._jobID);
+    }
+
+    return undefined;
+  }
+
   private _empRef: EmployeeRef;
   get emp(): Employee {
     if (this._empRef) {
@@ -55,8 +63,7 @@ export class DateSelectComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.jobIdx = +params.get("job");
-      console.log("jobidx", this.jobIdx);
+      this._jobID = +params.get("jobid");
       this.getViewDays();
     });
 
@@ -66,7 +73,7 @@ export class DateSelectComponent implements OnInit {
         this.getViewDays();
       });
 
-      console.log("day select job", this.emp.jobs[this.jobIdx]);
+      console.log("day select job", this.job);
     });
   }
 
@@ -110,20 +117,10 @@ export class DateSelectComponent implements OnInit {
   }
 
   selectDay = (day: Date) => {
-    let idx = -1;
-    for (let i = 0; i < this.emp.jobs[this.jobIdx].days.length; i++) {
-      if (
-        this.emp.jobs[this.jobIdx].days[i].time.toDateString() ===
-        day.toDateString()
-      ) {
-        idx = i;
-        break;
-      }
-    }
+    const str =
+      day.getFullYear() + "-" + (day.getMonth() + 1) + "-" + day.getDate();
 
-    if (idx != -1) {
-      this.router.navigate(["./" + idx], { relativeTo: this.route });
-    }
+    this.router.navigate(["./" + str], { relativeTo: this.route });
   };
 
   getViewDays() {
@@ -150,7 +147,7 @@ export class DateSelectComponent implements OnInit {
   }
 
   dayHasException(day: Date): boolean {
-    const empDay = this.emp.jobs[this.jobIdx].days.find(
+    const empDay = this.job.days.find(
       d => d.time.toDateString() === day.toDateString()
     );
 
@@ -162,7 +159,7 @@ export class DateSelectComponent implements OnInit {
   }
 
   dayHasPunch(day: Date): boolean {
-    const empDay = this.emp.jobs[this.jobIdx].days.find(
+    const empDay = this.job.days.find(
       d => d.time.toDateString() === day.toDateString()
     );
 
