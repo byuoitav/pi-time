@@ -6,6 +6,8 @@ import { APIService } from 'src/app/services/api.service';
 import { Observable } from 'rxjs';
 import { LunchPunchDialog } from 'src/app/dialogs/lunch-punch/lunch-punch.dialog';
 import { ActivatedRoute } from '@angular/router';
+import { share } from 'rxjs/operators';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: "wo-sr",
@@ -20,7 +22,7 @@ export class WoSrComponent implements OnInit {
   @Input() job: Job;
   @Input() emp: Employee;
 
-  constructor(private api: APIService, private dialog: MatDialog) {
+  constructor(private api: APIService, private dialog: MatDialog, private _toast: ToastService) {
 
   }
 
@@ -49,7 +51,19 @@ export class WoSrComponent implements OnInit {
           entry.timeReportingCodeHours = hours;
           entry.editable = true;
 
-          return this.api.newWorkOrderEntry(this.emp.id, entry);
+          const obs = this.api.newWorkOrderEntry(this.emp.id, entry).pipe(share());
+          obs.subscribe(
+            resp => {
+              const msg = "Work Order Entry added sucessfully!";
+              this._toast.show(msg, "DISMISS", 2000);
+              console.log("response data", entry);
+            },
+            err => {
+              console.warn("response ERROR", err);
+            }
+          );
+
+          return obs;
         }
       }
     });
@@ -79,7 +93,19 @@ export class WoSrComponent implements OnInit {
           entry.timeReportingCodeHours = hours;
           entry.editable = true;
 
-          return this.api.updateWorkOrderEntry(this.emp.id, entry);
+          const obs = this.api.updateWorkOrderEntry(this.emp.id, entry).pipe(share());
+          obs.subscribe(
+            resp => {
+              const msg = "Work Order Entry updated sucessfully!";
+              this._toast.show(msg, "DISMISS", 2000);
+              console.log("response data", entry);
+            },
+            err => {
+              console.warn("response ERROR", err);
+            }
+          );
+
+          return obs;
         }
       }
     });

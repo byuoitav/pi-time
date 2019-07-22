@@ -93,6 +93,9 @@ export class ClockComponent implements OnInit {
               const obs = this.api.punch(data).pipe(share());
               obs.subscribe(
                 resp => {
+                  const msg =
+            "Clocked " + PunchType.toNormalString(state) + " successfully!";
+          this.toast.show(msg, "DISMISS", 2000);
                   console.log("response data", data);
                 },
                 err => {
