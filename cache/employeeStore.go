@@ -53,6 +53,11 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+	if employee == nil {
+		log.L.Debugf("Employee is nil when updating from timesheet for %v", byuID)
+		return
+	}
+
 	employee.ID = byuID
 	employee.Name = timesheet.PersonName
 	employee.TotalTime.PayPeriod = timesheet.PeriodTotal
@@ -103,6 +108,12 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 	//log.L.Debugf("Job: %v, Work Orders: %v+", jobID, workOrderArray)
 
 	employee := employeeCache[byuID]
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when updating possible work orders for %v", byuID)
+		return
+	}
+
 	for i := range employee.Jobs {
 		log.L.Debugf("employeejobID: %v, jobID: %v", employee.Jobs[i].EmployeeJobID, jobID)
 		if employee.Jobs[i].EmployeeJobID == jobID {
@@ -128,6 +139,12 @@ func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when updating other hours for job for %v, %v", byuID, jobID)
+		return
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			//loop through the dates on the and match them up
@@ -185,6 +202,12 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when updating work order entries for job for %v, %v", byuID, jobID)
+		return
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			//now we merge all the days together.....
@@ -230,6 +253,12 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 	defer employeeCacheMutex.Unlock()
 
 	employee := employeeCache[byuID]
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when updating employee punches for job for %v, %v", byuID, jobID)
+		return
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 
@@ -363,6 +392,11 @@ func GetPunchesForAllJobs(byuID string) {
 	employee := employeeCache[byuID]
 	employeeCacheMutex.Unlock()
 
+	if employee == nil {
+		log.L.Debugf("Employee is nil when getting all punches for %v", byuID)
+		return
+	}
+
 	for _, job := range employee.Jobs {
 		// call WSO2 for this job and get the punches
 		punches := ytimeapi.GetPunchesForJob(byuID, job.EmployeeJobID)
@@ -378,6 +412,11 @@ func GetPossibleWorkOrders(byuID string) {
 	employeeCacheMutex.Lock()
 	employee := employeeCache[byuID]
 	employeeCacheMutex.Unlock()
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when getting possible work orders for %v", byuID)
+		return
+	}
 
 	for _, job := range employee.Jobs {
 		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
@@ -398,6 +437,11 @@ func GetWorkOrderEntries(byuID string) {
 	employee := employeeCache[byuID]
 	employeeCacheMutex.Unlock()
 
+	if employee == nil {
+		log.L.Debugf("Employee is nil when getting work order entries for %v", byuID)
+		return
+	}
+
 	for _, job := range employee.Jobs {
 		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
 			//call WSO2 to get work orders for job
@@ -416,6 +460,11 @@ func GetOtherHours(byuID string) {
 	employeeCacheMutex.Lock()
 	employee := employeeCache[byuID]
 	employeeCacheMutex.Unlock()
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when getting other hours for %v", byuID)
+		return
+	}
 
 	for _, job := range employee.Jobs {
 		if job.JobType == "F" {

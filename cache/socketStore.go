@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/structs"
 )
 
@@ -49,6 +50,12 @@ func AddConnection(byuID string, connectionToAdd *Client) {
 
 //SendMessageToClient will send a message to the web socket client
 func SendMessageToClient(byuID string, messageType string, toSend interface{}) error {
+
+	if toSend == nil {
+		log.L.Debugf("Nothing to send down web socket")
+		return
+	}
+
 	openConnectionMutex.Lock()
 	defer openConnectionMutex.Unlock()
 
