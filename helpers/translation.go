@@ -42,15 +42,12 @@ func translateToLunchPunch(start structs.ClientLunchPunchRequest) structs.LunchP
 	return toReturn
 }
 
-func translateToElapsedTimeEntry(start structs.ClientOtherHours) structs.ElapsedTimeEntry {
+func translateToElapsedTimeEntry(start structs.ClientOtherHoursRequest) structs.ElapsedTimeEntry {
 	var toReturn structs.ElapsedTimeEntry
 
-	toReturn.Editable = start.Editable
 	toReturn.SequenceNumber = start.SequenceNumber
-	toReturn.TRC = structs.TRC{
-		TRCID:          start.TRC.ID,
-		TRCDescription: start.TRC.Description,
-	}
+	toReturn.TRCID = start.TRCID
+	toReturn.EmployeeRecord = start.EmployeeJobID
 	toReturn.TimeReportingCodeHours = start.TimeReportingCodeHours
 
 	return toReturn

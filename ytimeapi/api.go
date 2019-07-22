@@ -2,6 +2,7 @@ package ytimeapi
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
@@ -192,20 +193,39 @@ func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDay
 	return WSO2Response
 }
 
-// GetOtherHours gets the other hours for a job from WSO2
-func GetOtherHours(byuID string, employeeJobID int) structs.ElapsedTimeSummary {
+// // GetOtherHours gets the other hours for a job from WSO2
+// func GetOtherHours(byuID string, employeeJobID int) structs.ElapsedTimeSummary {
+// 	var WSO2Response structs.ElapsedTimeSummary
+
+// 	log.L.Debugf("Getting other hours for employee and job %v %v", byuID, employeeJobID)
+
+// 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
+// 		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response, map[string]string{
+// 			"Content-Type": "application/json",
+// 			"Accept":       "application/json",
+// 		})
+
+// 	if err != nil {
+// 		log.L.Errorf("Error when retrieving other hours %v", err.Error())
+// 	}
+
+// 	return WSO2Response
+// }
+
+// GetOtherHoursForDate gets the other hours for a job for a specitic date from WSO2
+func GetOtherHoursForDate(byuID string, employeeJobID int, date time.Time) structs.ElapsedTimeSummary {
 	var WSO2Response structs.ElapsedTimeSummary
 
-	log.L.Debugf("Getting other hours for employee and job %v %v", byuID, employeeJobID)
+	log.L.Debugf("Getting other hours for employee and and date job %v %v", byuID, employeeJobID, date)
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
-		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response, map[string]string{
+		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID)+","+date.Format("2006-01-02"), "", &WSO2Response, map[string]string{
 			"Content-Type": "application/json",
 			"Accept":       "application/json",
 		})
 
 	if err != nil {
-		log.L.Errorf("Error when retrieving other hours %v", err.Error())
+		log.L.Errorf("Error when retrieving other hours for date %v %v", date, err.Error())
 	}
 
 	return WSO2Response

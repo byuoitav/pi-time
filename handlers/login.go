@@ -39,7 +39,7 @@ func LogInUser(context echo.Context) error {
 	go cache.GetPossibleWorkOrders(byuID)
 	go cache.GetPunchesForAllJobs(byuID)
 	go cache.GetWorkOrderEntries(byuID)
-	go cache.GetOtherHours(byuID)
+	//go cache.GetOtherHours(byuID)
 
 	//if offline, send an offline message down the web socket
 	if isOffline {

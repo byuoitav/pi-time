@@ -133,8 +133,72 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
-//UpdateOtherHoursForJob updates the other hours for a job
-func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.ElapsedTimeSummary) {
+// //UpdateOtherHoursForJob updates the other hours for a job
+// func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.ElapsedTimeSummary) {
+// 	employeeCacheMutex.Lock()
+// 	defer employeeCacheMutex.Unlock()
+
+// 	employee := employeeCache[byuID]
+
+// 	if employee == nil {
+// 		log.L.Debugf("Employee is nil when updating other hours for job for %v, %v", byuID, jobID)
+// 		return
+// 	}
+
+// 	for i := range employee.Jobs {
+// 		if employee.Jobs[i].EmployeeJobID == jobID {
+// 			//loop through the dates on the and match them up
+
+// 			for _, elapsedTimeDay := range elapsedTimeSummary.Dates {
+// 				serverDate, err := time.ParseInLocation("2006-01-02", elapsedTimeDay.PunchDate, time.Local)
+// 				if err != nil {
+// 					//freak out
+// 					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error())
+// 				}
+// 				foundDay := false
+// 				for x := range employee.Jobs[i].Days {
+
+// 					if employee.Jobs[i].Days[x].Date == serverDate {
+
+// 						//loop through the ElapstedTimeEntries and translate them to ClientOtherHours
+// 						employee.Jobs[i].Days[x].OtherHours = []structs.ClientOtherHours{}
+
+// 						for _, elapsedTimeEntry := range elapsedTimeDay.ElapsedTimeEntries {
+// 							var newClientOtherHours structs.ClientOtherHours
+// 							newClientOtherHours.Editable = *elapsedTimeEntry.Editable
+// 							newClientOtherHours.SequenceNumber = elapsedTimeEntry.SequenceNumber
+// 							newClientOtherHours.TimeReportingCodeHours = elapsedTimeEntry.TimeReportingCodeHours
+// 							newClientOtherHours.TRC = structs.ClientTRC{
+// 								ID:          elapsedTimeEntry.TRC.TRCID,
+// 								Description: elapsedTimeEntry.TRC.TRCDescription,
+// 							}
+// 							employee.Jobs[i].Days[x].OtherHours = append(employee.Jobs[i].Days[x].OtherHours, newClientOtherHours)
+// 						}
+
+// 						employee.Jobs[i].Days[x].SickHoursYTD = elapsedTimeSummary.SickLeaveBalanceHours
+// 						employee.Jobs[i].Days[x].VacationHoursYTD = elapsedTimeSummary.VacationLeaveBalanceHours
+
+// 						foundDay = true
+
+// 					}
+// 				}
+
+// 				if !foundDay {
+// 					var newDay structs.ClientDay
+// 					newDay.Date = serverDate
+// 					updateClientDayFromServerOtherHoursDay(&newDay, &elapsedTimeSummary)
+// 					employee.Jobs[i].Days = append(employee.Jobs[i].Days, newDay)
+// 				}
+// 			}
+// 			break
+// 		}
+// 	}
+
+// 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+// }
+
+//UpdateOtherHoursForJobAndDate updates the other hours for a job and that day
+func UpdateOtherHoursForJobAndDate(byuID string, jobID int, date time.Time, elapsedTimeSummary structs.ElapsedTimeSummary) {
 	employeeCacheMutex.Lock()
 	defer employeeCacheMutex.Unlock()
 
@@ -145,50 +209,77 @@ func UpdateOtherHoursForJob(byuID string, jobID int, elapsedTimeSummary structs.
 		return
 	}
 
+	if len(elapsedTimeSummary.Dates) != 1 {
+		log.L.Debugf("More/Less than one day showing up when updating other hours for job and date")
+		return
+	}
+
+	elapsedTimeDay := elapsedTimeSummary.Dates[0]
+
+	serverDate, err := time.ParseInLocation("2006-01-02", elapsedTimeDay.PunchDate, time.Local)
+	if err != nil {
+		//freak out
+		log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error())
+	}
+
+	if serverDate != date {
+		log.L.Fatalf("ElapsedTimeSummary date does not match the date passed in")
+	}
+
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			//loop through the dates on the and match them up
+			foundDay := false
 
-			for _, elapsedTimeDay := range elapsedTimeSummary.Dates {
-				serverDate, err := time.Parse("2006-01-02", elapsedTimeDay.PunchDate)
-				if err != nil {
-					//freak out
-					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error())
-				}
-				foundDay := false
-				for x := range employee.Jobs[i].Days {
+			for x := range employee.Jobs[i].Days {
+				if employee.Jobs[i].Days[x].Date == date {
+					//loop through the ElapstedTimeEntries and translate them to ClientOtherHours
+					employee.Jobs[i].Days[x].OtherHours = []structs.ClientOtherHours{}
 
-					if employee.Jobs[i].Days[x].Date == serverDate {
-
-						//loop through the ElapstedTimeEntries and translate them to ClientOtherHours
-						employee.Jobs[i].Days[x].OtherHours = []structs.ClientOtherHours{}
-
-						for _, elapsedTimeEntry := range elapsedTimeDay.ElapsedTimeEntries {
-							var newClientOtherHours structs.ClientOtherHours
-							newClientOtherHours.Editable = elapsedTimeEntry.Editable
-							newClientOtherHours.SequenceNumber = elapsedTimeEntry.SequenceNumber
-							newClientOtherHours.TimeReportingCodeHours = elapsedTimeEntry.TimeReportingCodeHours
-							newClientOtherHours.TRC = structs.ClientTRC{
-								ID:          elapsedTimeEntry.TRC.TRCID,
-								Description: elapsedTimeEntry.TRC.TRCDescription,
-							}
-							employee.Jobs[i].Days[x].OtherHours = append(employee.Jobs[i].Days[x].OtherHours, newClientOtherHours)
+					for _, elapsedTimeEntry := range elapsedTimeDay.ElapsedTimeEntries {
+						var newClientOtherHours structs.ClientOtherHours
+						newClientOtherHours.Editable = *elapsedTimeEntry.Editable
+						newClientOtherHours.SequenceNumber = elapsedTimeEntry.SequenceNumber
+						newClientOtherHours.TimeReportingCodeHours = elapsedTimeEntry.TimeReportingCodeHours
+						newClientOtherHours.TRC = structs.ClientTRC{
+							ID:          elapsedTimeEntry.TRC.TRCID,
+							Description: elapsedTimeEntry.TRC.TRCDescription,
 						}
-
-						employee.Jobs[i].Days[x].SickHoursYTD = elapsedTimeSummary.SickLeaveBalanceHours
-						employee.Jobs[i].Days[x].VacationHoursYTD = elapsedTimeSummary.VacationLeaveBalanceHours
-
-						foundDay = true
-
+						employee.Jobs[i].Days[x].OtherHours = append(employee.Jobs[i].Days[x].OtherHours, newClientOtherHours)
 					}
-				}
-				if !foundDay {
-					var newDay structs.ClientDay
-					newDay.Date = serverDate
-					updateClientDayFromServerOtherHoursDay(&newDay, &elapsedTimeSummary)
-					employee.Jobs[i].Days = append(employee.Jobs[i].Days, newDay)
+
+					employee.Jobs[i].Days[x].SickHoursYTD = elapsedTimeSummary.SickLeaveBalanceHours
+					employee.Jobs[i].Days[x].VacationHoursYTD = elapsedTimeSummary.VacationLeaveBalanceHours
+
+					foundDay = true
+
 				}
 			}
+
+			if !foundDay {
+				var newDay structs.ClientDay
+				newDay.Date = serverDate
+
+				newDay.OtherHours = []structs.ClientOtherHours{}
+
+				for _, elapsedTimeEntry := range elapsedTimeDay.ElapsedTimeEntries {
+					var newClientOtherHours structs.ClientOtherHours
+					newClientOtherHours.Editable = *elapsedTimeEntry.Editable
+					newClientOtherHours.SequenceNumber = elapsedTimeEntry.SequenceNumber
+					newClientOtherHours.TimeReportingCodeHours = elapsedTimeEntry.TimeReportingCodeHours
+					newClientOtherHours.TRC = structs.ClientTRC{
+						ID:          elapsedTimeEntry.TRC.TRCID,
+						Description: elapsedTimeEntry.TRC.TRCDescription,
+					}
+					newDay.OtherHours = append(newDay.OtherHours, newClientOtherHours)
+				}
+
+				newDay.SickHoursYTD = elapsedTimeSummary.SickLeaveBalanceHours
+				newDay.VacationHoursYTD = elapsedTimeSummary.VacationLeaveBalanceHours
+
+				employee.Jobs[i].Days = append(employee.Jobs[i].Days, newDay)
+			}
+
 			break
 		}
 	}
@@ -212,7 +303,7 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			//now we merge all the days together.....
 			for _, serverDay := range workOrderDayArray {
-				serverDate, err := time.Parse("2006-01-02", serverDay.Date)
+				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
 					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error())
@@ -264,7 +355,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 
 			//now we merge all the days together.....
 			for _, serverDay := range dayArray {
-				serverDate, err := time.Parse("2006-01-02", serverDay.Date)
+				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
 					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error())
@@ -338,7 +429,7 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 func updateClientDayFromServerWorkOrderDay(clientDay *structs.ClientDay, serverDay *structs.WorkOrderDaySummary) {
 	//clientDay.HasPunchException = serverDay.HasPunchException
 	clientDay.HasWorkOrderException = serverDay.HasWorkOrderException
-	clientDay.PunchHours = serverDay.PunchHours
+	clientDay.ReportedHours = serverDay.ReportedHours
 	clientDay.PhysicalFacilitiesHours = serverDay.PhysicalFacilitiesHours
 
 	//replace the punches in this clientDay with the translated punches from the serverDay
@@ -373,7 +464,7 @@ func updateClientDayFromServerOtherHoursDay(clientDay *structs.ClientDay, server
 		for _, serverElapsedTimeEntry := range serverElapsedTimeDay.ElapsedTimeEntries {
 			var newElapsedTimeEntry structs.ClientOtherHours
 
-			newElapsedTimeEntry.Editable = serverElapsedTimeEntry.Editable
+			newElapsedTimeEntry.Editable = *serverElapsedTimeEntry.Editable
 			newElapsedTimeEntry.SequenceNumber = serverElapsedTimeEntry.SequenceNumber
 			newElapsedTimeEntry.TRC = structs.ClientTRC{
 				ID:          serverElapsedTimeEntry.TRC.TRCID,
@@ -454,8 +545,31 @@ func GetWorkOrderEntries(byuID string) {
 	}
 }
 
-//GetOtherHours will get the Other Hours entries for the employee and add them to the cached employee record
-func GetOtherHours(byuID string) {
+// //GetOtherHours will get the Other Hours entries for the employee and add them to the cached employee record
+// func GetOtherHours(byuID string) {
+// 	//lock the mutex, get the employee record from the cache
+// 	employeeCacheMutex.Lock()
+// 	employee := employeeCache[byuID]
+// 	employeeCacheMutex.Unlock()
+
+// 	if employee == nil {
+// 		log.L.Debugf("Employee is nil when getting other hours for %v", byuID)
+// 		return
+// 	}
+
+// 	for _, job := range employee.Jobs {
+// 		if job.JobType == "F" {
+// 			//call WSO2 to get other hours for the job
+// 			otherHours := ytimeapi.GetOtherHours(byuID, job.EmployeeJobID)
+
+// 			//update the other hours
+// 			UpdateOtherHoursForJob(byuID, job.EmployeeJobID, otherHours)
+// 		}
+// 	}
+// }
+
+//GetOtherHoursForJobAndDate will get the Other Hours entries for the employee (job/date) and add them to the cached employee record
+func GetOtherHoursForJobAndDate(byuID string, jobID int, date time.Time) {
 	//lock the mutex, get the employee record from the cache
 	employeeCacheMutex.Lock()
 	employee := employeeCache[byuID]
@@ -466,13 +580,9 @@ func GetOtherHours(byuID string) {
 		return
 	}
 
-	for _, job := range employee.Jobs {
-		if job.JobType == "F" {
-			//call WSO2 to get other hours for the job
-			otherHours := ytimeapi.GetOtherHours(byuID, job.EmployeeJobID)
+	//call WSO2 to get other hours for the job
+	otherHours := ytimeapi.GetOtherHoursForDate(byuID, jobID, date)
 
-			//update the other hours
-			UpdateOtherHoursForJob(byuID, job.EmployeeJobID, otherHours)
-		}
-	}
+	//update the other hours
+	UpdateOtherHoursForJobAndDate(byuID, jobID, date, otherHours)
 }

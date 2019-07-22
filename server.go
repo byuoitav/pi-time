@@ -53,8 +53,11 @@ func main() {
 	//lunchpunch
 	router.POST("/lunchpunch/:id", handlers.LunchPunch)
 
+	//get sick and vacation
+	router.GET("/otherhours/:id/:jobid/:date", handlers.GetSickAndVacationForJobAndDate)
+
 	//add sick or vacation
-	router.PUT("/otherhours/:id/:jobid", handlers.OtherHours)
+	router.PUT("/otherhours/:id", handlers.OtherHours)
 
 	//edit work order entry
 	router.PUT("/workorderentry/:id", handlers.EditWorkOrderEntry)

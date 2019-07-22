@@ -3,9 +3,11 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/byuoitav/common/log"
 	commonEvents "github.com/byuoitav/common/v2/events"
+	"github.com/byuoitav/pi-time/cache"
 	eventsender "github.com/byuoitav/pi-time/events"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/structs"
@@ -56,17 +58,14 @@ func LunchPunch(context echo.Context) error {
 func OtherHours(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date are all passed in the url
 	byuID := context.Param("id")
-	jobIDString := context.Param("jobid")
 
-	jobID, _ := strconv.Atoi(jobIDString)
-
-	var incomingRequest structs.ClientOtherHours
+	var incomingRequest structs.ClientOtherHoursRequest
 	err := context.Bind(incomingRequest)
 	if err != nil {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.OtherHours(byuID, jobID, incomingRequest)
+	err = helpers.OtherHours(byuID, incomingRequest)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
 	}
@@ -153,4 +152,19 @@ func SendEvent(context echo.Context) error {
 
 	log.L.Debugf("sent event from UI: %+v", event)
 	return context.String(http.StatusOK, "success")
+}
+
+//GetSickAndVacationForJobAndDate handles ensuring that we have the sick and vacation for a day
+func GetSickAndVacationForJobAndDate(context echo.Context) error {
+	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
+	byuID := context.Param("id")
+	jobIDString := context.Param("jobid")
+	dateString := context.Param("date")
+
+	jobID, _ := strconv.Atoi(jobIDString)
+	date, _ := time.Parse("2006-01-02", dateString)
+
+	cache.GetOtherHoursForJobAndDate(byuID, jobID, date)
+
+	return context.String(http.StatusOK, "ok")
 }

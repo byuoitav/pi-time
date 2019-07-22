@@ -62,7 +62,7 @@ type ClientDay struct {
 	Punches               []ClientPunch `json:"punches"`
 	PunchedHours          string        `json:"punched-hours"`
 
-	PunchHours              string                 `json:"punch_hours"`
+	ReportedHours           string                 `json:"reported_hours"`
 	PhysicalFacilitiesHours string                 `json:"physical_facilities_hours"`
 	WorkOrderEntries        []ClientWorkOrderEntry `json:"work-order-entries"`
 
@@ -96,20 +96,6 @@ type ClientLunchPunchRequest struct {
 	DurationInMinutes int       `json:"duration-in-minutes"`
 }
 
-//ClientSickRequest .
-type ClientSickRequest struct {
-	Editable bool `json:"editable"`
-	// SequenceNumber int    `json:"sequence-number"`
-	ElapsedHours string `json:"elapsed-hours"`
-}
-
-//ClientVacationRequest .
-type ClientVacationRequest struct {
-	Editable bool `json:"editable"`
-	//SequenceNumber int    `json:"sequence-number"`
-	ElapsedHours string `json:"elapsed-hours"`
-}
-
 //ClientDeletePunch .
 type ClientDeletePunch struct {
 	PunchType      string `json:"punch-type"`
@@ -123,6 +109,14 @@ type ClientOtherHours struct {
 	SequenceNumber         int       `json:"sequence_number"`
 	TimeReportingCodeHours string    `json:"time_reporting_code_hours"`
 	TRC                    ClientTRC `json:"trc"`
+}
+
+//ClientOtherHoursRequest is used to post and put the vacation and sick hours
+type ClientOtherHoursRequest struct {
+	EmployeeJobID          int    `json:"employee-job-id"`
+	SequenceNumber         int    `json:"sequence-number"`
+	TimeReportingCodeHours string `json:"time-reporting-code-hours"`
+	TRCID                  string `json:"trc-id"`
 }
 
 //ClientPunchRequest is the punch structure from the client on a punch in or out

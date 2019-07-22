@@ -107,8 +107,9 @@ type LunchPunch struct {
 type WorkOrderDaySummary struct {
 	Date                    string           `json:"punch_date"`
 	WorkOrderEntries        []WorkOrderEntry `json:"work_order_entries"`
-	PunchHours              string           `json:"punch_hours"`
+	ReportedHours           string           `json:"reported_hours"`
 	PhysicalFacilitiesHours string           `json:"physical_facilities_hours"`
+	OtherHours              string           `json:"other_hours"`
 	HasPunchException       *bool            `json:"has_punch_exception,omitempty"`
 	HasWorkOrderException   *bool            `json:"has_work_order_exception,omitempty"`
 }
@@ -140,10 +141,19 @@ type ElapsedTimeDay struct {
 
 //ElapsedTimeEntry is the structure for a single amount of sick or vacation time
 type ElapsedTimeEntry struct {
-	Editable               bool   `json:"editable"`
-	SequenceNumber         int    `json:"sequence_number"`
+	//these only come back when GETTING
+	Editable *bool `json:"editable,omitempty"`
+	TRC      TRC   `json:"trc"`
+
+	//these come back for GET and are used on POST
 	TimeReportingCodeHours string `json:"time_reporting_code_hours"`
-	TRC                    TRC    `json:"trc"`
+	SequenceNumber         int    `json:"sequence_number"`
+	EmployeeRecord         int    `json:"employee_record"`
+
+	//POST only
+	PunchDate            string `json:"punch_date"`
+	TRCID                string `json:"trc_id"`
+	TimeCollectionSource string `json:"time_collection_source"`
 }
 
 //DeletePunch .

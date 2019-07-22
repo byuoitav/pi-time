@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"time"
+
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/structs"
@@ -59,7 +61,7 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 }
 
 // OtherHours will record sick/vacation hours for the employee and report up the websocket.
-func OtherHours(byuID string, jobID int, request structs.ClientOtherHours) error {
+func OtherHours(byuID string, request structs.ClientOtherHoursRequest) error {
 	// build WSO2 request
 	elapsed := translateToElapsedTimeEntry(request)
 
@@ -69,8 +71,11 @@ func OtherHours(byuID string, jobID int, request structs.ClientOtherHours) error
 		return err
 	}
 
+	//parse the date
+	date, _ := time.Parse(summary.Dates[0].PunchDate, "2006-01-02")
+
 	// update the employee record, which also sends it up the websocket
-	cache.UpdateOtherHoursForJob(byuID, jobID, summary)
+	cache.UpdateOtherHoursForJobAndDate(byuID, request.EmployeeJobID, date, summary)
 
 	// if successful, return nil
 	return nil
