@@ -37,7 +37,7 @@ import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
 import { HoursPipe } from "./pipes/hours.pipe";
 import { WoTrcDialog } from "./dialogs/wo-trc/wo-trc.dialog";
-import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
+// import { WorkOrdersComponent } from "./components/work-orders/work-orders.component";
 import { ActivityButton } from "./components/activity-button/activity-button.component";
 import { JobSelectComponent } from "./components/job-select/job-select.component";
 import { DateSelectComponent } from "./components/date-select/date-select.component";
@@ -60,9 +60,8 @@ import { ToastService } from "./services/toast.service";
     LoginComponent,
     HoursPipe,
     WoTrcDialog,
-    WorkOrdersComponent,
+    // WorkOrdersComponent,
     ActivityButton,
-    // JobTimeSelectComponent,
     JobSelectComponent,
     DateSelectComponent,
     DayOverviewComponent,

@@ -141,18 +141,7 @@ export class PunchesComponent implements OnInit {
       date.setSeconds(0);
 
       req.time = date;
-      const obs = this.api.punch(req);
-
-      obs.subscribe(
-        resp => {
-          console.log("response data", resp);
-        },
-        err => {
-          console.log("response ERROR", err);
-        }
-      );
-
-      return obs;
+      return this.api.punch(req);
     }
   };
 

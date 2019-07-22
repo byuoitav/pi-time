@@ -218,9 +218,11 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     return new Promise<boolean>((resolve, reject) => {
       this.data.save(this.data.ref, hour, minute).subscribe(
         data => {
+          console.log("save data", data);
           resolve(true);
         },
         err => {
+          console.error("save error", err);
           resolve(false);
         }
       );
