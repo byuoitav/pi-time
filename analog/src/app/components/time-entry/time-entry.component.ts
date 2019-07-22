@@ -58,7 +58,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   constructor(
     private ref: OverlayRef,
     @Inject(PORTAL_DATA)
-    private data: {
+    public data: {
       ref: any;
       title: string;
       duration: boolean;
