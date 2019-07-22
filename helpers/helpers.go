@@ -26,6 +26,11 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 	log.L.Debug("updating employee timesheet")
 	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
 
+	//update the punches and work order entries
+	log.L.Debug("updating employee punches and work orders because a new punch happened")
+	go cache.GetPunchesForAllJobs(byuID)
+	go cache.GetWorkOrderEntries(byuID)
+
 	// if successful, return nil
 	return nil
 }
@@ -43,6 +48,11 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 
 	// update the employee timesheet, which also sends it up the websocket
 	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
+
+	//update the punches and work order entries
+	log.L.Debug("updating employee punches and work orders because a new lunch punch happened")
+	go cache.GetPunchesForAllJobs(byuID)
+	go cache.GetWorkOrderEntries(byuID)
 
 	// if successful, return nil
 	return nil

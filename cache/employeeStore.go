@@ -95,8 +95,11 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 	employeeCacheMutex.Lock()
 	defer employeeCacheMutex.Unlock()
 
+	//log.L.Debugf("Job: %v, Work Orders: %v+", jobID, workOrderArray)
+
 	employee := employeeCache[byuID]
 	for i := range employee.Jobs {
+		log.L.Debugf("employeejobID: %v, jobID: %v", employee.Jobs[i].EmployeeJobID, jobID)
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			employee.Jobs[i].WorkOrders = []structs.ClientWorkOrder{}
 
@@ -104,10 +107,12 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 				var newClientWorkOrder structs.ClientWorkOrder
 				newClientWorkOrder.ID = serverWorkOrder.WorkOrderID
 				newClientWorkOrder.Name = serverWorkOrder.WorkOrderDescription
+				//log.L.Debugf("Adding %+v", newClientWorkOrder)
 				employee.Jobs[i].WorkOrders = append(employee.Jobs[i].WorkOrders, newClientWorkOrder)
 			}
+
+			break
 		}
-		break
 	}
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
@@ -373,7 +378,7 @@ func GetPossibleWorkOrders(byuID string) {
 		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
 			//call WSO2 to get work orders for job
 			workOrders := ytimeapi.GetWorkOrders(job.OperatingUnit)
-
+			//log.L.Debugf("Work orders: %+v", workOrders)
 			//update the work orders
 			UpdatePossibleWorkOrders(byuID, job.EmployeeJobID, workOrders)
 		}
