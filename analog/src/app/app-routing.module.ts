@@ -10,7 +10,7 @@ import { EmployeeResolverService } from "./services/employee-resolver.service";
 import { JobSelectComponent } from "./components/job-select/job-select.component";
 import { DateSelectComponent } from "./components/date-select/date-select.component";
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
-import { ScreenSaverComponent } from './components/screen-saver/screen-saver.component';
+import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.component";
 
 const routes: Routes = [
   {

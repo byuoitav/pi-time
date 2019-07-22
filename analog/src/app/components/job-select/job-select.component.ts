@@ -44,7 +44,7 @@ export class JobSelectComponent implements OnInit {
   };
 
   goBack() {
-    this.router.navigate(["../"], {
+    this.router.navigate(["../../../"], {
       relativeTo: this.route,
       queryParamsHandling: "preserve"
     });
