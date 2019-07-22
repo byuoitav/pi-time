@@ -57,19 +57,15 @@ export class DateSelectComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.jobIdx = +params.get("job");
       console.log("jobidx", this.jobIdx);
+      this.getViewDays();
     });
 
     this.route.data.subscribe(data => {
       this._empRef = data.empRef;
 
       console.log("day select job", this.emp.jobs[this.jobIdx]);
+      this.getViewDays();
     });
-
-    this.today = new Date();
-    this.viewMonth = this.today.getMonth();
-    this.viewYear = this.today.getFullYear();
-
-    this.getViewDays();
   }
 
   goBack() {
@@ -128,12 +124,12 @@ export class DateSelectComponent implements OnInit {
     }
   };
 
-  // selectRandomDay = () => {
-  //   const max = this.emp.jobs[this.jobIdx].days.length - 1;
-  //   this.selectDay(Math.floor(Math.random() * Math.floor(max)));
-  // };
-
   getViewDays() {
+    this.today = new Date();
+
+    this.viewMonth = this.today.getMonth();
+    this.viewYear = this.today.getFullYear();
+
     this.viewDays = [];
     const lastDayOfLastMonth = new Date(this.viewYear, this.viewMonth, 0);
     const start = lastDayOfLastMonth.getDate() - lastDayOfLastMonth.getDay();
@@ -145,6 +141,7 @@ export class DateSelectComponent implements OnInit {
         startDate.getMonth(),
         startDate.getDate()
       );
+
       d.setDate(startDate.getDate() + i);
       this.viewDays.push(d);
     }
