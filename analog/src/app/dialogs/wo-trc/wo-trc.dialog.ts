@@ -62,9 +62,11 @@ export class WoTrcDialog implements OnInit {
     return new Promise<boolean>((resolve, reject) => {
       this.data.submit(trc, this.selectedWO, this.hours).subscribe(
         data => {
+          console.log("sumbit data", data);
           resolve(true);
         },
         err => {
+          console.error("sumbit error", err);
           resolve(false);
         }
       );

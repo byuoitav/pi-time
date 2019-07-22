@@ -44,7 +44,7 @@ export class DayOverviewComponent implements OnInit {
   }
 
   private _selectedTab: string;
-  get selectedTab(): int {
+  get selectedTab(): string | number {
     switch (this._selectedTab) {
       case "punches":
         return 0;
@@ -104,7 +104,11 @@ export class DayOverviewComponent implements OnInit {
   }
 
   goBack() {
-    window.history.back();
+    this.router.navigate(["../"], {
+      relativeTo: this.route,
+      preserveFragment: false,
+      queryParamsHandling: "preserve"
+    });
   }
 
   logout = () => {
