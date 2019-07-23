@@ -121,10 +121,11 @@ type ClientOtherHours struct {
 
 //ClientOtherHoursRequest is used to post and put the vacation and sick hours
 type ClientOtherHoursRequest struct {
-	EmployeeJobID          int    `json:"employee-job-id"`
-	SequenceNumber         int    `json:"sequence-number"`
-	TimeReportingCodeHours string `json:"time-reporting-code-hours"`
-	TRCID                  string `json:"trc-id"`
+	EmployeeJobID          int       `json:"employee-job-id"`
+	SequenceNumber         int       `json:"sequence-number"`
+	TimeReportingCodeHours string    `json:"time-reporting-code-hours"`
+	TRCID                  string    `json:"trc-id"`
+	PunchDate              time.Time `json:"punch-date"`
 }
 
 //ClientPunchRequest is the punch structure from the client on a punch in or out

@@ -45,7 +45,11 @@ func SendLunchPunchRequest(byuID string, body structs.LunchPunch) (structs.Times
 func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs.ElapsedTimeSummary, *nerr.E) {
 	var otherResponse structs.ElapsedTimeSummary
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, body, &otherResponse, map[string]string{
+	var wrapper structs.ElapsedTimeEntryWrapper
+
+	wrapper.ElapsedTimeEntry = body
+
+	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, wrapper, &otherResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})

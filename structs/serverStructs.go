@@ -156,6 +156,11 @@ type ElapsedTimeEntry struct {
 	TimeCollectionSource string `json:"time_collection_source"`
 }
 
+//ElapsedTimeEntryWrapper is th structure to use when POSTING sick or vacation
+type ElapsedTimeEntryWrapper struct {
+	ElapsedTimeEntry ElapsedTimeEntry `json:"elapsed_time_entry"`
+}
+
 //DeletePunch .
 type DeletePunch struct {
 	PunchType      string `json:"punch-type"`
