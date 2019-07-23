@@ -120,12 +120,16 @@ func EditWorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrder
 // DeletePunch will delete a punch from the employee record and report up the websocket.
 func DeletePunch(byuID string, jobID int, sequenceNumber string, request structs.ClientDeletePunch) error {
 	// build WSO2 request
-	// delPunch := translateToDeletePunch(request, sequenceNumber)
+	delPunch := translateToDeletePunch(request, sequenceNumber)
 
 	// send WSO2 request to the YTime API
-	// responseArray, err := ytimeapi.SendDeletePunchRequest(byuID, delPunch)
+	responseArray, err := ytimeapi.SendDeletePunchRequest(byuID, delPunch)
+	if err != nil {
+		return err
+	}
 
 	// update the employee timesheet
+	cache.DeletePunchForJob(byuID, jobID, request.PunchDate, responseArray)
 
 	// send employee down the websocket
 

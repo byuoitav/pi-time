@@ -101,6 +101,7 @@ type ClientDeletePunch struct {
 	PunchType      string `json:"punch-type"`
 	PunchTime      string `json:"punch-time"`
 	SequenceNumber int    `json:"sequence-number"`
+	PunchDate      string `json:"punch-date"`
 }
 
 //ClientOtherHours .
