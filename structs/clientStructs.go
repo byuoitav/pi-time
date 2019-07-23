@@ -38,6 +38,7 @@ type EmployeeJob struct {
 	OperatingUnit         string            `json:"operating_unit"`
 	TRCs                  []ClientTRC       `json:"trcs"`
 	CurrentTRC            ClientTRC         `json:"current-trc"`
+	CurrentWorkOrder      ClientWorkOrder   `json:"current-work-order"`
 	WorkOrders            []ClientWorkOrder `json:"work-orders"`
 	Days                  []ClientDay       `json:"days"`
 }
