@@ -22,7 +22,8 @@ import {
   DeletePunch,
   OtherHour,
   OtherHourRequest,
-  DeleteWorkOrder
+  DeleteWorkOrder,
+  WorkOrderUpsertRequest
 } from "../objects";
 
 export class EmployeeRef {
@@ -206,24 +207,15 @@ export class APIService {
     }
   };
 
-  newWorkOrderEntry = (byuID: string, data: WorkOrderEntry) => {
+  upsertWorkOrder = (
+    byuID: string,
+    jobID: number,
+    data: WorkOrderUpsertRequest
+  ) => {
     try {
       const json = this.jsonConvert.serialize(data);
-      return this.http.post("/workorderentry/" + byuID, json, {
-        responseType: "text",
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
-    } catch (e) {
-      return throwError(e);
-    }
-  };
 
-  updateWorkOrderEntry = (byuID: string, data: WorkOrderEntry) => {
-    try {
-      const json = this.jsonConvert.serialize(data);
-      return this.http.put("/workorderentry/" + byuID, json, {
+      return this.http.post("/workorderentry/" + byuID + "/" + jobID, json, {
         responseType: "text",
         headers: new HttpHeaders({
           "content-type": "application/json"

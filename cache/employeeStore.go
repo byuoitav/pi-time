@@ -422,7 +422,6 @@ func DeletePunchForJob(byuID string, jobID int, punchDate string, punchArray []s
 	for i := range employee.Jobs {
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			for x := range employee.Jobs[i].Days {
-
 				if employee.Jobs[i].Days[x].Date == timePunchDate {
 					var clientDay structs.ClientDay
 

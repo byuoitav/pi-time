@@ -123,7 +123,6 @@ func EditWorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrder
 // DeletePunch will delete a punch from the employee record and report up the websocket.
 func DeletePunch(byuID string, jobID int, sequenceNumber string, request structs.ClientDeletePunch) error {
 	// build WSO2 request
-	// delPunch := translateToDeletePunch(request, sequenceNumber)
 	jobIDstr := strconv.Itoa(jobID)
 
 	t, gerr := time.ParseInLocation("Mon Jan 2 2006", request.PunchDate, time.Local)

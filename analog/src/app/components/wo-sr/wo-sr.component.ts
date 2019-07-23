@@ -7,7 +7,8 @@ import {
   WorkOrder,
   Employee,
   LunchPunch,
-  DeleteWorkOrder
+  DeleteWorkOrder,
+  WorkOrderUpsertRequest
 } from "../../objects";
 import { MatDialog } from "@angular/material";
 import { WoTrcDialog } from "src/app/dialogs/wo-trc/wo-trc.dialog";
@@ -53,27 +54,21 @@ export class WoSrComponent implements OnInit {
           wo?: WorkOrder,
           hours?: string
         ): Observable<any> => {
-          const entry = new WorkOrderEntry();
-
-          if (this.day.workOrderEntries) {
-            entry.id = this.day.workOrderEntries.length + 1;
-          } else {
-            entry.id = 1;
-          }
-
-          entry.trc = trc;
-          entry.workOrder = wo;
-          entry.timeReportingCodeHours = hours;
-          entry.editable = true;
+          const req = new WorkOrderUpsertRequest();
+          req.timeReportingCodeHours = hours;
+          req.punchDate = this.day.time;
+          req.trcID = trc.id;
+          req.workOrderID = wo.id;
 
           const obs = this.api
-            .newWorkOrderEntry(this.emp.id, entry)
+            .upsertWorkOrder(this.emp.id, this.job.employeeJobID.valueOf(), req)
             .pipe(share());
+
           obs.subscribe(
             resp => {
               const msg = "Work Order Entry added sucessfully!";
               this._toast.show(msg, "DISMISS", 2000);
-              console.log("response data", entry);
+              console.log("response data", resp);
             },
             err => {
               console.warn("response ERROR", err);
@@ -127,27 +122,22 @@ export class WoSrComponent implements OnInit {
           wo?: WorkOrder,
           hours?: string
         ): Observable<any> => {
-          const entry = new WorkOrderEntry();
-
-          if (this.day.workOrderEntries) {
-            entry.id = this.day.workOrderEntries.length + 1;
-          } else {
-            entry.id = 1;
-          }
-
-          entry.trc = trc;
-          entry.workOrder = wo;
-          entry.timeReportingCodeHours = hours;
-          entry.editable = true;
+          const req = new WorkOrderUpsertRequest();
+          req.sequenceNumber = woToEdit.id;
+          req.trcID = woToEdit.trc.id;
+          req.workOrderID = woToEdit.workOrder.id;
+          req.timeReportingCodeHours = hours;
+          req.punchDate = this.day.time;
 
           const obs = this.api
-            .updateWorkOrderEntry(this.emp.id, entry)
+            .upsertWorkOrder(this.emp.id, this.job.employeeJobID.valueOf(), req)
             .pipe(share());
+
           obs.subscribe(
             resp => {
               const msg = "Work Order Entry updated sucessfully!";
               this._toast.show(msg, "DISMISS", 2000);
-              console.log("response data", entry);
+              console.log("response data", resp);
             },
             err => {
               console.warn("response ERROR", err);

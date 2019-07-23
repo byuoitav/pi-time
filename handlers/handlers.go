@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -127,11 +128,15 @@ func DeletePunch(context echo.Context) error {
 	byuID := context.Param("id")
 	jobIDString := context.Param("jobid")
 
-	jobID, _ := strconv.Atoi(jobIDString)
+	jobID, err := strconv.Atoi(jobIDString)
+	if err != nil {
+		return context.String(http.StatusBadRequest, fmt.Sprintf("unable to parse job id: %s", err))
+	}
+
 	seqNum := context.Param("seqnum")
 
 	var incomingRequest structs.ClientDeletePunch
-	err := context.Bind(&incomingRequest)
+	err = context.Bind(&incomingRequest)
 	if err != nil {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
