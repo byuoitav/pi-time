@@ -52,7 +52,7 @@ build-arm:
 
 build-web: $(NG1)
 	# ng1
-	cd $(NG1) && $(NPM_INSTALL) && $(NPM_BUILD)
+	cd $(NG1) && $(NPM_INSTALL) && $(NPM_BUILD) --base-href="./$(NG1)/"
 	mv $(NG1)/dist $(NG1)-dist
 
 test: 
@@ -70,7 +70,7 @@ run: $(NAME)-bin $(NG1)-dist
 
 deps:
 	npm config set unsafe-perm true
-	$(NPM_INSTALL) -g @angular/cli@latest
+	#$(NPM_INSTALL) -g @angular/cli@latest
 	$(GOGET) -d -v
 	gvt fetch -tag v1.6.0 github.com/dgraph-io/badger
 	gvt fetch -tag v3.3.10 github.com/labstack/echo
