@@ -1,6 +1,7 @@
 package ytimeapi
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 
@@ -48,6 +49,10 @@ func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs
 	var wrapper structs.ElapsedTimeEntryWrapper
 
 	wrapper.ElapsedTimeEntry = body
+
+	test, _ := json.Marshal(body)
+
+	log.L.Debugf("Body to send to other hours WSO2: %s", test)
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, wrapper, &otherResponse, map[string]string{
 		"Content-Type": "application/json",
