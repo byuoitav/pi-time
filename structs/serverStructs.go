@@ -163,6 +163,13 @@ type DeletePunch struct {
 	SequenceNumber string `json:"sequence-number"`
 }
 
+//DeleteWorkOrderEntry .
+type DeleteWorkOrderEntry struct {
+	JobID          int    `json:"employee-job-id"`
+	Date           string `json:"date"`
+	SequenceNumber int    `json:"sequence-number"`
+}
+
 //YTimeLocation .
 type YTimeLocation struct {
 	YtimeLocation             string      `json:"ytime_location"`

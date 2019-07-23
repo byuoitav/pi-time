@@ -102,6 +102,21 @@ func SendDeletePunchRequest(byuID string, jobID string, punchDate string, sequen
 	return response, nil
 }
 
+// SendDeleteWorkOrderEntryRequest sends a delete work order entry request to the YTime API and returns the response
+func SendDeleteWorkOrderEntryRequest(byuID string, jobID string, punchDate string, sequenceNumber string) (structs.WorkOrderDaySummary, *nerr.E) {
+	var response structs.WorkOrderDaySummary
+
+	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", "https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID+","+jobID+","+punchDate+","+sequenceNumber, "", &response, map[string]string{
+		"Content-Type": "application/json",
+		"Accept":       "application/json",
+	})
+	if err != nil {
+		return response, nerr.Translate(err).Addf("failed to delete work order entry for %s", byuID)
+	}
+
+	return response, nil
+}
+
 // GetTimesheet returns a timesheet, a bool if the timesheet was returned in offline mode (from cache), and possible error
 func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 

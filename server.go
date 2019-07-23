@@ -67,6 +67,9 @@ func main() {
 	//new work order entry
 	router.POST("/workorderentry/:id", handlers.NewWorkOrderEntry)
 
+	//delete work order entry
+	router.DELETE("/workorderentry/:id", handlers.DeleteWorkOrderEntry)
+
 	//delete duplicate punch
 	router.DELETE("/punch/:id/:jobid/:seqnum", handlers.DeletePunch)
 
