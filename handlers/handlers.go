@@ -151,6 +151,8 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 	if err != nil {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
+	date, err := time.ParseInLocation("2006-01-02", incomingRequest.Date, time.Local)
+	incomingRequest.Date = date.Format("2006-01-02")
 
 	ne := helpers.DeleteWorkOrderEntry(byuID, incomingRequest)
 	if ne != nil {
