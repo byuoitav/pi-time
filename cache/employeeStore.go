@@ -64,8 +64,9 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 	employee.TotalTime.Week = timesheet.WeeklyTotal
 	employee.Message = timesheet.InternationalMessage
 
-	//add the jobs
+	// update the jobs
 	employee.Jobs = []structs.EmployeeJob{}
+
 	for _, job := range timesheet.Jobs {
 		var translatedJob structs.EmployeeJob
 		translatedJob.EmployeeJobID = job.EmployeeRecord
@@ -615,6 +616,7 @@ func GetWorkOrderEntries(byuID string) {
 
 	for _, job := range employee.Jobs {
 		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
+			log.L.Infof("GETTING WORK ORDERS for JOB %s", job.)
 			//call WSO2 to get work orders for job
 			workOrders := ytimeapi.GetWorkOrderEntries(byuID, job.EmployeeJobID)
 
