@@ -129,7 +129,7 @@ type WorkOrderEntry struct {
 //ElapsedTimeSummary is the parent structure for sick and vacation hours
 type ElapsedTimeSummary struct {
 	SickLeaveBalanceHours     string           `json:"sick_leave_balance_hours"`
-	VacationLeaveBalanceHours string           `json:"vacation_leave_balance_balance"`
+	VacationLeaveBalanceHours string           `json:"vacation_leave_balance_hours"`
 	Dates                     []ElapsedTimeDay `json:"elapsed_time_dates"`
 }
 
@@ -154,6 +154,11 @@ type ElapsedTimeEntry struct {
 	PunchDate            string `json:"punch_date"`
 	TRCID                string `json:"trc_id"`
 	TimeCollectionSource string `json:"time_collection_source"`
+}
+
+//ElapsedTimeEntryWrapper is th structure to use when POSTING sick or vacation
+type ElapsedTimeEntryWrapper struct {
+	ElapsedTimeEntry ElapsedTimeEntry `json:"elapsed_time_entry"`
 }
 
 //DeletePunch .

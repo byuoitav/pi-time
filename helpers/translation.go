@@ -51,6 +51,8 @@ func translateToElapsedTimeEntry(start structs.ClientOtherHoursRequest) structs.
 	toReturn.TRCID = start.TRCID
 	toReturn.EmployeeRecord = start.EmployeeJobID
 	toReturn.TimeReportingCodeHours = start.TimeReportingCodeHours
+	toReturn.PunchDate = start.PunchDate.Format("2006-01-02")
+	toReturn.TimeCollectionSource = os.Getenv("SYSTEM_ID")
 
 	return toReturn
 }

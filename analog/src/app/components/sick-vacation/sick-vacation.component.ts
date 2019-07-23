@@ -51,6 +51,7 @@ export class SickVacationComponent implements OnInit {
         req.jobID = this.jobID;
         req.timeReportingCodeHours = hours + ":" + mins;
         req.trcID = other.trc.id;
+        req.punchDate = this.day.time;
 
         const obs = this.api.submitOtherHour(this.byuID, req);
         obs.subscribe(

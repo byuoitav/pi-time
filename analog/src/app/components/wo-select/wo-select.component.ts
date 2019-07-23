@@ -50,7 +50,6 @@ export class WoSelectComponent implements OnInit, AfterViewInit {
           "z x c v b n m {bksp}"
         ]
       },
-      useTouchEvents: true,
       buttonTheme: [
         {
           class: "keyboard-tall-button",

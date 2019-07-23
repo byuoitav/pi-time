@@ -61,13 +61,17 @@ func OtherHours(context echo.Context) error {
 	byuID := context.Param("id")
 
 	var incomingRequest structs.ClientOtherHoursRequest
-	err := context.Bind(incomingRequest)
+	err := context.Bind(&incomingRequest)
 	if err != nil {
+		log.L.Debugf("Bad incoming request for other hours %v", err.Error())
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
+	log.L.Debugf("Processing other hours request: %+v", incomingRequest)
+
 	err = helpers.OtherHours(byuID, incomingRequest)
 	if err != nil {
+		log.L.Debugf("Error processing other hours %v", err.Error())
 		return context.String(http.StatusInternalServerError, err.Error())
 	}
 
@@ -152,6 +156,13 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 	if err != nil {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
+	date, err := time.ParseInLocation("2006-1-02", incomingRequest.Date, time.Local)
+	if err != nil {
+		log.L.Debugf("Invalid date sent %v", incomingRequest.Date)
+		return context.String(http.StatusInternalServerError, "invalid date")
+	}
+
+	incomingRequest.Date = date.Format("2006-01-02")
 
 	ne := helpers.DeleteWorkOrderEntry(byuID, incomingRequest)
 	if ne != nil {

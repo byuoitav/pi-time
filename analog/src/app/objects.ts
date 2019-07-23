@@ -465,6 +465,9 @@ export class OtherHourRequest {
   @JsonProperty("time-reporting-code-hours", String)
   timeReportingCodeHours: string;
 
+  @JsonProperty("punch-date", DateConverter)
+  punchDate: Date = undefined;
+
   @JsonProperty("trc-id", String)
   trcID: string;
 }

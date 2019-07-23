@@ -64,8 +64,9 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 	employee.TotalTime.Week = timesheet.WeeklyTotal
 	employee.Message = timesheet.InternationalMessage
 
-	//add the jobs
+	// update the jobs
 	employee.Jobs = []structs.EmployeeJob{}
+
 	for _, job := range timesheet.Jobs {
 		var translatedJob structs.EmployeeJob
 		translatedJob.EmployeeJobID = job.EmployeeRecord
@@ -90,6 +91,11 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 		translatedJob.CurrentTRC = structs.ClientTRC{
 			ID:          job.CurrentTRC.TRCID,
 			Description: job.CurrentTRC.TRCDescription,
+		}
+
+		translatedJob.CurrentWorkOrder = structs.ClientWorkOrder{
+			ID:   job.CurrentWorkOrder.WorkOrderID,
+			Name: job.CurrentWorkOrder.WorkOrderDescription,
 		}
 
 		//append to array

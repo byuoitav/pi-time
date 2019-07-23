@@ -22,8 +22,7 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 	timesheet, err := ytimeapi.SendPunchRequest(byuID, punchRequest)
 	if err != nil {
 		log.L.Error(err.Error())
-		// put it into the cache
-
+		// TODO put it into the db to be posted later
 	}
 
 	// update the employee timesheet, which also sends it up the websocket
@@ -32,6 +31,7 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 
 	//update the punches and work order entries
 	log.L.Debug("updating employee punches and work orders because a new punch happened")
+	go cache.GetPossibleWorkOrders(byuID)
 	go cache.GetPunchesForAllJobs(byuID)
 	go cache.GetWorkOrderEntries(byuID)
 
@@ -59,6 +59,7 @@ func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 
 	//update the punches and work order entries
 	log.L.Debug("updating employee punches and work orders because a new lunch punch happened")
+	go cache.GetPossibleWorkOrders(byuID)
 	go cache.GetPunchesForAllJobs(byuID)
 	go cache.GetWorkOrderEntries(byuID)
 
