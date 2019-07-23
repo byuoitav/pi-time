@@ -15,9 +15,11 @@ import {
   Punch,
   PORTAL_DATA,
   ClientPunchRequest,
-  LunchPunch
+  LunchPunch,
+  DeletePunch
 } from "../../objects";
 import { ToastService } from "src/app/services/toast.service";
+import { DeletePunchDialog } from 'src/app/dialogs/delete-punch/delete-punch.dialog';
 
 @Component({
   selector: "punches",
@@ -43,6 +45,10 @@ export class PunchesComponent implements OnInit {
   ngOnInit() {}
 
   openKeyboard = (punch: Punch) => {
+    if (punch.time !== undefined) {
+      return;
+    }
+
     const overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
@@ -172,4 +178,26 @@ export class PunchesComponent implements OnInit {
       }
     });
   };
+
+  deletePunch = (punch: Punch) => {
+    if (punch == null || punch.deletablePair == null || punch.deletablePair === 0) {
+      return;
+    }
+
+    this.dialog.open(DeletePunchDialog, { 
+      data: { 
+        punch: punch,
+        submit: (yes: boolean): Observable<any> => {
+          if (yes) {
+            const dPunch = new DeletePunch();
+            dPunch.punchTime = punch.time.toLocaleTimeString();
+            dPunch.punchType = PunchType.fromString(punch.type);
+            dPunch.sequenceNumber = punch.id;
+
+            return this.api.deletePunch(this.jobID, dPunch);
+          }
+        }
+      }
+    });
+  }
 }

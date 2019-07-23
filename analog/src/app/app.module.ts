@@ -51,6 +51,7 @@ import { TimeEntryComponent } from "./components/time-entry/time-entry.component
 import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
 import { ToastService } from "./services/toast.service";
 import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
+import { DeletePunchDialog } from './dialogs/delete-punch/delete-punch.dialog';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
     TimeEntryComponent,
     LunchPunchDialog,
     ConfirmDialog,
+    DeletePunchDialog,
   ],
   imports: [
     BrowserModule,
@@ -118,7 +120,8 @@ import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
     ErrorDialog,
     TimeEntryComponent,
     LunchPunchDialog,
-    ConfirmDialog
+    ConfirmDialog,
+    DeletePunchDialog
   ],
   bootstrap: [AppComponent]
 })

@@ -1,0 +1,13 @@
+<div mat-dialog-content>
+    <span class="mat-h3">Are you sure you want to delete the punch at {{data.punch.time.toLocaleTimeString()}}?</span>
+</div>
+
+<div mat-dialog-actions>
+    <button (click)="cancel()" (press)="cancel()" mat-flat-button>
+    Cancel
+  </button>
+
+    <button color="warn" type="mat-flat-button" activity-button [click]="submit" (success)="success()" [spinnerDiameter]="38" cdkFocusInitial>
+    Delete
+  </button>
+</div>

@@ -52,6 +52,19 @@ export namespace PunchType {
         return pt;
     }
   }
+
+  export function fromString(s: string | String): PunchType {
+    switch (s) {
+      case "I":
+        return PunchType.In;
+      case "O":
+        return PunchType.Out;
+      case "T":
+        return PunchType.Transfer;
+      default:
+        return;
+    }
+  }
 }
 
 export enum JobType {
@@ -433,6 +446,9 @@ export class LunchPunch {
 export class DeletePunch {
   @JsonProperty("punch-type", String)
   punchType: PunchType;
+
+  @JsonProperty("punch-date", DateConverter)
+  punchDate: Date;
 
   @JsonProperty("punch-time", String)
   punchTime: string;
