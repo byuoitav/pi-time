@@ -73,10 +73,7 @@ deps:
 	$(NPM_INSTALL) -g @angular/cli@latest
 	$(GOGET) -d -v
 	gvt fetch -tag v1.6.0 github.com/dgraph-io/badger
-ifneq "$(BRANCH)" "master"
-	# put vendored packages in here
 	gvt fetch -tag v3.3.10 github.com/labstack/echo
-endif
 
 docker: docker-x86 docker-arm
 
