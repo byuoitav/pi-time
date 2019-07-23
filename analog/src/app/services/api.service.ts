@@ -20,7 +20,8 @@ import {
   LunchPunch,
   DeletePunch,
   OtherHour,
-  OtherHourRequest
+  OtherHourRequest,
+  DeleteWorkOrder
 } from "../objects";
 
 export class EmployeeRef {
@@ -239,6 +240,22 @@ export class APIService {
           })
         }
       );
+    } catch (e) {
+      return throwError(e);
+    }
+  };
+
+  deleteWorkOrder = (byuID: string, data: DeleteWorkOrder) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+
+      return this.http.request("delete", "/workorderentry/" + byuID, {
+        body: json,
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
     } catch (e) {
       return throwError(e);
     }

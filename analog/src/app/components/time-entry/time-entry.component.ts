@@ -58,10 +58,9 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     private ref: OverlayRef,
     @Inject(PORTAL_DATA)
     public data: {
-      ref: any;
       title: string;
       duration: boolean;
-      save: (ref: any, hours: string, mins: string) => Observable<any>;
+      save: (hours: string, mins: string) => Observable<any>;
       error: () => void;
     }
   ) {}
@@ -230,7 +229,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     const mins = this.getMinutes();
 
     return new Promise<boolean>((resolve, reject) => {
-      this.data.save(this.data.ref, hours, mins).subscribe(
+      this.data.save(hours, mins).subscribe(
         data => {
           resolve(true);
         },

@@ -452,3 +452,15 @@ export class OtherHourRequest {
   @JsonProperty("trc-id", String)
   trcID: string;
 }
+
+@JsonObject("DeleteWorkOrder")
+export class DeleteWorkOrder {
+  @JsonProperty("employee-job-id", Number)
+  jobID: number;
+
+  @JsonProperty("date", String)
+  date: string;
+
+  @JsonProperty("sequence-number", Number)
+  sequenceNumber: number;
+}

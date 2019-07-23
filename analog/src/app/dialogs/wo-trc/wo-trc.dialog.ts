@@ -2,9 +2,10 @@ import { Component, OnInit, Inject, Injector } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 
 import { WoSelectComponent } from "../../components/wo-select/wo-select.component";
+import { TimeEntryComponent } from "../../components/time-entry/time-entry.component";
 import { Job, WorkOrder, TRC, PORTAL_DATA } from "../../objects";
 
 @Component({
@@ -30,6 +31,7 @@ export class WoTrcDialog implements OnInit {
       showHours: boolean;
       chosenWO?: WorkOrder;
       submit: (trc?: TRC, wo?: WorkOrder, hours?: string) => Observable<any>;
+      delete: () => Observable<any>;
     }
   ) {
     if (data.chosenWO) {
@@ -37,7 +39,7 @@ export class WoTrcDialog implements OnInit {
     } else {
       this.selectedWO = data.job.currentWorkOrder;
     }
-    
+
     this.selectedPay = data.job.currentTRC.id;
     this.hours = "";
 
@@ -61,6 +63,19 @@ export class WoTrcDialog implements OnInit {
 
     return new Promise<boolean>((resolve, reject) => {
       this.data.submit(trc, this.selectedWO, this.hours).subscribe(
+        data => {
+          resolve(true);
+        },
+        err => {
+          resolve(false);
+        }
+      );
+    });
+  };
+
+  delete = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      this.data.delete().subscribe(
         data => {
           resolve(true);
         },
@@ -103,10 +118,13 @@ export class WoTrcDialog implements OnInit {
   }
 
   stopSubmit = (): boolean => {
-    if (this.data.showTRC && (this.selectedPay == null || this.selectedPay.length == 0)) {
+    if (
+      this.data.showTRC &&
+      (this.selectedPay == null || this.selectedPay.length == 0)
+    ) {
       return true;
     }
-    if (this.data.showWO && (this.selectedWO == null)) {
+    if (this.data.showWO && this.selectedWO == null) {
       return true;
     }
     if (this.data.showHours && (this.hours == null || this.hours.length == 0)) {
@@ -114,5 +132,34 @@ export class WoTrcDialog implements OnInit {
     }
 
     return false;
-  }
+  };
+
+  openHourEdit = () => {
+    const overlayRef = this._overlay.create({
+      height: "100vh",
+      width: "100vw",
+      disposeOnNavigation: true,
+      hasBackdrop: false,
+      panelClass: ["overlay", "time-entry-overlay"]
+    });
+
+    const injector = this.createInjector(overlayRef, {
+      title: "Enter time for work order.",
+      duration: true,
+      save: (hours: string, mins: string): Observable<any> => {
+        if (hours) {
+          this.hours = hours + ":" + mins;
+        } else {
+          this.hours = ":" + mins;
+        }
+
+        return of(true); // TODO is there a better way...?
+      },
+      error: () => {}
+    });
+
+    const portal = new ComponentPortal(TimeEntryComponent, null, injector);
+    const containerRef = overlayRef.attach(portal);
+    return overlayRef;
+  };
 }

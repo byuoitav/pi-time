@@ -46,8 +46,26 @@ export class SickVacationComponent implements OnInit {
     const injector = this.createInjector(overlayRef, {
       title: "Enter time for " + other.trc.description + " hours.",
       duration: true,
-      ref: other,
-      save: this.submitOtherHours,
+      save: (hours: string, mins: string): Observable<any> => {
+        const req = new OtherHourRequest();
+        req.jobID = this.jobID;
+        req.timeReportingCodeHours = hours + ":" + mins;
+        req.trcID = other.trc.id;
+
+        const obs = this.api.submitOtherHour(this.byuID, req);
+        obs.subscribe(
+          resp => {
+            console.log("response data", resp);
+            const msg = other.trc.description + "Hours Recorded";
+            this.toast.show(msg, "DISMISS", 2000);
+          },
+          err => {
+            console.warn("response ERROR", err);
+          }
+        );
+
+        return obs;
+      },
       error: () => {
         this.router.navigate([], {
           queryParams: {
@@ -76,34 +94,5 @@ export class SickVacationComponent implements OnInit {
     tokens.set(PORTAL_DATA, data);
 
     return new PortalInjector(this._injector, tokens);
-  };
-
-  submitOtherHours = (
-    other: any,
-    hour: string,
-    min: string
-  ): Observable<any> => {
-    if (other instanceof OtherHour) {
-      const req = new OtherHourRequest();
-      req.jobID = this.jobID;
-      req.timeReportingCodeHours = hour + ":" + min;
-      req.trcID = other.trc.id;
-
-      const obs = this.api.submitOtherHour(this.byuID, req);
-      obs.subscribe(
-        resp => {
-          console.log("response data", resp);
-          const msg = other.trc.description + "Hours Recorded";
-          this.toast.show(msg, "DISMISS", 2000);
-        },
-        err => {
-          console.warn("response ERROR", err);
-        }
-      );
-
-      return obs;
-    }
-
-    // TODO return something that fails
   };
 }
