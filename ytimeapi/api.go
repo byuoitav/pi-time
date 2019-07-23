@@ -36,7 +36,7 @@ func SendLunchPunchRequest(byuID string, body structs.LunchPunch) (structs.Times
 		"Accept":       "application/json",
 	})
 	if err != nil {
-		return punchResponse, nerr.Translate(err).Addf("failed to make a lunch punch for %s", byuID)
+		return punchResponse, nerr.Translate(err).Addf("failed to make a lunch punch for %s: %s", byuID, err.Error())
 	}
 
 	return punchResponse, nil

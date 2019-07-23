@@ -42,11 +42,15 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 // LunchPunch will record a lunch punch on the employee record and report up the websocket.
 func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
 	// build WSO2 request
+	log.L.Infof("Preprocessed lunch punch: %+v", request)
 	punchRequest := translateToLunchPunch(request)
+
+	log.L.Infof("LunchPunch: %+v", punchRequest)
 
 	// send WSO2 request to the YTime API
 	timesheet, err := ytimeapi.SendLunchPunchRequest(byuID, punchRequest)
 	if err != nil {
+		log.L.Warnf("Error with lunch punch ws02")
 		return err
 	}
 

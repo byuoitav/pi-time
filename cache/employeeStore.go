@@ -93,6 +93,11 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 			Description: job.CurrentTRC.TRCDescription,
 		}
 
+		translatedJob.CurrentWorkOrder = structs.ClientWorkOrder{
+			ID:   job.CurrentWorkOrder.WorkOrderID,
+			Name: job.CurrentWorkOrder.WorkOrderDescription,
+		}
+
 		//append to array
 		employee.Jobs = append(employee.Jobs, translatedJob)
 	}

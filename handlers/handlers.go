@@ -43,6 +43,7 @@ func LunchPunch(context echo.Context) error {
 	var incomingRequest structs.ClientLunchPunchRequest
 	err := context.Bind(&incomingRequest)
 	if err != nil {
+		log.L.Infof("Couldn't bind: %v", err)
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
