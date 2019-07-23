@@ -104,6 +104,13 @@ type ClientDeletePunch struct {
 	PunchDate      string `json:"punch-date"`
 }
 
+//ClientDeleteWorkOrder .
+type ClientDeleteWorkOrderEntry struct {
+	JobID          int    `json:"employee-job-id"`
+	Date           string `json:"date"`
+	SequenceNumber int    `json:"sequence-number"`
+}
+
 //ClientOtherHours .
 type ClientOtherHours struct {
 	Editable               bool      `json:"editable"`

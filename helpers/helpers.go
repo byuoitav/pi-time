@@ -138,11 +138,29 @@ func DeletePunch(byuID string, jobID int, sequenceNumber string, request structs
 		return fmt.Errorf(err.Error())
 	}
 
-	// update the employee timesheet
+	// update the employee timesheet, which also sends it up the websocket
 	cache.DeletePunchForJob(byuID, jobID, request.PunchDate, responseArray)
 
-	// send employee down the websocket
-
 	// if successful, return nil
+	return nil
+}
+
+// DeleteWorkOrderEntry deletes a work order entry and reports to the websocket
+func DeleteWorkOrderEntry(byuID string, request structs.ClientDeleteWorkOrderEntry) error {
+	//send WSO2 request
+	id := strconv.Itoa(request.JobID)
+	seqNum := strconv.Itoa(request.SequenceNumber)
+
+	response, err := ytimeapi.SendDeleteWorkOrderEntryRequest(byuID, id, request.Date, seqNum)
+	if err != nil {
+		log.L.Error(err)
+		return fmt.Errorf(err.Error())
+	}
+	var array []structs.WorkOrderDaySummary
+	array = append(array, response)
+	//update the employee timesheet, which also sends it up the websocket
+	cache.UpdateWorkOrderEntriesForJob(byuID, request.JobID, array)
+
+	//if successful return nil
 	return nil
 }

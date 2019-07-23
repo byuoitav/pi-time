@@ -391,6 +391,18 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
+//DeleteWorkOrderEntry deletes a work order entry
+func DeleteWorkOrderEntry(byuID string, id int, date string, seqNum string, response structs.WorkOrderDaySummary) {
+	employeeCacheMutex.Lock()
+	defer employeeCacheMutex.Unlock()
+	employee := employeeCache[byuID]
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when updating work order entries for job for %v, %v", byuID, id)
+	}
+}
+
+//DeletePunchForJob deletes a punch
 func DeletePunchForJob(byuID string, jobID int, punchDate string, punchArray []structs.Punch) {
 	employeeCacheMutex.Lock()
 	defer employeeCacheMutex.Unlock()
@@ -456,10 +468,6 @@ func DeletePunchForJob(byuID string, jobID int, punchDate string, punchArray []s
 
 	//send down websocket
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
-}
-
-func UpdateClientDayFromServerPunchArray(clientDay *structs.ClientPunch, serverDay *structs.Punch) {
-
 }
 
 func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverDay *structs.TimeClockDay) {

@@ -141,6 +141,26 @@ func DeletePunch(context echo.Context) error {
 	return context.String(http.StatusOK, "ok")
 }
 
+// DeleteWorkOrderEntry deletes a work order entry
+func DeleteWorkOrderEntry(context echo.Context) error {
+	//BYU ID is passed in the url
+	byuID := context.Param("id")
+
+	var incomingRequest structs.ClientDeleteWorkOrderEntry
+	err := context.Bind(&incomingRequest)
+	if err != nil {
+		return context.String(http.StatusBadRequest, err.Error())
+	}
+
+	ne := helpers.DeleteWorkOrderEntry(byuID, incomingRequest)
+	if ne != nil {
+		log.L.Error(ne)
+		return context.String(http.StatusInternalServerError, ne.Error())
+	}
+
+	return context.String(http.StatusOK, "ok")
+}
+
 //SendEvent passes an event to the messenger
 func SendEvent(context echo.Context) error {
 	var event commonEvents.Event
