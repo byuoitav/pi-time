@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -120,12 +122,20 @@ func EditWorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrder
 // DeletePunch will delete a punch from the employee record and report up the websocket.
 func DeletePunch(byuID string, jobID int, sequenceNumber string, request structs.ClientDeletePunch) error {
 	// build WSO2 request
-	delPunch := translateToDeletePunch(request, sequenceNumber)
+	// delPunch := translateToDeletePunch(request, sequenceNumber)
+	jobIDstr := strconv.Itoa(jobID)
+
+	t, gerr := time.ParseInLocation("Mon Jan 2 2006", request.PunchDate, time.Local)
+	if gerr != nil {
+		log.L.Error("crap")
+		return gerr
+	}
 
 	// send WSO2 request to the YTime API
-	responseArray, err := ytimeapi.SendDeletePunchRequest(byuID, delPunch)
+	responseArray, err := ytimeapi.SendDeletePunchRequest(byuID, jobIDstr, t.Format("2006-01-02"), sequenceNumber)
 	if err != nil {
-		return err
+		log.L.Error(err)
+		return fmt.Errorf(err.Error())
 	}
 
 	// update the employee timesheet

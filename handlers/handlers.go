@@ -132,9 +132,10 @@ func DeletePunch(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.DeletePunch(byuID, jobID, seqNum, incomingRequest)
-	if err != nil {
-		return context.String(http.StatusInternalServerError, err.Error())
+	ne := helpers.DeletePunch(byuID, jobID, seqNum, incomingRequest)
+	if ne != nil {
+		log.L.Error(ne)
+		return context.String(http.StatusInternalServerError, ne.Error())
 	}
 
 	return context.String(http.StatusOK, "ok")

@@ -68,7 +68,7 @@ func main() {
 	router.POST("/workorderentry/:id", handlers.NewWorkOrderEntry)
 
 	//delete duplicate punch
-	router.DELETE("/punch/:jobid/:seqnum", handlers.DeletePunch)
+	router.DELETE("/punch/:id/:jobid/:seqnum", handlers.DeletePunch)
 
 	//endpoint for UI events
 	router.POST("/event", handlers.SendEvent)

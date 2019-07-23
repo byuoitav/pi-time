@@ -1,28 +1,28 @@
 {
-  "/id": {
-    "target": "ws://localhost:8463",
-    "secure": false,
-    "logLevel": "debug",
-    "ws": true
-  },
-  "/punch/*": {
-    "target": "http://localhost:8463",
-    "secure": false,
-    "logLevel": "debug"
-  },
-  "/lunchpunch/*": {
-    "target": "http://localhost:8463",
-    "secure": false,
-    "logLevel": "debug"
-  },
-  "/workorderentry/*": {
-    "target": "http://localhost:8463",
-    "secure": false,
-    "logLevel": "debug"
-  },
-  "/otherhours/*": {
-    "target": "http://localhost:8463",
-    "secure": false,
-    "logLevel": "debug"
-  }
+    "/id": {
+        "target": "ws://localhost:8463",
+        "secure": false,
+        "logLevel": "debug",
+        "ws": true
+    },
+    "/punch/*": {
+        "target": "http://localhost:8463",
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "/lunchpunch/*": {
+        "target": "http://localhost:8463",
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "/workorderentry/*": {
+        "target": "http://localhost:8463",
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "/otherhours/*": {
+        "target": "http://localhost:8463",
+        "secure": false,
+        "logLevel": "debug"
+    }
 }
