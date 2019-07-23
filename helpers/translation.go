@@ -32,9 +32,10 @@ func translateToLunchPunch(start structs.ClientLunchPunchRequest) structs.LunchP
 	var toReturn structs.LunchPunch
 
 	toReturn.EmployeeRecord = start.EmployeeJobID
-	
-	toReturn.StartTime, err := time.ParseInLocation("3:04 PM" )	
-	toReturn.StartTime = start.StartTime.Format("3:04 PM")
+
+	// TODO not sure where things were left off here
+	// toReturn.StartTime, err = time.ParseInLocation("3:04 PM")
+	// toReturn.StartTime = start.StartTime.Format("3:04 PM")
 	toReturn.PunchDate = start.PunchDate
 	toReturn.Duration = string(start.DurationInMinutes)
 	toReturn.TimeCollectionSource = "CPI"
