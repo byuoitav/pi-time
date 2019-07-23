@@ -76,7 +76,7 @@ const routes: Routes = [
   providers: [
     {
       provide: APP_BASE_HREF,
-      useValue: "/"
+      useValue: "/analog"
     }
   ],
   exports: [RouterModule]

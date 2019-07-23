@@ -6,14 +6,12 @@ import (
 
 	"github.com/byuoitav/pi-time/cache"
 	figure "github.com/common-nighthawk/go-figure"
+	"github.com/labstack/echo/v4"
 
-	"github.com/labstack/echo"
-
-	"github.com/byuoitav/common"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/handlers"
 	"github.com/byuoitav/pi-time/helpers"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var updateCacheNowChannel = make(chan struct{})
@@ -41,7 +39,7 @@ func main() {
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
 
-	router := common.NewRouter()
+	router := echo.New() // TODO use common.NewRouter()
 
 	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.LogInUser)
@@ -82,7 +80,7 @@ func main() {
 	router.PUT("/updateCache", updateCacheNow)
 
 	//serve the angular web page
-	router.Group("/", middleware.StaticWithConfig(middleware.StaticConfig{
+	router.Group("/analog", middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:   "analog-dist",
 		Index:  "index.html",
 		HTML5:  true,

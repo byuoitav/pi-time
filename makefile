@@ -39,7 +39,6 @@ PASS=$(shell echo $(DOCKER_PASSWORD))
 NPM=npm
 NPM_INSTALL=$(NPM) install
 NPM_BUILD=$(NPM) run-script build
-NG_BUILD=ng build --prod --aot --build-optimizer 
 NG1=analog
 
 build: build-x86 build-arm build-web
@@ -53,14 +52,13 @@ build-arm:
 build-web: $(NG1)
 	# ng1
 	cd $(NG1) && $(NPM_INSTALL) && $(NPM_BUILD)
-	mv $(NG1)/dist $(NG1)-dist
+	mv $(NG1)/dist/$(NG1) $(NG1)-dist
 
-test: 
+test:
 	$(GOTEST) -v -race $(go list ./... | grep -v /vendor/) 
 
 clean:
 	$(GOCLEAN)
-	rm -rf vendor/
 	rm -f $(NAME)-bin
 	rm -f $(NAME)-arm
 	rm -rf $(NG1)-dist
@@ -71,10 +69,6 @@ run: $(NAME)-bin $(NG1)-dist
 deps:
 	npm config set unsafe-perm true
 	$(NPM_INSTALL) -g @angular/cli@latest
-	$(GOGET) -d -v
-	gvt fetch -tag v1.6.0 github.com/dgraph-io/badger
-	gvt fetch -tag v3.3.10 github.com/labstack/echo
-	rm -rf $(shell echo $(GOPATH))/src/github.com/labstack
 
 docker: docker-x86 docker-arm
 
