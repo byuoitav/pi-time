@@ -178,10 +178,11 @@ export class PunchesComponent implements OnInit {
           if (yes) {
             const dPunch = new DeletePunch();
             dPunch.punchTime = punch.time.toLocaleTimeString();
+            dPunch.punchDate = punch.time.toDateString();
             dPunch.punchType = PunchType.fromString(punch.type);
             dPunch.sequenceNumber = punch.id;
 
-            return this.api.deletePunch(this.jobID, dPunch);
+            return this.api.deletePunch(this.byuID, this.jobID, dPunch);
           }
         }
       }

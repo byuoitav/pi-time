@@ -394,7 +394,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 func DeletePunchForJob(byuID string, jobID int, punchDate string, punchArray []structs.Punch) {
 	employeeCacheMutex.Lock()
 	defer employeeCacheMutex.Unlock()
-	timePunchDate, err := time.ParseInLocation("2006-01-02", punchDate, time.Local)
+	timePunchDate, err := time.ParseInLocation("Mon Jan 2 2006", punchDate, time.Local)
 	if err != nil {
 		log.L.Fatalf("Bad punch date %s %v", punchDate, err)
 	}
@@ -411,15 +411,44 @@ func DeletePunchForJob(byuID string, jobID int, punchDate string, punchArray []s
 			for x := range employee.Jobs[i].Days {
 
 				if employee.Jobs[i].Days[x].Date == timePunchDate {
-					var serverDay structs.TimeClockDay
+					var clientDay structs.ClientDay
 
-					serverDay.Date = punchDate
-					serverDay.HasPunchException = employee.Jobs[i].Days[x].HasPunchException
-					serverDay.HasWorkOrderException = employee.Jobs[i].Days[x].HasWorkOrderException
-					serverDay.PunchedHours = employee.Jobs[i].Days[x].PunchedHours
+					clientDay.Date = timePunchDate
+					clientDay.HasPunchException = employee.Jobs[i].Days[x].HasPunchException
+					clientDay.HasWorkOrderException = employee.Jobs[i].Days[x].HasWorkOrderException
+					clientDay.PunchedHours = employee.Jobs[i].Days[x].PunchedHours
+					clientDay.ReportedHours = employee.Jobs[i].Days[x].ReportedHours
+					clientDay.PhysicalFacilitiesHours = employee.Jobs[i].Days[x].PhysicalFacilitiesHours
+					clientDay.WorkOrderEntries = employee.Jobs[i].Days[x].WorkOrderEntries
+					clientDay.SickHoursYTD = employee.Jobs[i].Days[x].SickHoursYTD
+					clientDay.VacationHoursYTD = employee.Jobs[i].Days[x].VacationHoursYTD
+					clientDay.OtherHours = employee.Jobs[i].Days[x].OtherHours
 					for z := range punchArray {
-						serverDay.Punches = append(serverDay.Punches, punchArray[z])
+						var clientPunch structs.ClientPunch
+						if punchArray[z].SequenceNumber != nil {
+							clientPunch.ID = *punchArray[z].SequenceNumber
+
+						}
+
+						if punchArray[z].EmployeeRecord != nil {
+							clientPunch.EmployeeJobID = *punchArray[z].EmployeeRecord
+						}
+
+						var serverPunchTime time.Time
+						if len(punchArray[z].PunchTime) > 0 {
+							serverPunchTime, err := time.ParseInLocation("2006-01-02", punchArray[z].PunchTime, time.Local)
+							if err != nil {
+								log.L.Fatalf("Bad punch time %s %v", serverPunchTime, err)
+							}
+						}
+
+						clientPunch.Time = serverPunchTime
+						clientPunch.PunchType = punchArray[z].PunchType
+						clientPunch.DeletablePair = punchArray[z].DeletablePair
+						clientDay.Punches = append(clientDay.Punches, clientPunch)
+
 					}
+					employee.Jobs[i].Days[x] = clientDay
 				}
 			}
 		}

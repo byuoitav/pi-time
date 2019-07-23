@@ -34,6 +34,8 @@ export class DeletePunchDialog implements OnInit {
       this.data.submit(true).subscribe(
         resp => {
           resolve(true);
+          // TODO: don't do this
+          window.location.reload()
         },
         err => {
           resolve(false);

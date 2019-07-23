@@ -58,7 +58,7 @@ build-web: $(NG1)
 test: 
 	$(GOTEST) -v -race $(go list ./... | grep -v /vendor/) 
 
-clean: 
+clean:
 	$(GOCLEAN)
 	rm -rf vendor/
 	rm -f $(NAME)-bin
@@ -74,6 +74,7 @@ deps:
 	$(GOGET) -d -v
 	gvt fetch -tag v1.6.0 github.com/dgraph-io/badger
 	gvt fetch -tag v3.3.10 github.com/labstack/echo
+	rm -rf $(shell echo $(GOPATH))/src/github.com/labstack
 
 docker: docker-x86 docker-arm
 
