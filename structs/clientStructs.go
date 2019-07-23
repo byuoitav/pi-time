@@ -91,9 +91,10 @@ type ClientWorkOrderEntry struct {
 
 //ClientLunchPunchRequest send us for lunch punch
 type ClientLunchPunchRequest struct {
-	EmployeeJobID     int       `json:"employee-job-id"`
-	StartTime         time.Time `json:"time"`
-	DurationInMinutes int       `json:"duration-in-minutes"`
+	EmployeeJobID     int    `json:"employee-job-id"`
+	StartTime         string `json:"start_time"`
+	DurationInMinutes int    `json:"duration"`
+	PunchDate         string `json:"punch_date"`
 }
 
 //ClientDeletePunch .
@@ -104,7 +105,7 @@ type ClientDeletePunch struct {
 	PunchDate      string `json:"punch-date"`
 }
 
-//ClientDeleteWorkOrder .
+//ClientDeleteWorkOrderEntry .
 type ClientDeleteWorkOrderEntry struct {
 	JobID          int    `json:"employee-job-id"`
 	Date           string `json:"date"`
