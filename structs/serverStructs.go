@@ -129,7 +129,7 @@ type WorkOrderEntry struct {
 //ElapsedTimeSummary is the parent structure for sick and vacation hours
 type ElapsedTimeSummary struct {
 	SickLeaveBalanceHours     string           `json:"sick_leave_balance_hours"`
-	VacationLeaveBalanceHours string           `json:"vacation_leave_balance_balance"`
+	VacationLeaveBalanceHours string           `json:"vacation_leave_balance_hours"`
 	Dates                     []ElapsedTimeDay `json:"elapsed_time_dates"`
 }
 
