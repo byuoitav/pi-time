@@ -15,7 +15,7 @@ import {
 } from "../../objects";
 import { WoTrcDialog } from "../../dialogs/wo-trc/wo-trc.dialog";
 import { ToastService } from "src/app/services/toast.service";
-import { ConfirmDialog } from 'src/app/dialogs/confirm/confirm.dialog';
+import { ConfirmDialog } from "src/app/dialogs/confirm/confirm.dialog";
 
 @Component({
   selector: "clock",
@@ -29,6 +29,14 @@ export class ClockComponent implements OnInit {
   get emp(): Employee {
     if (this._empRef) {
       return this._empRef.employee;
+    }
+
+    return undefined;
+  }
+
+  get offline(): Boolean {
+    if (this._empRef) {
+      return this._empRef.offline;
     }
 
     return undefined;
@@ -49,21 +57,22 @@ export class ClockComponent implements OnInit {
   }
 
   doubleClockConfirm(job: Job, state: PunchType) {
-    if (job.clockStatus === state as string) {
+    if (job.clockStatus === (state as string)) {
       console.log("confirming...");
-      this.dialog.open(
-        ConfirmDialog, { data: { state: PunchType.toNormalString(state) } }
-      ).afterClosed().subscribe((confirmed) => {
-        if (confirmed === "confirmed") {
-          this.clockInOut(job, state, null);
-        }
-      });
+      this.dialog
+        .open(ConfirmDialog, {
+          data: { state: PunchType.toNormalString(state) }
+        })
+        .afterClosed()
+        .subscribe(confirmed => {
+          if (confirmed === "confirmed") {
+            this.clockInOut(job, state, null);
+          }
+        });
     }
   }
 
   clockInOut = (job: Job, state: PunchType, event?) => {
-    
-
     console.log("clocking job", job.description, "to state", state);
     const data = new ClientPunchRequest();
     data.byuID = Number(this.emp.id);
@@ -94,8 +103,10 @@ export class ClockComponent implements OnInit {
               obs.subscribe(
                 resp => {
                   const msg =
-            "Clocked " + PunchType.toNormalString(state) + " successfully!";
-          this.toast.show(msg, "DISMISS", 2000);
+                    "Clocked " +
+                    PunchType.toNormalString(state) +
+                    " successfully!";
+                  this.toast.show(msg, "DISMISS", 2000);
                   console.log("response data", data);
                 },
                 err => {
@@ -120,7 +131,6 @@ export class ClockComponent implements OnInit {
               console.log(event);
               event.source.radioGroup.value = PunchType.reverse(state);
             }
-            
           }
         });
     } else {
@@ -160,6 +170,10 @@ export class ClockComponent implements OnInit {
   }
 
   hasTimesheetException = () => {
+    if (this.offline) {
+      return "";
+    }
+
     if (
       this.emp.jobs.some(j =>
         j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
