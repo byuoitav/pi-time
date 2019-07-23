@@ -20,7 +20,8 @@ import {
   LunchPunch,
   DeletePunch,
   OtherHour,
-  OtherHourRequest
+  OtherHourRequest,
+  DeleteWorkOrder
 } from "../objects";
 
 export class EmployeeRef {
@@ -154,7 +155,7 @@ export class APIService {
       // change the message in this one?
     } else {
       const ref = this.dialog.open(ErrorDialog, {
-        width: "70vw",
+        width: "80vw",
         data: {
           msg: msg
         }
@@ -244,10 +245,26 @@ export class APIService {
     }
   };
 
-  submitOtherHour = (byuID: string, jobID: number, data: OtherHourRequest) => {
+  deleteWorkOrder = (byuID: string, data: DeleteWorkOrder) => {
     try {
       const json = this.jsonConvert.serialize(data);
-      return this.http.put("/otherhours/" + byuID + "/" + jobID, json, {
+
+      return this.http.request("delete", "/workorderentry/" + byuID, {
+        body: json,
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
+    } catch (e) {
+      return throwError(e);
+    }
+  };
+
+  submitOtherHour = (byuID: string, data: OtherHourRequest) => {
+    try {
+      const json = this.jsonConvert.serialize(data);
+      return this.http.put("/otherhours/" + byuID, json, {
         responseType: "text",
         headers: new HttpHeaders({
           "content-type": "application/json"

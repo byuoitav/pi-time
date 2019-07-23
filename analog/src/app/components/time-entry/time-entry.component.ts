@@ -16,10 +16,6 @@ enum AMPM {
   PM = "PM"
 }
 
-// TODO make sure everything works if min is 0. (looks like 00)
-// ie 5:00
-// also 10:05
-
 @Component({
   selector: "time-entry",
   encapsulation: ViewEncapsulation.None,
@@ -34,69 +30,26 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   public ampm: AMPM;
 
   get value(): string {
-    if (this.data.duration) {
-      if (!this.time) {
-        return "--:--";
-      }
-
-      switch (this.time.length) {
-        case 0:
-          return "--:--";
-        default:
-          let hours: string;
-          let mins: string;
-
-          if (this.getHours()) {
-            hours = this.getHours().toString();
-          }
-
-          if (this.getMinutes() || this.getMinutes() === 0) {
-            mins = this.getMinutes().toString();
-          }
-
-          if (
-            hours &&
-            hours.length + mins.length !== this.time.length &&
-            mins === "0"
-          ) {
-            mins = "00";
-          }
-
-          if (!hours) {
-            return ":" + mins;
-          }
-
-          return hours + ":" + mins;
-
-        /*
-          return this.getHours()
-            ? this.getHours() + ":" + this.getMinutes()
-            : ":" + this.getMinutes();
-            */
-      }
-    } else {
-      if (!this.time) {
-        if (this.ampm) {
-          return "--:-- " + this.ampm;
-        }
-
-        return "--:--";
-      }
-
-      let sliceIdx = this.time.length === 3 ? 1 : 2;
-      const str =
-        this.time.length >= 3
-          ? this.time.slice(0, sliceIdx) +
-            ":" +
-            this.time.slice(sliceIdx, this.time.length)
-          : this.time;
-
-      if (!this.ampm) {
-        return str;
-      }
-
-      return str + " " + this.ampm;
+    if (!this.time) {
+      return "--:--";
     }
+
+    const hour = this.getHours();
+    const min = this.getMinutes();
+
+    if (!hour) {
+      if (!this.data.duration && this.ampm) {
+        return ":" + min + " " + this.ampm;
+      }
+
+      return ":" + min;
+    }
+
+    if (!this.data.duration && this.ampm) {
+      return hour + ":" + min + " " + this.ampm;
+    }
+
+    return hour + ":" + min;
   }
 
   private keyboard: Keyboard;
@@ -105,10 +58,9 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     private ref: OverlayRef,
     @Inject(PORTAL_DATA)
     public data: {
-      ref: any;
       title: string;
       duration: boolean;
-      save: (ref: any, hour: Number, min: Number) => Observable<any>;
+      save: (hours: string, mins: string) => Observable<any>;
       error: () => void;
     }
   ) {}
@@ -216,51 +168,29 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     }
   };
 
-  getHours = (): Number => {
-    if (this.data.duration) {
-      switch (this.time.length) {
-        case 0:
-          return undefined;
-        case 1:
-          return undefined;
-        case 2:
-          return undefined;
-        default:
-          return Number(this.time.slice(0, this.time.length - 2));
-      }
-    } else {
-      switch (this.time.length) {
-        case 4:
-          return Number(this.time.slice(0, 2));
-        case 3:
-          return Number(this.time.slice(0, 1));
-        default:
-          return 0;
-      }
+  getHours = (): string => {
+    switch (this.time.length) {
+      case 0:
+        return undefined;
+      case 1:
+        return undefined;
+      case 2:
+        return undefined;
+      default:
+        return this.time.slice(0, this.time.length - 2);
     }
   };
 
-  getMinutes = (): Number => {
-    if (this.data.duration) {
-      switch (this.time.length) {
-        case 0:
-          return undefined;
-        case 1:
-          return Number(this.time.slice(0, 1));
-        case 2:
-          return Number(this.time.slice(0, 2));
-        default:
-          return Number(this.time.slice(-2));
-      }
-    } else {
-      switch (this.time.length) {
-        case 4:
-          return Number(this.time.slice(2, 4));
-        case 3:
-          return Number(this.time.slice(1, 3));
-        default:
-          return 0;
-      }
+  getMinutes = (): string => {
+    switch (this.time.length) {
+      case 0:
+        return undefined;
+      case 1:
+        return this.time.slice(0, 1);
+      case 2:
+        return this.time.slice(0, 2);
+      default:
+        return this.time.slice(-2);
     }
   };
 
@@ -278,9 +208,8 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   valid = (): boolean => {
     if (this.data.duration) {
-      return true;
+      return this.time.length > 0;
     } else {
-      // normal time
       if (this.time.length <= 2 || !this.ampm) {
         return false;
       }
@@ -296,11 +225,11 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       });
     }
 
-    const hour = this.getHours();
-    const minute = this.getMinutes();
+    const hours = this.getHours();
+    const mins = this.getMinutes();
 
     return new Promise<boolean>((resolve, reject) => {
-      this.data.save(this.data.ref, hour, minute).subscribe(
+      this.data.save(hours, mins).subscribe(
         data => {
           resolve(true);
         },
