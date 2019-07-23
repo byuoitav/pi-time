@@ -7,7 +7,7 @@ import (
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/ytimeapi"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 //LogInUser will authenticate a user, upgrade to websocket, and return the timesheet and offline mode to the web socket

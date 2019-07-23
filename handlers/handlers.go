@@ -11,7 +11,7 @@ import (
 	eventsender "github.com/byuoitav/pi-time/events"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/structs"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 // Punch adds an in or out punch as determined by the body sent
