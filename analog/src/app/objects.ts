@@ -249,9 +249,7 @@ export class Day {
   @JsonProperty("vacation-hours-ytd", String, true)
   vacationHoursYTD: string = undefined;
 
-  public static minDay<T extends Day>(
-    days: T[]
-  ): Day {
+  public static minDay<T extends Day>(days: T[]): Day {
     if (days == null) {
       return;
     }
@@ -274,9 +272,7 @@ export class Day {
     return minimum;
   }
 
-  public static maxDay<T extends Day>(
-    days: T[]
-  ): Day {
+  public static maxDay<T extends Day>(days: T[]): Day {
     if (days == null) {
       return;
     }
@@ -285,7 +281,7 @@ export class Day {
     const today = new Day();
     today.time = new Date();
     maximum = today;
-  
+
     for (const d of days) {
       if (d.time.getTime() > maximum.time.getTime()) {
         maximum = d;
@@ -443,4 +439,13 @@ export class DeletePunch {
 
   @JsonProperty("sequence-number", Number, true)
   sequenceNumber: number;
+}
+
+@JsonObject("OtherHourRequest")
+export class OtherHourRequest {
+  @JsonProperty("time-reporting-code-hours", String)
+  timeReportingCodeHours: string;
+
+  @JsonProperty("trc-id", String)
+  trcID: string;
 }

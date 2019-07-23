@@ -10,11 +10,40 @@
       <ng-container *ngFor="let other of day?.otherHours; let lastItem = last">
         <div class="entry">
           <span class="label">{{ other?.trc?.description }}</span>
-          <span class="hours">{{ other?.timeReportingCodeHours }}</span>
+          <span
+            class="hours"
+            [class.editable]="other?.editable"
+            (click)="openTimeEdit(other)"
+            >{{ other?.timeReportingCodeHours }}</span
+          >
         </div>
 
         <mat-divider *ngIf="!lastItem"></mat-divider>
       </ng-container>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>YTD Balance</mat-card-title>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <ng-container *ngIf="day?.sickHoursYTD">
+        <div class="entry">
+          <span class="label">Sick</span>
+          <span class="hours">{{ day?.sickHoursYTD }}</span>
+        </div>
+
+        <mat-divider *ngIf="day?.vacationHoursYTD"></mat-divider>
+      </ng-container>
+
+      <div *ngIf="day?.vacationHoursYTD" class="entry">
+        <span class="label">Vacation</span>
+        <span class="hours">{{ day?.vacationHoursYTD }}</span>
+      </div>
     </mat-card-content>
   </mat-card>
 

@@ -1,12 +1,5 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  ViewEncapsulation,
-  Inject,
-  Injector
-} from "@angular/core";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Component, OnInit, Input, Inject, Injector } from "@angular/core";
+import { Router } from "@angular/router";
 import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
 import { MatDialog } from "@angular/material";
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
@@ -159,6 +152,8 @@ export class PunchesComponent implements OnInit {
 
       return obs;
     }
+
+    // TODO return something that fails
   };
 
   lunchPunch = () => {

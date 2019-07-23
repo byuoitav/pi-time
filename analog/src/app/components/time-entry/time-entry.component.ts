@@ -16,6 +16,10 @@ enum AMPM {
   PM = "PM"
 }
 
+// TODO make sure everything works if min is 0. (looks like 00)
+// ie 5:00
+// also 10:05
+
 @Component({
   selector: "time-entry",
   encapsulation: ViewEncapsulation.None,
@@ -30,27 +34,69 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   public ampm: AMPM;
 
   get value(): string {
-    if (!this.time) {
-      if (this.ampm) {
-        return "--:-- " + this.ampm;
+    if (this.data.duration) {
+      if (!this.time) {
+        return "--:--";
       }
 
-      return "--:--";
+      switch (this.time.length) {
+        case 0:
+          return "--:--";
+        default:
+          let hours: string;
+          let mins: string;
+
+          if (this.getHours()) {
+            hours = this.getHours().toString();
+          }
+
+          if (this.getMinutes() || this.getMinutes() === 0) {
+            mins = this.getMinutes().toString();
+          }
+
+          if (
+            hours &&
+            hours.length + mins.length !== this.time.length &&
+            mins === "0"
+          ) {
+            mins = "00";
+          }
+
+          if (!hours) {
+            return ":" + mins;
+          }
+
+          return hours + ":" + mins;
+
+        /*
+          return this.getHours()
+            ? this.getHours() + ":" + this.getMinutes()
+            : ":" + this.getMinutes();
+            */
+      }
+    } else {
+      if (!this.time) {
+        if (this.ampm) {
+          return "--:-- " + this.ampm;
+        }
+
+        return "--:--";
+      }
+
+      let sliceIdx = this.time.length === 3 ? 1 : 2;
+      const str =
+        this.time.length >= 3
+          ? this.time.slice(0, sliceIdx) +
+            ":" +
+            this.time.slice(sliceIdx, this.time.length)
+          : this.time;
+
+      if (!this.ampm) {
+        return str;
+      }
+
+      return str + " " + this.ampm;
     }
-
-    let sliceIdx = this.time.length === 3 ? 1 : 2;
-    const str =
-      this.time.length >= 3
-        ? this.time.slice(0, sliceIdx) +
-          ":" +
-          this.time.slice(sliceIdx, this.time.length)
-        : this.time;
-
-    if (!this.ampm) {
-      return str;
-    }
-
-    return str + " " + this.ampm;
   }
 
   private keyboard: Keyboard;
@@ -87,7 +133,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
         }
       ],
       maxLength: {
-        default: 4
+        default: this.data.duration ? 5 : 4
       },
       useTouchEvents: true
     });
@@ -102,41 +148,52 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   onKeyPress = (button: string) => {};
 
-  // TODO fix for duration
   updateValidKeys = () => {
     for (const key of [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]) {
       let valid = false;
 
-      switch (this.time.length) {
-        case 4:
-          valid = false;
-          break;
-        case 3:
-          const hour = Number(this.time.slice(0, 2));
-          const min = Number(this.time.charAt(2));
-
-          if (hour > 12) {
+      if (this.data.duration) {
+        switch (this.time.length) {
+          case 0:
+            valid = key === 0 ? false : true;
+            break;
+          case 5:
             valid = false;
-          } else {
-            if (min >= 6) {
+            break;
+          default:
+            valid = true;
+            break;
+        }
+      } else {
+        switch (this.time.length) {
+          case 4:
+            valid = false;
+            break;
+          case 3:
+            const hour = Number(this.time.slice(0, 2));
+            const min = Number(this.time.charAt(2));
+
+            if (hour > 12) {
               valid = false;
             } else {
-              valid = true;
+              if (min >= 6) {
+                valid = false;
+              } else {
+                valid = true;
+              }
             }
-          }
 
-          break;
-        case 2:
-          valid = true;
-          break;
-        case 1:
-          // keys 0-5 are valid
-          valid = key <= 5 ? true : false;
-          break;
-        case 0:
-          // all keys except 0 are valid
-          valid = key === 0 ? false : true;
-          break;
+            break;
+          case 2:
+            valid = true;
+            break;
+          case 1:
+            valid = key <= 5 ? true : false;
+            break;
+          case 0:
+            valid = key === 0 ? false : true;
+            break;
+        }
       }
 
       if (valid) {
@@ -160,24 +217,50 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   };
 
   getHours = (): Number => {
-    switch (this.time.length) {
-      case 4:
-        return Number(this.time.slice(0, 2));
-      case 3:
-        return Number(this.time.slice(0, 1));
-      default:
-        return 0;
+    if (this.data.duration) {
+      switch (this.time.length) {
+        case 0:
+          return undefined;
+        case 1:
+          return undefined;
+        case 2:
+          return undefined;
+        default:
+          return Number(this.time.slice(0, this.time.length - 2));
+      }
+    } else {
+      switch (this.time.length) {
+        case 4:
+          return Number(this.time.slice(0, 2));
+        case 3:
+          return Number(this.time.slice(0, 1));
+        default:
+          return 0;
+      }
     }
   };
 
   getMinutes = (): Number => {
-    switch (this.time.length) {
-      case 4:
-        return Number(this.time.slice(2, 4));
-      case 3:
-        return Number(this.time.slice(1, 3));
-      default:
-        return 0;
+    if (this.data.duration) {
+      switch (this.time.length) {
+        case 0:
+          return undefined;
+        case 1:
+          return Number(this.time.slice(0, 1));
+        case 2:
+          return Number(this.time.slice(0, 2));
+        default:
+          return Number(this.time.slice(-2));
+      }
+    } else {
+      switch (this.time.length) {
+        case 4:
+          return Number(this.time.slice(2, 4));
+        case 3:
+          return Number(this.time.slice(1, 3));
+        default:
+          return 0;
+      }
     }
   };
 
@@ -195,6 +278,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   valid = (): boolean => {
     if (this.data.duration) {
+      return true;
     } else {
       // normal time
       if (this.time.length <= 2 || !this.ampm) {

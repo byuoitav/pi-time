@@ -1,23 +1,25 @@
-.mat-button-wrapper {
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.activity-button {
+  .mat-button-wrapper {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-  .mat-button-content,
-  .mat-spinner,
-  .mat-icon {
-    opacity: 0;
-    transition: opacity 0s ease-in-out;
-    line-height: unset;
+    .mat-button-content,
+    .mat-spinner,
+    .mat-icon {
+      opacity: 0;
+      transition: opacity 0s ease-in-out;
+      line-height: unset;
 
-    &.active {
-      opacity: 1;
+      &.active {
+        opacity: 1;
+      }
     }
-  }
 
-  .hidden {
-    display: none;
+    .hidden {
+      display: none;
+    }
   }
 }
 

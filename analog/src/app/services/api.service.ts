@@ -19,7 +19,8 @@ import {
   ClientPunchRequest,
   LunchPunch,
   DeletePunch,
-  OtherHour
+  OtherHour,
+  OtherHourRequest
 } from "../objects";
 
 export class EmployeeRef {
@@ -243,7 +244,7 @@ export class APIService {
     }
   };
 
-  sendOtherHour = (byuID: string, jobID: number, data: OtherHour) => {
+  submitOtherHour = (byuID: string, jobID: number, data: OtherHourRequest) => {
     try {
       const json = this.jsonConvert.serialize(data);
       return this.http.put("/otherhours/" + byuID + "/" + jobID, json, {
