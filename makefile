@@ -48,7 +48,7 @@ build-x86:
 	env GOOS=linux CGO_ENABLED=0 $(GOBUILD) -o $(NAME)-bin -v
 
 build-arm: 
-	env GOOS=linux GOARCH=arm64 $(GOBUILD) -o $(NAME)-arm -v
+	env GOOS=linux GOARCH=arm $(GOBUILD) -o $(NAME)-arm -v
 
 build-web: $(NG1)
 	# ng1
@@ -60,6 +60,7 @@ test:
 
 clean: 
 	$(GOCLEAN)
+	rm -rf vendor/
 	rm -f $(NAME)-bin
 	rm -f $(NAME)-arm
 	rm -rf $(NG1)-dist
@@ -71,9 +72,9 @@ deps:
 	npm config set unsafe-perm true
 	$(NPM_INSTALL) -g @angular/cli@latest
 	$(GOGET) -d -v
+	gvt fetch -tag v1.6.0 github.com/dgraph-io/badger
 ifneq "$(BRANCH)" "master"
 	# put vendored packages in here
-	# e.g. $(VENDOR) github.com/byuoitav/event-router-microservice
 	gvt fetch -tag v3.3.10 github.com/labstack/echo
 endif
 
