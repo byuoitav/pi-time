@@ -616,7 +616,6 @@ func GetWorkOrderEntries(byuID string) {
 
 	for _, job := range employee.Jobs {
 		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
-			log.L.Infof("GETTING WORK ORDERS for JOB %s", job.)
 			//call WSO2 to get work orders for job
 			workOrders := ytimeapi.GetWorkOrderEntries(byuID, job.EmployeeJobID)
 
