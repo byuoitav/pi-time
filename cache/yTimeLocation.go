@@ -11,6 +11,7 @@ import (
 	"github.com/byuoitav/wso2services/wso2requests"
 )
 
+//LAT and LONG
 var (
 	LATITUDE  string
 	LONGITUDE string
@@ -39,7 +40,7 @@ func GetYtimeLocation() {
 			"https://api.byu.edu:443/domains/erp/hr/locations/v1/"+building, "", &ytimeLocation)
 
 		if err != nil {
-			log.L.Errorf("Error when retrieving building information for %v", building)
+			log.L.Errorf("Error when retrieving building information for %v: %v", building, err)
 			time.Sleep(1000)
 		} else {
 			LATITUDE = fmt.Sprintf("%v", ytimeLocation.Latitude)

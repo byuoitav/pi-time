@@ -71,7 +71,7 @@
         </mat-grid-list>
     </mat-card>
 
-    <button class="view-timesheet" color="accent" (click)="toTimesheet()" [matBadge]="hasTimesheetException()" matBadgeColor="warn" matBadgeSize="medium" mat-raised-button>
+    <button class="view-timesheet" color="accent" (click)="toTimesheet()" [disabled]="offline" [matBadge]="hasTimesheetException()" matBadgeColor="warn" matBadgeSize="medium" mat-raised-button>
     View Timesheet
   </button>
 </div>

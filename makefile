@@ -58,7 +58,7 @@ build-web: $(NG1)
 test: 
 	$(GOTEST) -v -race $(go list ./... | grep -v /vendor/) 
 
-clean: 
+clean:
 	$(GOCLEAN)
 	rm -rf vendor/
 	rm -f $(NAME)-bin
@@ -73,10 +73,8 @@ deps:
 	$(NPM_INSTALL) -g @angular/cli@latest
 	$(GOGET) -d -v
 	gvt fetch -tag v1.6.0 github.com/dgraph-io/badger
-ifneq "$(BRANCH)" "master"
-	# put vendored packages in here
 	gvt fetch -tag v3.3.10 github.com/labstack/echo
-endif
+	rm -rf $(shell echo $(GOPATH))/src/github.com/labstack
 
 docker: docker-x86 docker-arm
 

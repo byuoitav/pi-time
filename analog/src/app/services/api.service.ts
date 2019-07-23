@@ -6,6 +6,7 @@ import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
 
 import { ErrorDialog } from "../dialogs/error/error.dialog";
+import { ToastService } from "./toast.service";
 import {
   Employee,
   Job,
@@ -28,6 +29,8 @@ export class EmployeeRef {
   private _employee: BehaviorSubject<Employee>;
   private _logout;
 
+  public offline: boolean;
+
   get employee() {
     if (this._employee) {
       return this._employee.value;
@@ -35,6 +38,7 @@ export class EmployeeRef {
 
     return undefined;
   }
+
   constructor(employee: BehaviorSubject<Employee>, logout: () => void) {
     this._employee = employee;
     this._logout = logout;
@@ -63,7 +67,8 @@ export class APIService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toast: ToastService
   ) {
     this.jsonConvert = new JsonConvert();
     this.jsonConvert.ignorePrimitiveChecks = false;
@@ -103,6 +108,19 @@ export class APIService {
     const endpoint = "ws://" + window.location.host + "/id/" + id;
     const ws = new WebSocket(endpoint);
 
+    const empRef = new EmployeeRef(employee, () => {
+      console.log("logging out employee", employee.value.id);
+
+      // clean up the websocket
+      ws.close();
+
+      // no more employee values
+      employee.complete();
+
+      // route to login page
+      this.router.navigate(["/login"], { replaceUrl: true });
+    });
+
     ws.onmessage = event => {
       const data: Message = JSON.parse(event.data);
 
@@ -121,6 +139,22 @@ export class APIService {
             console.warn("unable to deserialize employee", e);
             employee.error("invalid response from api");
           }
+
+          break;
+        case "offline-mode":
+          empRef.offline = Boolean(data.value);
+
+          if (empRef.offline) {
+            this.router
+              .navigate(["/employee/" + empRef.employee.id], {
+                queryParams: {},
+                fragment: null
+              })
+              .finally(() => {
+                this.toast.showIndefinitely("Offline Mode", "");
+              });
+          }
+
           break;
       }
     };
@@ -129,19 +163,6 @@ export class APIService {
       console.error("websocket error", event);
       employee.error("No employee found with the given ID.");
     };
-
-    const empRef = new EmployeeRef(employee, () => {
-      console.log("logging out employee", employee.value.id);
-
-      // clean up the websocket
-      ws.close();
-
-      // no more employee values
-      employee.complete();
-
-      // route to login page
-      this.router.navigate(["/login"], { replaceUrl: true });
-    });
 
     return empRef;
   };
