@@ -391,6 +391,48 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 	SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
+func DeletePunchForJob(byuID string, jobID int, punchDate string, punchArray []structs.Punch) {
+	employeeCacheMutex.Lock()
+	defer employeeCacheMutex.Unlock()
+	timePunchDate, err := time.ParseInLocation("2006-01-02", punchDate, time.Local)
+	if err != nil {
+		log.L.Fatalf("Bad punch date %s %v", punchDate, err)
+	}
+
+	employee := employeeCache[byuID]
+
+	if employee == nil {
+		log.L.Debugf("Employee is nil when updating employee punches for job for %v, %v", byuID, jobID)
+		return
+	}
+
+	for i := range employee.Jobs {
+		if employee.Jobs[i].EmployeeJobID == jobID {
+			for x := range employee.Jobs[i].Days {
+
+				if employee.Jobs[i].Days[x].Date == timePunchDate {
+					var serverDay structs.TimeClockDay
+
+					serverDay.Date = punchDate
+					serverDay.HasPunchException = employee.Jobs[i].Days[x].HasPunchException
+					serverDay.HasWorkOrderException = employee.Jobs[i].Days[x].HasWorkOrderException
+					serverDay.PunchedHours = employee.Jobs[i].Days[x].PunchedHours
+					for z := range punchArray {
+						serverDay.Punches = append(serverDay.Punches, punchArray[z])
+					}
+				}
+			}
+		}
+	}
+
+	//send down websocket
+	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+}
+
+func UpdateClientDayFromServerPunchArray(clientDay *structs.ClientPunch, serverDay *structs.Punch) {
+
+}
+
 func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverDay *structs.TimeClockDay) {
 	clientDay.HasPunchException = serverDay.HasPunchException
 	//clientDay.HasWorkOrderException = serverDay.HasWorkOrderException

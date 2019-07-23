@@ -63,8 +63,31 @@ export class PunchesComponent implements OnInit {
     const injector = this.createInjector(overlayRef, {
       title: "Enter time for " + PunchType.toString(punch.type) + " punch.",
       duration: false,
-      ref: punch,
-      save: this.submitUpdatedTime,
+      save: (hours: string, mins: string): Observable<any> => {
+        const req = new ClientPunchRequest();
+        req.byuID = Number(this.byuID);
+        req.jobID = this.jobID;
+        req.type = punch.type;
+
+        const date = new Date(punch.time);
+        date.setHours(Number(hours), Number(mins), 0, 0);
+
+        req.time = date;
+
+        const obs = this.api.punch(req).pipe(share());
+        obs.subscribe(
+          resp => {
+            console.log("response data", resp);
+            const msg = "Successfully updated punch.";
+            this.toast.show(msg, "DISMISS", 2000);
+          },
+          err => {
+            console.warn("response ERROR", err);
+          }
+        );
+
+        return obs;
+      },
       error: () => {
         this.router.navigate([], {
           queryParams: {
@@ -124,42 +147,6 @@ export class PunchesComponent implements OnInit {
     }
 
     return "--:--";
-  };
-
-  submitUpdatedTime = (
-    punch: any,
-    hour: Number,
-    min: Number
-  ): Observable<any> => {
-    if (punch instanceof Punch) {
-      const req = new ClientPunchRequest();
-      req.byuID = Number(this.byuID);
-      req.jobID = this.jobID;
-      req.type = punch.type;
-
-      const date = new Date(punch.time);
-      date.setHours(hour.valueOf());
-      date.setMinutes(min.valueOf());
-      date.setSeconds(0);
-
-      req.time = date;
-
-      const obs = this.api.punch(req).pipe(share());
-      obs.subscribe(
-        resp => {
-          console.log("response data", resp);
-          const msg = "Successfully updated punch.";
-          this.toast.show(msg, "DISMISS", 2000);
-        },
-        err => {
-          console.warn("response ERROR", err);
-        }
-      );
-
-      return obs;
-    }
-
-    // TODO return something that fails
   };
 
   lunchPunch = () => {
