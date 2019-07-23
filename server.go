@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/byuoitav/pi-time/cache"
+	figure "github.com/common-nighthawk/go-figure"
 
 	"github.com/labstack/echo"
 
@@ -17,6 +19,8 @@ import (
 var updateCacheNowChannel = make(chan struct{})
 
 func main() {
+	figure.NewFigure("P-TIME", "ntgreek", true).Print()
+	fmt.Print("\n\n")
 	log.SetLevel("debug")
 
 	//start a go routine to go and get the latitude and longitude from the building struct
