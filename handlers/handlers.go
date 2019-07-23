@@ -60,13 +60,17 @@ func OtherHours(context echo.Context) error {
 	byuID := context.Param("id")
 
 	var incomingRequest structs.ClientOtherHoursRequest
-	err := context.Bind(incomingRequest)
+	err := context.Bind(&incomingRequest)
 	if err != nil {
+		log.L.Debugf("Bad incoming request for other hours %v", err.Error())
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
+	log.L.Debugf("Processing other hours request: %+v", incomingRequest)
+
 	err = helpers.OtherHours(byuID, incomingRequest)
 	if err != nil {
+		log.L.Debugf("Error processing other hours %v", err.Error())
 		return context.String(http.StatusInternalServerError, err.Error())
 	}
 
