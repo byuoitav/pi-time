@@ -227,14 +227,15 @@ export class APIService {
     }
   };
 
-  deletePunch = (jobID: number, data: DeletePunch) => {
+  deletePunch = (byuID: string, jobID: number, data: DeletePunch) => {
     try {
       const json = this.jsonConvert.serialize(data);
       return this.http.request(
         "delete",
-        "/punch/" + jobID + "/" + data.sequenceNumber,
+        "/punch/" + byuID + "/" + jobID + "/" + data.sequenceNumber,
         {
           body: json,
+          responseType: "text",
           headers: new HttpHeaders({
             "content-type": "application/json"
           })

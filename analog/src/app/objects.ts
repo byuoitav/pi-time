@@ -447,8 +447,8 @@ export class DeletePunch {
   @JsonProperty("punch-type", String)
   punchType: PunchType;
 
-  @JsonProperty("punch-date", DateConverter)
-  punchDate: Date;
+  @JsonProperty("punch-date", String)
+  punchDate: string;
 
   @JsonProperty("punch-time", String)
   punchTime: string;

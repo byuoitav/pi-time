@@ -87,10 +87,11 @@ func SendEditWorkOrderEntryRequest(byuID string, body structs.WorkOrderEntry) (s
 }
 
 // SendDeletePunchRequest sends a delete punch request to the YTime API and returns the response.
-func SendDeletePunchRequest(byuID string, body structs.DeletePunch) ([]structs.Punch, *nerr.E) {
+func SendDeletePunchRequest(byuID string, jobID string, punchDate string, sequenceNumber string) ([]structs.Punch, *nerr.E) {
 	var response []structs.Punch
+	log.L.Info(punchDate)
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &response, map[string]string{
+	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+jobID+","+punchDate+","+sequenceNumber, "", &response, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
