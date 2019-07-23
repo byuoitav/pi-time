@@ -74,10 +74,10 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   providers: [
-    // {
-    //   provide: APP_BASE_HREF,
-    //   useValue: "/"
-    // }
+    {
+      provide: APP_BASE_HREF,
+      useValue: "/analog"
+    }
   ],
   exports: [RouterModule]
 })

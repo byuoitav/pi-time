@@ -77,8 +77,8 @@ func main() {
 	router.PUT("/updateCache", updateCacheNow)
 
 	//serve the angular web page
-	router.Group("/", middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:   "analog-dist/analog",
+	router.Group("/analog", middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:   "analog-dist",
 		Index:  "index.html",
 		HTML5:  true,
 		Browse: true,
