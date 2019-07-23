@@ -80,15 +80,16 @@ export class SickVacationComponent implements OnInit {
 
   submitOtherHours = (
     other: any,
-    hour: Number,
-    min: Number
+    hour: string,
+    min: string
   ): Observable<any> => {
     if (other instanceof OtherHour) {
       const req = new OtherHourRequest();
+      req.jobID = this.jobID;
       req.timeReportingCodeHours = hour + ":" + min;
       req.trcID = other.trc.id;
 
-      const obs = this.api.submitOtherHour(this.byuID, this.jobID, req);
+      const obs = this.api.submitOtherHour(this.byuID, req);
       obs.subscribe(
         resp => {
           console.log("response data", resp);

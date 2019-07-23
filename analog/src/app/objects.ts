@@ -443,6 +443,9 @@ export class DeletePunch {
 
 @JsonObject("OtherHourRequest")
 export class OtherHourRequest {
+  @JsonProperty("employee-job-id", Number)
+  jobID: number;
+
   @JsonProperty("time-reporting-code-hours", String)
   timeReportingCodeHours: string;
 

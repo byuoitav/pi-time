@@ -154,7 +154,7 @@ export class APIService {
       // change the message in this one?
     } else {
       const ref = this.dialog.open(ErrorDialog, {
-        width: "70vw",
+        width: "80vw",
         data: {
           msg: msg
         }
@@ -244,10 +244,10 @@ export class APIService {
     }
   };
 
-  submitOtherHour = (byuID: string, jobID: number, data: OtherHourRequest) => {
+  submitOtherHour = (byuID: string, data: OtherHourRequest) => {
     try {
       const json = this.jsonConvert.serialize(data);
-      return this.http.put("/otherhours/" + byuID + "/" + jobID, json, {
+      return this.http.put("/otherhours/" + byuID, json, {
         responseType: "text",
         headers: new HttpHeaders({
           "content-type": "application/json"
