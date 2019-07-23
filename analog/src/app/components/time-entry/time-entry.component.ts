@@ -86,8 +86,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       ],
       maxLength: {
         default: this.data.duration ? 5 : 4
-      },
-      useTouchEvents: true
+      }
     });
 
     this.updateValidKeys();
