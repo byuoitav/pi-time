@@ -60,7 +60,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     public data: {
       title: string;
       duration: boolean;
-      save: (hours: string, mins: string) => Observable<any>;
+      save: (hours: string, mins: string, ampm?: string) => Observable<any>;
       error: () => void;
     }
   ) {}
@@ -229,7 +229,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     const mins = this.getMinutes();
 
     return new Promise<boolean>((resolve, reject) => {
-      this.data.save(hours, mins).subscribe(
+      this.data.save(hours, mins, this.ampm).subscribe(
         data => {
           resolve(true);
         },
