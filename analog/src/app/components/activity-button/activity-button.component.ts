@@ -106,16 +106,22 @@ export class ActivityButton extends ActivityButtonBase {
       this._resolving = false;
 
       setTimeout(() => {
-        this.reset();
         this.success.emit();
-      }, 750);
+      }, 200);
+
+      setTimeout(() => {
+        this.reset();
+      }, 600);
     } else {
       this._error = true;
 
       setTimeout(() => {
-        this.reset();
         this.error.emit();
-      }, 750);
+      }, 300);
+
+      setTimeout(() => {
+        this.reset();
+      }, 800);
     }
   }
 }
