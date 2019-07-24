@@ -84,19 +84,20 @@ func SendWorkOrderUpsertRequest(byuID string, req structs.WorkOrderUpsert) (stru
 }
 
 // SendDeletePunchRequest sends a delete punch request to the YTime API and returns the response.
-func SendDeletePunchRequest(byuID string, jobID string, punchDate string, sequenceNumber string) ([]structs.Punch, *nerr.E) {
-	var response []structs.Punch
-	log.L.Info(punchDate)
+func SendDeletePunchRequest(byuID string, req structs.DeletePunch) ([]structs.TimeClockDay, *nerr.E) {
+	var resp []structs.TimeClockDay
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+jobID+","+punchDate+","+sequenceNumber, "", &response, map[string]string{
+	url := fmt.Sprintf("https://api.byu.edu:443/domains/erp/hr/punches/v1/%s,%d,%s,%d", byuID, *req.EmployeeJobID, req.PunchTime.Format("2006-01-02"), *req.SequenceNumber)
+
+	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", url, nil, &resp, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
 	if err != nil {
-		return response, nerr.Translate(err).Addf("failed to delete punch for %s", byuID)
+		return resp, nerr.Translate(err).Addf("failed to delete punch")
 	}
 
-	return response, nil
+	return resp, nil
 }
 
 // SendDeleteWorkOrderEntryRequest sends a delete work order entry request to the YTime API and returns the response

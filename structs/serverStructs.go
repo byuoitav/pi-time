@@ -161,13 +161,6 @@ type ElapsedTimeEntryWrapper struct {
 	ElapsedTimeEntry ElapsedTimeEntry `json:"elapsed_time_entry"`
 }
 
-//DeletePunch .
-type DeletePunch struct {
-	PunchType      string `json:"punch-type"`
-	PunchTime      string `json:"punch-time"`
-	SequenceNumber string `json:"sequence-number"`
-}
-
 //DeleteWorkOrderEntry .
 type DeleteWorkOrderEntry struct {
 	JobID          int    `json:"employee-job-id"`

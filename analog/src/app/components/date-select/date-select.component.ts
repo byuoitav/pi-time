@@ -76,18 +76,12 @@ export class DateSelectComponent implements OnInit {
         this.minDay = Day.minDay(this.job.days);
         this.maxDay = Day.maxDay(this.job.days);
 
-        console.log("minimum day", this.minDay);
-        console.log("maximum day", this.maxDay);
-
         this.getViewDays();
       });
-
-      console.log("day select job", this.job);
     });
   }
 
   goBack() {
-    console.log("navigating");
     this.router.navigate(["../../../../../"], {
       relativeTo: this.route,
       queryParamsHandling: "preserve"
@@ -109,7 +103,6 @@ export class DateSelectComponent implements OnInit {
   }
 
   moveMonthBack() {
-    console.log("moving month back...");
     if (this.viewMonth === 0) {
       this.viewMonth = 11;
       this.viewYear--;
@@ -121,7 +114,6 @@ export class DateSelectComponent implements OnInit {
   }
 
   moveMonthForward() {
-    console.log("moving month forward...");
     if (this.viewMonth === 11) {
       this.viewMonth = 0;
       this.viewYear++;

@@ -30,8 +30,6 @@ export class DateResolverService implements Resolve<any> {
     const jobID = +route.paramMap.get("jobid");
     const date = route.paramMap.get("date");
 
-    console.log("id", id, "jobId", jobID, "date", date);
-
     return this.api.getOtherHours(id, jobID, date);
   }
 }

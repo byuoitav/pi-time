@@ -1,28 +1,26 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Observable } from 'rxjs';
-import { ToastService } from 'src/app/services/toast.service';
-import { Punch } from 'src/app/objects';
+import { Component, OnInit, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
+import { Observable } from "rxjs";
+import { ToastService } from "src/app/services/toast.service";
+import { Punch } from "src/app/objects";
 
 @Component({
-  selector: 'delete-punch-dialog',
-  templateUrl: './delete-punch.dialog.html',
-  styleUrls: ['./delete-punch.dialog.scss']
+  selector: "delete-punch-dialog",
+  templateUrl: "./delete-punch.dialog.html",
+  styleUrls: ["./delete-punch.dialog.scss"]
 })
 export class DeletePunchDialog implements OnInit {
-
   constructor(
     public ref: MatDialogRef<DeletePunchDialog>,
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      punch: Punch
-      submit: (yes: boolean) => Observable<any>;
+      punch: Punch;
+      submit: () => Observable<any>;
     },
     private _toast: ToastService
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   cancel() {
     this.ref.close();
@@ -31,11 +29,9 @@ export class DeletePunchDialog implements OnInit {
   submit = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       console.log("deleting punch", this.data.punch);
-      this.data.submit(true).subscribe(
+      this.data.submit().subscribe(
         resp => {
           resolve(true);
-          // TODO: don't do this
-          window.location.reload()
         },
         err => {
           resolve(false);
@@ -47,5 +43,5 @@ export class DeletePunchDialog implements OnInit {
   success = () => {
     this.ref.close();
     this._toast.show("Punch deleted", "DISMISS", 2000);
-  }
+  };
 }

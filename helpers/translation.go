@@ -74,13 +74,3 @@ func translateToWorkOrderEntry(start structs.ClientWorkOrderEntry) structs.WorkO
 
 	return toReturn
 }
-
-func translateToDeletePunch(start structs.ClientDeletePunch, sequenceNumber string) structs.DeletePunch {
-	var toReturn structs.DeletePunch
-
-	toReturn.PunchTime = start.PunchTime
-	toReturn.PunchType = start.PunchType
-	toReturn.SequenceNumber = sequenceNumber
-
-	return toReturn
-}

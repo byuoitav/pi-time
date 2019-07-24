@@ -144,16 +144,13 @@ export class PunchesComponent implements OnInit {
     this.dialog.open(DeletePunchDialog, {
       data: {
         punch: punch,
-        submit: (yes: boolean): Observable<any> => {
-          if (yes) {
-            const dPunch = new DeletePunch();
-            dPunch.punchTime = punch.time.toLocaleTimeString();
-            dPunch.punchDate = punch.time.toDateString();
-            dPunch.punchType = PunchType.fromString(punch.type);
-            dPunch.sequenceNumber = punch.id;
+        submit: (): Observable<any> => {
+          const req = new DeletePunch();
+          req.punchTime = punch.time;
+          req.sequenceNumber = punch.id;
+          req.jobID = this.jobID;
 
-            return this.api.deletePunch(this.byuID, this.jobID, dPunch);
-          }
+          return this.api.deletePunch(this.byuID, req);
         }
       }
     });

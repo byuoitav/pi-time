@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -98,31 +97,21 @@ func UpsertWorkOrderEntry(ectx echo.Context) error {
 }
 
 // DeletePunch deletes an added punch
-func DeletePunch(context echo.Context) error {
-	//BYU ID, EmployeeJobID, Punch Date, Sequence number are all passed in the url
-	byuID := context.Param("id")
-	jobIDString := context.Param("jobid")
+func DeletePunch(ectx echo.Context) error {
+	byuID := ectx.Param("id")
 
-	jobID, err := strconv.Atoi(jobIDString)
+	var req structs.DeletePunch
+	err := ectx.Bind(&req)
 	if err != nil {
-		return context.String(http.StatusBadRequest, fmt.Sprintf("unable to parse job id: %s", err))
+		return ectx.String(http.StatusBadRequest, err.Error())
 	}
 
-	seqNum := context.Param("seqnum")
-
-	var incomingRequest structs.ClientDeletePunch
-	err = context.Bind(&incomingRequest)
+	err = helpers.DeletePunch(byuID, req)
 	if err != nil {
-		return context.String(http.StatusBadRequest, err.Error())
+		return ectx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	ne := helpers.DeletePunch(byuID, jobID, seqNum, incomingRequest)
-	if ne != nil {
-		log.L.Error(ne)
-		return context.String(http.StatusInternalServerError, ne.Error())
-	}
-
-	return context.String(http.StatusOK, "ok")
+	return ectx.String(http.StatusOK, "ok")
 }
 
 // DeleteWorkOrderEntry deletes a work order entry

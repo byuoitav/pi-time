@@ -107,27 +107,25 @@ func UpsertWorkOrderEntry(byuID string, req structs.WorkOrderUpsert) error {
 }
 
 // DeletePunch will delete a punch from the employee record and report up the websocket.
-func DeletePunch(byuID string, jobID int, sequenceNumber string, request structs.ClientDeletePunch) error {
-	// build WSO2 request
-	jobIDstr := strconv.Itoa(jobID)
-
-	t, gerr := time.ParseInLocation("Mon Jan 2 2006", request.PunchDate, time.Local)
-	if gerr != nil {
-		log.L.Error("crap")
-		return gerr
+func DeletePunch(byuID string, req structs.DeletePunch) error {
+	if req.EmployeeJobID == nil {
+		return fmt.Errorf("employee-record must be set to delete a punch")
 	}
 
-	// send WSO2 request to the YTime API
-	responseArray, err := ytimeapi.SendDeletePunchRequest(byuID, jobIDstr, t.Format("2006-01-02"), sequenceNumber)
+	if req.SequenceNumber == nil {
+		return fmt.Errorf("sequence-number must be set to delete a punch")
+	}
+
+	resp, err := ytimeapi.SendDeletePunchRequest(byuID, req)
 	if err != nil {
-		log.L.Error(err)
-		return fmt.Errorf(err.Error())
+		return fmt.Errorf("unable to send punch request: %s", err.Error())
 	}
 
-	// update the employee timesheet, which also sends it up the websocket
-	cache.DeletePunchForJob(byuID, jobID, request.PunchDate, responseArray)
+	if len(resp) == 0 || len(resp) > 1 {
+		return fmt.Errorf("unexpected response from API - expected 1 day, got %v days", len(resp))
+	}
 
-	// if successful, return nil
+	cache.UpdateTimeClockDay(byuID, *req.EmployeeJobID, resp[0])
 	return nil
 }
 

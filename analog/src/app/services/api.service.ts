@@ -236,20 +236,17 @@ export class APIService {
     }
   };
 
-  deletePunch = (byuID: string, jobID: number, data: DeletePunch) => {
+  deletePunch = (byuID: string, data: DeletePunch) => {
     try {
       const json = this.jsonConvert.serialize(data);
-      return this.http.request(
-        "delete",
-        "/punch/" + byuID + "/" + jobID + "/" + data.sequenceNumber,
-        {
-          body: json,
-          responseType: "text",
-          headers: new HttpHeaders({
-            "content-type": "application/json"
-          })
-        }
-      );
+
+      return this.http.request("delete", "/punch/" + byuID, {
+        body: json,
+        responseType: "text",
+        headers: new HttpHeaders({
+          "content-type": "application/json"
+        })
+      });
     } catch (e) {
       return throwError(e);
     }

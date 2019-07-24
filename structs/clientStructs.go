@@ -101,12 +101,11 @@ type ClientLunchPunchRequest struct {
 	PunchDate         string `json:"punch_date"`
 }
 
-//ClientDeletePunch .
-type ClientDeletePunch struct {
-	PunchType      string `json:"punch-type"`
-	PunchTime      string `json:"punch-time"`
-	SequenceNumber int    `json:"sequence-number"`
-	PunchDate      string `json:"punch-date"`
+// DeletePunch .
+type DeletePunch struct {
+	EmployeeJobID  *int      `json:"employee-record"`
+	SequenceNumber *int      `json:"sequence-number"`
+	PunchTime      time.Time `json:"punch-time"`
 }
 
 //ClientDeleteWorkOrderEntry .

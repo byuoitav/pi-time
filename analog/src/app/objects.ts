@@ -444,16 +444,13 @@ export class LunchPunch {
 
 @JsonObject("DeletePunch")
 export class DeletePunch {
-  @JsonProperty("punch-type", String)
-  punchType: PunchType;
+  @JsonProperty("employee-record", Number)
+  jobID: number;
 
-  @JsonProperty("punch-date", String)
-  punchDate: string;
+  @JsonProperty("punch-time", DateConverter)
+  punchTime: Date;
 
-  @JsonProperty("punch-time", String)
-  punchTime: string;
-
-  @JsonProperty("sequence-number", Number, true)
+  @JsonProperty("sequence-number", Number)
   sequenceNumber: number;
 }
 
