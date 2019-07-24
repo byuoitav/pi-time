@@ -93,12 +93,32 @@ type ClientWorkOrderEntry struct {
 	Editable               bool            `json:"editable"`
 }
 
-//ClientLunchPunchRequest send us for lunch punch
-type ClientLunchPunchRequest struct {
-	EmployeeJobID     int    `json:"employee-job-id"`
-	StartTime         string `json:"start_time"`
-	DurationInMinutes int    `json:"duration"`
-	PunchDate         string `json:"punch_date"`
+// LunchPunch send us for lunch punch
+type LunchPunch struct {
+	// required from client
+	EmployeeJobID *int      `json:"employee_record,omitempty"`
+	StartTime     time.Time `json:"start_time"`
+	Duration      *string   `json:"duration,omitempty"`
+
+	// added by server
+	PunchZone            *string `json:"punch_zone,omitempty"`
+	TimeCollectionSource string  `json:"time_collection_source"`
+	LocationDescription  string  `json:"location_description"`
+}
+
+// MarshalJSON .
+func (p LunchPunch) MarshalJSON() ([]byte, error) {
+	type Alias LunchPunch
+
+	return json.Marshal(&struct {
+		StartTime string `json:"start_time"`
+		PunchDate string `json:"punch_date"`
+		*Alias
+	}{
+		StartTime: p.StartTime.Local().Format("15:04"),
+		PunchDate: p.StartTime.Local().Format("2006-01-02"),
+		Alias:     (*Alias)(&p),
+	})
 }
 
 // DeletePunch .
@@ -163,7 +183,7 @@ func (w WorkOrderUpsert) MarshalJSON() ([]byte, error) {
 		PunchDate string `json:"punch_date"`
 		*Alias
 	}{
-		PunchDate: w.PunchDate.Format("2006-01-02"),
+		PunchDate: w.PunchDate.Local().Format("2006-01-02"),
 		Alias:     (*Alias)(&w),
 	})
 }

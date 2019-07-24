@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -40,19 +41,26 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 }
 
 // LunchPunch will record a lunch punch on the employee record and report up the websocket.
-func LunchPunch(byuID string, request structs.ClientLunchPunchRequest) error {
-	// build WSO2 request
-	log.L.Infof("Preprocessed lunch punch: %+v", request)
-	punchRequest := translateToLunchPunch(request)
+func LunchPunch(byuID string, req structs.LunchPunch) error {
+	if req.EmployeeJobID == nil {
+		return fmt.Errorf("employee_record must be set")
+	}
 
-	log.L.Infof("LunchPunch: %+v", punchRequest)
+	if req.Duration == nil {
+		return fmt.Errorf("duration must be set")
+	}
 
-	// send WSO2 request to the YTime API
-	timesheet, err := ytimeapi.SendLunchPunchRequest(byuID, punchRequest)
+	req.TimeCollectionSource = "CPI"
+	req.LocationDescription = os.Getenv("SYSTEM_ID")
+	req.PunchZone = structs.String(req.StartTime.Local().Format("-07:00"))
+
+	timesheet, err := ytimeapi.SendLunchPunch(byuID, req)
 	if err != nil {
 		log.L.Warnf("Error with lunch punch ws02")
 		return err
 	}
+
+	log.L.Fatalf("response: %+v", timesheet)
 
 	// update the employee timesheet, which also sends it up the websocket
 	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)

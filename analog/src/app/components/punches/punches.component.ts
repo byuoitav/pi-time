@@ -120,13 +120,21 @@ export class PunchesComponent implements OnInit {
     const ref = this.dialog.open(LunchPunchDialog, {
       width: "50vw",
       data: {
-        submit: (startTime: string, duration: string): Observable<any> => {
-          const body = new LunchPunch();
-          body.startTime = startTime;
-          body.duration = duration;
-          body.punchDate = new Date().toLocaleDateString();
+        submit: (startTime: Date, duration: string): Observable<any> => {
+          const req = new LunchPunch();
+          req.duration = duration;
+          req.jobID = this.jobID;
 
-          return this.api.lunchPunch(this.byuID, body);
+          req.startTime = new Date(this.day.time);
+          req.startTime.setHours(
+            startTime.getHours(),
+            startTime.getMinutes(),
+            0,
+            0
+          );
+          console.log("req", req);
+
+          return this.api.lunchPunch(this.byuID, req);
         }
       }
     });

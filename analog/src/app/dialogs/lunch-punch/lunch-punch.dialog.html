@@ -4,7 +4,7 @@
   <mat-form-field class="form-field" (click)="editStartTime()">
     <input
       placeholder="Enter Start Time"
-      [(ngModel)]="selectedStartTime"
+      [value]="selectedStartTime | date:'shortTime'"
       matInput
     />
   </mat-form-field>

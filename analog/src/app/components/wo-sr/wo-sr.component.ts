@@ -169,13 +169,20 @@ export class WoSrComponent implements OnInit {
     const ref = this.dialog.open(LunchPunchDialog, {
       width: "50vw",
       data: {
-        submit: (startTime: string, duration: string): Observable<any> => {
-          const body = new LunchPunch();
-          body.startTime = startTime;
-          body.duration = duration;
-          body.punchDate = new Date().toLocaleDateString();
+        submit: (startTime: Date, duration: string): Observable<any> => {
+          const req = new LunchPunch();
+          req.duration = duration;
+          req.jobID = this.job.employeeJobID.valueOf();
 
-          return this.api.lunchPunch(this.emp.id, body);
+          req.startTime = new Date(this.day.time);
+          req.startTime.setHours(
+            startTime.getHours(),
+            startTime.getMinutes(),
+            0,
+            0
+          );
+
+          return this.api.lunchPunch(this.emp.id, req);
         }
       }
     });

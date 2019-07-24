@@ -420,26 +420,14 @@ export class ClientPunchRequest {
 
 @JsonObject("LunchPunch")
 export class LunchPunch {
-  @JsonProperty("start_time", String)
-  startTime: string;
+  @JsonProperty("start_time", Date)
+  startTime: Date;
 
   @JsonProperty("duration", String)
   duration: string;
 
-  @JsonProperty("employee_record", Number, true)
-  employeeRecord: number;
-
-  @JsonProperty("punch_date", String, true)
-  punchDate: string;
-
-  @JsonProperty("time_collection_source", String, true)
-  timeCollectionSource: string;
-
-  @JsonProperty("punch_zone", String, true)
-  punchZone: string;
-
-  @JsonProperty("location_description", String, true)
-  locationDescription: string;
+  @JsonProperty("employee_record", Number)
+  jobID: number;
 }
 
 @JsonObject("DeletePunch")

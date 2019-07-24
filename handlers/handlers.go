@@ -38,16 +38,14 @@ func LunchPunch(context echo.Context) error {
 	//byu id passed in the url
 	byuID := context.Param("id")
 
-	//the body needs to be a ClientLunchPunchRequest struct
-	var incomingRequest structs.ClientLunchPunchRequest
-	err := context.Bind(&incomingRequest)
+	var req structs.LunchPunch
+	err := context.Bind(&req)
 	if err != nil {
-		log.L.Infof("Couldn't bind: %v", err)
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
 	//call the helper
-	err = helpers.LunchPunch(byuID, incomingRequest)
+	err = helpers.LunchPunch(byuID, req)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
 	}

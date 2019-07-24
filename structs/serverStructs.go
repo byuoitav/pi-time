@@ -92,17 +92,6 @@ type Punch struct {
 	InternetAddress      *string `json:"internet_address,omitempty"`
 }
 
-//LunchPunch is used when posting a lunch punch to the system
-type LunchPunch struct {
-	StartTime            string `json:"start_time"`
-	Duration             string `json:"duration"`
-	EmployeeRecord       int    `json:"employee_record"`
-	PunchDate            string `json:"punch_date"`
-	TimeCollectionSource string `json:"time_collection_source"`
-	PunchZone            string `json:"punch_zone"`
-	LocationDescription  string `json:"location_description"`
-}
-
 //WorkOrderDaySummary is returned when querying a date for work orders logged on that date
 type WorkOrderDaySummary struct {
 	Date                    string           `json:"punch_date"`

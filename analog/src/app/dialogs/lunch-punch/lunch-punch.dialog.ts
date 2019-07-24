@@ -15,7 +15,7 @@ import { PORTAL_DATA } from "../../objects";
   styleUrls: ["./lunch-punch.dialog.scss"]
 })
 export class LunchPunchDialog implements OnInit {
-  selectedStartTime: string;
+  selectedStartTime: Date;
   selectedDuration: string;
 
   constructor(
@@ -24,7 +24,7 @@ export class LunchPunchDialog implements OnInit {
     private _injector: Injector,
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      submit: (startTime: string, duration: string) => Observable<any>;
+      submit: (startTime: Date, duration: string) => Observable<any>;
     },
     private _toast: ToastService
   ) {}
@@ -43,6 +43,7 @@ export class LunchPunchDialog implements OnInit {
         "and duration of ",
         this.selectedDuration
       );
+
       this.data.submit(this.selectedStartTime, this.selectedDuration).subscribe(
         data => {
           resolve(true);
@@ -72,16 +73,21 @@ export class LunchPunchDialog implements OnInit {
       title: "Enter start time for lunch punch.",
       duration: false,
       save: (hours: string, mins: string, ampm: string): Observable<any> => {
-        if (hours) {
-          this.selectedStartTime = hours + ":" + mins;
-        } else {
-          this.selectedStartTime = ":" + mins;
+        let h = Number(hours);
+        const m = Number(mins);
+
+        if (ampm === "AM" && h === 12) {
+          h = 0;
         }
 
-        if (ampm) {
-          this.selectedStartTime += " " + ampm;
+        if (ampm === "PM" && h != 12) {
+          h += 12;
         }
 
+        const date = new Date();
+        date.setHours(h, m, 0, 0);
+
+        this.selectedStartTime = date;
         return of(true);
       }
     });

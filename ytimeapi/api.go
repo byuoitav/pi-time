@@ -28,11 +28,11 @@ func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Time
 	return punchResponse, nil
 }
 
-// SendLunchPunchRequest sends a lunch punch request to the YTime API and returns the response.
-func SendLunchPunchRequest(byuID string, body structs.LunchPunch) (structs.Timesheet, *nerr.E) {
+// SendLunchPunch sends a lunch punch request to the YTime API and returns the response.
+func SendLunchPunch(byuID string, req structs.LunchPunch) (structs.Timesheet, *nerr.E) {
 	var punchResponse structs.Timesheet
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/ytime_lunch_punch/v1/"+byuID, body, &punchResponse, map[string]string{
+	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/ytime_lunch_punch/v1/"+byuID, req, &punchResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
@@ -87,7 +87,7 @@ func SendWorkOrderUpsertRequest(byuID string, req structs.WorkOrderUpsert) (stru
 func SendDeletePunchRequest(byuID string, req structs.DeletePunch) ([]structs.TimeClockDay, *nerr.E) {
 	var resp []structs.TimeClockDay
 
-	url := fmt.Sprintf("https://api.byu.edu:443/domains/erp/hr/punches/v1/%s,%d,%s,%d", byuID, *req.EmployeeJobID, req.PunchTime.Format("2006-01-02"), *req.SequenceNumber)
+	url := fmt.Sprintf("https://api.byu.edu:443/domains/erp/hr/punches/v1/%s,%d,%s,%d", byuID, *req.EmployeeJobID, req.PunchTime.Local().Format("2006-01-02"), *req.SequenceNumber)
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", url, nil, &resp, map[string]string{
 		"Content-Type": "application/json",

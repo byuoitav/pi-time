@@ -28,23 +28,6 @@ func translateToPunch(start structs.ClientPunchRequest) map[string]structs.Punch
 	return wrapper
 }
 
-func translateToLunchPunch(start structs.ClientLunchPunchRequest) structs.LunchPunch {
-	var toReturn structs.LunchPunch
-
-	toReturn.EmployeeRecord = start.EmployeeJobID
-
-	// TODO not sure where things were left off here
-	// toReturn.StartTime, err = time.ParseInLocation("3:04 PM")
-	// toReturn.StartTime = start.StartTime.Format("3:04 PM")
-	toReturn.PunchDate = start.PunchDate
-	toReturn.Duration = string(start.DurationInMinutes)
-	toReturn.TimeCollectionSource = "CPI"
-	toReturn.PunchZone = "XXX"
-	toReturn.LocationDescription = os.Getenv("SYSTEM_ID")
-
-	return toReturn
-}
-
 func translateToElapsedTimeEntry(start structs.ClientOtherHoursRequest) structs.ElapsedTimeEntry {
 	var toReturn structs.ElapsedTimeEntry
 
