@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"time"
@@ -15,23 +16,28 @@ import (
 // Punch will record a regular punch on the employee record and report up the websocket.
 func Punch(byuID string, request structs.ClientPunchRequest) error {
 	// build WSO2 request
-	log.L.Debug("translating punch request")
+	log.L.Debugf("translating punch request")
 	punchRequest := translateToPunch(request)
 
 	// send WSO2 request to the YTime API
-	log.L.Debug("sending punch request")
-	timesheet, err := ytimeapi.SendPunchRequest(byuID, punchRequest)
+	log.L.Debugf("sending punch request %v", punchRequest)
+	timesheet, err, httpResponse := ytimeapi.SendPunchRequest(byuID, punchRequest)
 	if err != nil {
-		log.L.Error(err.Error())
+		responseBody, bodyErr := ioutil.ReadAll(httpResponse.Body)
+		if bodyErr != nil {
+			log.L.Errorf("Error with punch %v, unable to ready body", err.Error())
+		}
+
+		log.L.Errorf("Error with punch %v, body %s", err.Error(), responseBody)
 		// TODO put it into the db to be posted later
 	}
 
 	// update the employee timesheet, which also sends it up the websocket
-	log.L.Debug("updating employee timesheet")
+	log.L.Debugf("updating employee timesheet")
 	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
 
 	//update the punches and work order entries
-	log.L.Debug("updating employee punches and work orders because a new punch happened")
+	log.L.Debugf("updating employee punches and work orders because a new punch happened")
 	go cache.GetPossibleWorkOrders(byuID)
 	go cache.GetPunchesForAllJobs(byuID)
 	go cache.GetWorkOrderEntries(byuID)

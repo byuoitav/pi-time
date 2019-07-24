@@ -3,6 +3,7 @@ package ytimeapi
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -14,18 +15,18 @@ import (
 )
 
 // SendPunchRequest sends a punch request to the YTime API and returns the response.
-func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Timesheet, *nerr.E) {
+func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Timesheet, *nerr.E, *http.Response) {
 	var punchResponse structs.Timesheet
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
+	err, response := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
 	if err != nil {
-		return punchResponse, nerr.Translate(err).Addf("failed to make a punch for %s: %s", byuID, err.Error())
+		return punchResponse, nerr.Translate(err).Addf("failed to make a punch for %s: %s", byuID, err.Error()), response
 	}
 
-	return punchResponse, nil
+	return punchResponse, nil, response
 }
 
 // SendLunchPunch sends a lunch punch request to the YTime API and returns the response.

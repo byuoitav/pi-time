@@ -8,6 +8,8 @@ github.com/byuoitav/common v0.0.0-20190722210946-6eb714fb3ada h1:QfJb6pPxdtf8bZt
 github.com/byuoitav/common v0.0.0-20190722210946-6eb714fb3ada/go.mod h1:YTDTFEmez7HU3oyCIWjU3RfQ/P6v24LEzH5YUebph7I=
 github.com/byuoitav/wso2services v0.0.0-20190717210600-ca09dbf05034 h1:WSBSWd0Mo7jmdoOeAXBN2C5T+k7x46bx0Fs79fVV9qo=
 github.com/byuoitav/wso2services v0.0.0-20190717210600-ca09dbf05034/go.mod h1:coHjR6JEYwJ3YDnDhPOX80JF3H9JniwvlFC8cVpqzGI=
+github.com/byuoitav/wso2services v0.0.0-20190724221246-5cc9d8de5e53 h1:uGILkO+TsmbNL+3JdGIkriVez/uEMkqggO7GmaHS6UQ=
+github.com/byuoitav/wso2services v0.0.0-20190724221246-5cc9d8de5e53/go.mod h1:coHjR6JEYwJ3YDnDhPOX80JF3H9JniwvlFC8cVpqzGI=
 github.com/common-nighthawk/go-figure v0.0.0-20190529165535-67e0ed34491a h1:kTv7wPomOuRf17BKQKO5Y6GrKsYC52XHrjf26H6FdQU=
 github.com/common-nighthawk/go-figure v0.0.0-20190529165535-67e0ed34491a/go.mod h1:mk5IQ+Y0ZeO87b858TlA645sVcEcbiX6YqP98kt+7+w=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
