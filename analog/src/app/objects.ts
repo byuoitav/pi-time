@@ -486,19 +486,22 @@ export class DeleteWorkOrder {
 
 @JsonObject("WorkOrderUpsertRequest")
 export class WorkOrderUpsertRequest {
+  @JsonProperty("employee_record", Number)
+  employeeRecord: number = undefined;
+
   // empty if adding a new work order
-  @JsonProperty("sequence-number", Number, true)
+  @JsonProperty("sequence_number", Number, true)
   sequenceNumber: number = undefined;
 
-  @JsonProperty("time-reporting-code-hours", String)
+  @JsonProperty("time_reporting_code_hours", String)
   timeReportingCodeHours: string = undefined;
 
-  @JsonProperty("punch-date", DateConverter)
+  @JsonProperty("punch_date", DateConverter)
   punchDate: Date = undefined;
 
-  @JsonProperty("trc-id", String)
+  @JsonProperty("trc_id", String)
   trcID: string = undefined;
 
-  @JsonProperty("work-order-id", String)
+  @JsonProperty("work_order_id", String, true)
   workOrderID: string = undefined;
 }

@@ -207,15 +207,11 @@ export class APIService {
     }
   };
 
-  upsertWorkOrder = (
-    byuID: string,
-    jobID: number,
-    data: WorkOrderUpsertRequest
-  ) => {
+  upsertWorkOrder = (byuID: string, data: WorkOrderUpsertRequest) => {
     try {
       const json = this.jsonConvert.serialize(data);
 
-      return this.http.post("/workorderentry/" + byuID + "/" + jobID, json, {
+      return this.http.post("/workorderentry/" + byuID, json, {
         responseType: "text",
         headers: new HttpHeaders({
           "content-type": "application/json"

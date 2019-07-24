@@ -55,14 +55,13 @@ export class WoSrComponent implements OnInit {
           hours?: string
         ): Observable<any> => {
           const req = new WorkOrderUpsertRequest();
+          req.employeeRecord = this.job.employeeJobID.valueOf();
           req.timeReportingCodeHours = hours;
           req.punchDate = this.day.time;
           req.trcID = trc.id;
           req.workOrderID = wo.id;
 
-          const obs = this.api
-            .upsertWorkOrder(this.emp.id, this.job.employeeJobID.valueOf(), req)
-            .pipe(share());
+          const obs = this.api.upsertWorkOrder(this.emp.id, req).pipe(share());
 
           obs.subscribe(
             resp => {
@@ -123,15 +122,14 @@ export class WoSrComponent implements OnInit {
           hours?: string
         ): Observable<any> => {
           const req = new WorkOrderUpsertRequest();
+          req.employeeRecord = this.job.employeeJobID.valueOf();
           req.sequenceNumber = woToEdit.id;
           req.trcID = woToEdit.trc.id;
           req.workOrderID = woToEdit.workOrder.id;
           req.timeReportingCodeHours = hours;
           req.punchDate = this.day.time;
 
-          const obs = this.api
-            .upsertWorkOrder(this.emp.id, this.job.employeeJobID.valueOf(), req)
-            .pipe(share());
+          const obs = this.api.upsertWorkOrder(this.emp.id, req).pipe(share());
 
           obs.subscribe(
             resp => {

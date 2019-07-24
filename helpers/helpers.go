@@ -88,39 +88,21 @@ func OtherHours(byuID string, request structs.ClientOtherHoursRequest) error {
 	return nil
 }
 
-// NewWorkOrderEntry will record a work order entry for the employee and report up the websocket.
-func NewWorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrderEntry) error {
-	// build WSO2 request
-	entry := translateToWorkOrderEntry(request)
+// UpsertWorkOrderEntry .
+func UpsertWorkOrderEntry(byuID string, req structs.WorkOrderUpsert) error {
+	if req.EmployeeJobID == nil {
+		return fmt.Errorf("employee_record must be set to add/edit a work order entry")
+	}
 
-	// send WSO2 request to the YTime API
-	summary, err := ytimeapi.SendNewWorkOrderEntryRequest(byuID, entry)
+	req.TimeCollectionSource = "CPI"
+
+	summary, err := ytimeapi.SendWorkOrderUpsertRequest(byuID, req)
 	if err != nil {
 		return err
 	}
 
 	// update the employee record, which also sends it up the websocket
-	cache.UpdateWorkOrderEntriesForJob(byuID, jobID, []structs.WorkOrderDaySummary{summary})
-
-	// if successful, return nil
-	return nil
-}
-
-// EditWorkOrderEntry will record a work order entry for the employee and report up the websocket.
-func EditWorkOrderEntry(byuID string, jobID int, request structs.ClientWorkOrderEntry) error {
-	// build WSO2 request
-	entry := translateToWorkOrderEntry(request)
-
-	// send WSO2 request to the YTime API
-	summary, err := ytimeapi.SendEditWorkOrderEntryRequest(byuID, entry)
-	if err != nil {
-		return err
-	}
-
-	// update the employee record, which also sends it up the websocket
-	cache.UpdateWorkOrderEntriesForJob(byuID, jobID, []structs.WorkOrderDaySummary{summary})
-
-	// if successful, return nil
+	cache.UpdateWorkOrderEntriesForJob(byuID, *req.EmployeeJobID, []structs.WorkOrderDaySummary{summary})
 	return nil
 }
 

@@ -79,48 +79,22 @@ func OtherHours(context echo.Context) error {
 	return context.String(http.StatusOK, "ok")
 }
 
-//NewWorkOrderEntry handles adding a new WorkOrderEntry (post)
-func NewWorkOrderEntry(context echo.Context) error {
-	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
-	byuID := context.Param("id")
-	jobIDString := context.Param("jobid")
+// UpsertWorkOrderEntry .
+func UpsertWorkOrderEntry(ectx echo.Context) error {
+	byuID := ectx.Param("id")
 
-	jobID, _ := strconv.Atoi(jobIDString)
-
-	var incomingRequest structs.ClientWorkOrderEntry
-	err := context.Bind(&incomingRequest)
+	var req structs.WorkOrderUpsert
+	err := ectx.Bind(&req)
 	if err != nil {
-		return context.String(http.StatusBadRequest, err.Error())
+		return ectx.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = helpers.NewWorkOrderEntry(byuID, jobID, incomingRequest)
+	err = helpers.UpsertWorkOrderEntry(byuID, req)
 	if err != nil {
-		return context.String(http.StatusInternalServerError, err.Error())
+		return ectx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return context.String(http.StatusOK, "ok")
-}
-
-//EditWorkOrderEntry handles editing WorkOrderEntry (put)
-func EditWorkOrderEntry(context echo.Context) error {
-	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
-	byuID := context.Param("id")
-	jobIDString := context.Param("jobid")
-
-	jobID, _ := strconv.Atoi(jobIDString)
-
-	var incomingRequest structs.ClientWorkOrderEntry
-	err := context.Bind(&incomingRequest)
-	if err != nil {
-		return context.String(http.StatusBadRequest, err.Error())
-	}
-
-	err = helpers.EditWorkOrderEntry(byuID, jobID, incomingRequest)
-	if err != nil {
-		return context.String(http.StatusInternalServerError, err.Error())
-	}
-
-	return context.String(http.StatusOK, "ok")
+	return ectx.String(http.StatusOK, "ok")
 }
 
 // DeletePunch deletes an added punch

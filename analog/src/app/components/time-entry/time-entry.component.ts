@@ -224,8 +224,12 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       });
     }
 
-    const hours = this.getHours();
+    let hours = this.getHours();
     const mins = this.getMinutes();
+
+    if (hours && hours.length == 1) {
+      hours = "0" + hours;
+    }
 
     return new Promise<boolean>((resolve, reject) => {
       this.data.save(hours, mins, this.ampm).subscribe(

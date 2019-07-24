@@ -1,6 +1,9 @@
 package structs
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 //This file is all of the structs that will be sent to the angular client
 
@@ -138,4 +141,30 @@ type ClientPunchRequest struct {
 	PunchType     string    `json:"type"`
 	WorkOrderID   *string   `json:"work-order-id,omitempty"`
 	TRCID         *string   `json:"trc-id,omitempty"`
+}
+
+// WorkOrderUpsert .
+type WorkOrderUpsert struct {
+	EmployeeJobID          *int      `json:"employee_record"`
+	SequenceNumber         *int      `json:"sequence_number"`
+	TimeReportingCodeHours string    `json:"time_reporting_code_hours"`
+	PunchDate              time.Time `json:"punch_date"`
+	TRCID                  string    `json:"trc_id"`
+	WorkOrderID            *string   `json:"work_order_id"`
+
+	// set on the backend
+	TimeCollectionSource string `json:"time_collection_source"`
+}
+
+// MarshalJSON .
+func (w WorkOrderUpsert) MarshalJSON() ([]byte, error) {
+	type Alias WorkOrderUpsert
+
+	return json.Marshal(&struct {
+		PunchDate string `json:"punch_date"`
+		*Alias
+	}{
+		PunchDate: w.PunchDate.Format("2006-01-02"),
+		Alias:     (*Alias)(&w),
+	})
 }

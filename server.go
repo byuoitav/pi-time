@@ -61,11 +61,8 @@ func main() {
 	//add sick or vacation
 	router.PUT("/otherhours/:id", handlers.OtherHours)
 
-	//edit work order entry
-	router.PUT("/workorderentry/:id", handlers.EditWorkOrderEntry)
-
-	//new work order entry
-	router.POST("/workorderentry/:id", handlers.NewWorkOrderEntry)
+	// add/edit work order entry
+	router.POST("/workorderentry/:id", handlers.UpsertWorkOrderEntry)
 
 	//delete work order entry
 	router.DELETE("/workorderentry/:id", handlers.DeleteWorkOrderEntry)
