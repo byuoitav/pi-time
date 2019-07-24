@@ -1,21 +1,38 @@
 <div class="container">
-    <mat-card>
-        <div class="card-content">
-            <div class="punches">
-                <div class="punch" *ngFor="let punch of day?.punches">
-                    <span class="time" [class.edit]="!punch?.time" [class.delete]="punch?.deletablePair > 0" (click)="openKeyboard(punch)" (click)="deletePunch(punch)">
-            {{ punchTime(punch) }}
+  <mat-card>
+    <div class="card-content">
+      <div class="punches">
+        <div class="punch" *ngFor="let punch of day?.punches">
+          <span
+            class="time"
+            [class.edit]="!punch?.time"
+            [class.delete]="punch?.deletablePair > 0"
+            (click)="openKeyboard(punch)"
+            (click)="deletePunch(punch)"
+          >
+            {{ punch?.time ? (punch?.time | date: "shortTime") : "--:--" }}
           </span>
 
-                    <span class="type" [class.delete]="punch?.deletablePair > 0" (click)="deletePunch(punch)"> {{ punchType.toString(punch?.type) }} </span>
-                </div>
-            </div>
+          <span
+            class="type"
+            [class.delete]="punch?.deletablePair > 0"
+            (click)="deletePunch(punch)"
+          >
+            {{ punchType.toString(punch?.type) }}
+          </span>
+        </div>
+      </div>
 
-            <span class="total"> Total: {{ day?.punchedHours }} </span>
+      <span class="total"> Total: {{ day?.punchedHours }} </span>
 
-            <button class="lunch" color="accent" mat-raised-button (click)="lunchPunch()">
+      <button
+        class="lunch"
+        color="accent"
+        mat-raised-button
+        (click)="lunchPunch()"
+      >
         Enter Lunch Punch
       </button>
-        </div>
-    </mat-card>
+    </div>
+  </mat-card>
 </div>

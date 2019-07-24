@@ -19,7 +19,7 @@ import {
   DeletePunch
 } from "../../objects";
 import { ToastService } from "src/app/services/toast.service";
-import { DeletePunchDialog } from 'src/app/dialogs/delete-punch/delete-punch.dialog';
+import { DeletePunchDialog } from "src/app/dialogs/delete-punch/delete-punch.dialog";
 
 @Component({
   selector: "punches",
@@ -115,40 +115,6 @@ export class PunchesComponent implements OnInit {
     return new PortalInjector(this._injector, tokens);
   };
 
-  punchTime = (punch: Punch): string => {
-    if (punch.time) {
-      let hours = punch.time.getHours();
-      let minutes = punch.time.getMinutes();
-      const ampm = hours >= 12 ? "PM" : "AM";
-
-      hours = hours % 12;
-      const minutesStr = minutes < 10 ? "0" + minutes : minutes;
-
-      return hours + ":" + minutesStr + " " + ampm;
-    }
-
-    if (punch.editedTime) {
-      const time =
-        punch.editedTime.length >= 3
-          ? punch.editedTime.slice(0, 1) +
-            ":" +
-            punch.editedTime.slice(1, punch.editedTime.length)
-          : punch.editedTime;
-
-      if (punch.editedAMPM) {
-        return time + " " + punch.editedAMPM;
-      }
-
-      return time;
-    }
-
-    if (punch.editedAMPM) {
-      return "--:-- " + punch.editedAMPM;
-    }
-
-    return "--:--";
-  };
-
   lunchPunch = () => {
     console.log("lunch punch for job");
     const ref = this.dialog.open(LunchPunchDialog, {
@@ -167,12 +133,16 @@ export class PunchesComponent implements OnInit {
   };
 
   deletePunch = (punch: Punch) => {
-    if (punch == null || punch.deletablePair == null || punch.deletablePair === 0) {
+    if (
+      punch == null ||
+      punch.deletablePair == null ||
+      punch.deletablePair === 0
+    ) {
       return;
     }
 
-    this.dialog.open(DeletePunchDialog, { 
-      data: { 
+    this.dialog.open(DeletePunchDialog, {
+      data: {
         punch: punch,
         submit: (yes: boolean): Observable<any> => {
           if (yes) {
@@ -187,5 +157,5 @@ export class PunchesComponent implements OnInit {
         }
       }
     });
-  }
+  };
 }
