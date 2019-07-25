@@ -20,6 +20,8 @@ func translateToPunch(start structs.ClientPunchRequest) structs.Punch {
 	req.PunchZone = structs.String(start.Time.Local().Format("-07:00"))
 	req.InternetAddress = structs.String("")
 	req.SequenceNumber = start.SequenceNumber
+	req.WorkOrderID = start.WorkOrderID
+	req.TRCID = start.TRCID
 
 	return req
 }
