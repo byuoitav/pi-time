@@ -59,7 +59,7 @@
 
                 <ng-container *ngIf="canChangeWorkOrder(job)">
                     <mat-grid-tile colspan="{{ emp?.showTRC() ? 4 : 3 }}" rowspan="1">
-                        {{ job?.currentWorkOrder?.id }}
+                        {{ findDescription(job) }}
                     </mat-grid-tile>
                     <mat-grid-tile colspan="2" rowspan="1">
                         <button mat-flat-button color="accent" class="change-wo" (click)="changeWorkOrder(job)">
