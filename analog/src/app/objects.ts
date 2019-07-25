@@ -420,7 +420,7 @@ export class ClientPunchRequest {
 
 @JsonObject("LunchPunch")
 export class LunchPunch {
-  @JsonProperty("start_time", Date)
+  @JsonProperty("start_time", DateConverter)
   startTime: Date;
 
   @JsonProperty("duration", String)

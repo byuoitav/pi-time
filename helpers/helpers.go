@@ -56,11 +56,9 @@ func LunchPunch(byuID string, req structs.LunchPunch) error {
 
 	timesheet, err := ytimeapi.SendLunchPunch(byuID, req)
 	if err != nil {
-		log.L.Warnf("Error with lunch punch ws02")
+		log.L.Warnf("Error with lunch punch: %s", err.Error())
 		return err
 	}
-
-	log.L.Fatalf("response: %+v", timesheet)
 
 	// update the employee timesheet, which also sends it up the websocket
 	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)

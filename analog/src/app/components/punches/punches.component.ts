@@ -132,9 +132,23 @@ export class PunchesComponent implements OnInit {
             0,
             0
           );
-          console.log("req", req);
 
-          return this.api.lunchPunch(this.byuID, req);
+          const obs = this.api.lunchPunch(this.byuID, req).pipe(share());
+          obs.subscribe(
+            resp => {
+              console.log("response data", resp);
+              this.toast.show(
+                "Successfully made lunch punch.",
+                "DISMISS",
+                2000
+              );
+            },
+            err => {
+              console.log("response ERROR", err);
+            }
+          );
+
+          return obs;
         }
       }
     });
