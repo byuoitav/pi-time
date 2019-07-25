@@ -49,11 +49,12 @@ export class SickVacationComponent implements OnInit {
       save: (hours: string, mins: string): Observable<any> => {
         const req = new OtherHourRequest();
         req.jobID = this.jobID;
+        req.sequenceNumber = other.sequenceNumber;
         req.timeReportingCodeHours = hours + ":" + mins;
         req.trcID = other.trc.id;
         req.punchDate = this.day.time;
 
-        const obs = this.api.submitOtherHour(this.byuID, req);
+        const obs = this.api.submitOtherHour(this.byuID, req).pipe(share());
         obs.subscribe(
           resp => {
             console.log("response data", resp);
