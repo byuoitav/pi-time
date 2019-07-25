@@ -18,7 +18,7 @@ import (
 func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Timesheet, *nerr.E, *http.Response) {
 	var punchResponse structs.Timesheet
 
-	err, response := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
+	err, response, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
@@ -44,8 +44,8 @@ func SendLunchPunch(byuID string, req structs.LunchPunch) (structs.Timesheet, *n
 	return punchResponse, nil
 }
 
-// SendOtherHoursRequest sends a sick/vacation request to the YTime API and returns the response.
-func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs.ElapsedTimeSummary, *nerr.E) {
+// SendOtherHoursRequest sends a sick/vacation request to the YTime API and returns the response (if no problem), and error, as well as the http response and body
+func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs.ElapsedTimeSummary, *nerr.E, *http.Response, string) {
 	var otherResponse structs.ElapsedTimeSummary
 
 	var wrapper structs.ElapsedTimeEntryWrapper
@@ -56,15 +56,16 @@ func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs
 
 	log.L.Debugf("Body to send to other hours WSO2: %s", test)
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, wrapper, &otherResponse, map[string]string{
+	err, response, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, wrapper, &otherResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
+
 	if err != nil {
-		return otherResponse, nerr.Translate(err).Addf("failed to record sick hours for %s", byuID)
+		return otherResponse, nerr.Translate(err).Addf("failed to record sick hours for %s", byuID), response, responseBody
 	}
 
-	return otherResponse, nil
+	return otherResponse, nil, response, responseBody
 }
 
 // SendWorkOrderUpsertRequest .

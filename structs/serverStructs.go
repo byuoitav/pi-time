@@ -169,3 +169,8 @@ type YTimeLocation struct {
 	Status                    string      `json:"status"`
 	Longitude                 float64     `json:"longitude"`
 }
+
+//ServerErrorMessage .
+type ServerErrorMessage struct {
+	Message string `json:"message"`
+}

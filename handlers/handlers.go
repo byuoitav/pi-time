@@ -67,10 +67,10 @@ func OtherHours(context echo.Context) error {
 
 	log.L.Debugf("Processing other hours request: %+v", incomingRequest)
 
-	err = helpers.OtherHours(byuID, incomingRequest)
+	errMessage, err := helpers.OtherHours(byuID, incomingRequest)
 	if err != nil {
-		log.L.Debugf("Error processing other hours %v", err.Error())
-		return context.String(http.StatusInternalServerError, err.Error())
+		log.L.Debugf("Error processing other hours %v, %v", errMessage, err.Error())
+		return context.String(http.StatusInternalServerError, errMessage)
 	}
 
 	return context.String(http.StatusOK, "ok")

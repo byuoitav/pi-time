@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -80,28 +81,35 @@ func LunchPunch(byuID string, req structs.LunchPunch) error {
 }
 
 // OtherHours will record sick/vacation hours for the employee and report up the websocket.
-func OtherHours(byuID string, request structs.ClientOtherHoursRequest) error {
+func OtherHours(byuID string, request structs.ClientOtherHoursRequest) (string, error) {
 	// build WSO2 request
 	elapsed := translateToElapsedTimeEntry(request)
 
 	// send WSO2 request to the YTime API
-	summary, err := ytimeapi.SendOtherHoursRequest(byuID, elapsed)
+	summary, err, response, responseBody := ytimeapi.SendOtherHoursRequest(byuID, elapsed)
 	if err != nil {
-		return err
+		errMessage := err.Error()
+		if response.StatusCode == 400 {
+			var messageStruct structs.ServerErrorMessage
+
+			testForMessageErr := json.Unmarshal([]byte(responseBody), &messageStruct)
+			if testForMessageErr != nil {
+				return errMessage, err
+			}
+
+			errMessage = messageStruct.Message
+		}
+		return errMessage, err
 	}
 
-	log.L.Debugf("Coming back from Other hours API call: %+v", summary)
-
 	//parse the date
-	date, _ := time.ParseInLocation(summary.Dates[0].PunchDate, "2006-01-02", time.Local)
-
-	log.L.Debugf("date parse: %v %v", summary.Dates[0].PunchDate, date)
+	date, _ := time.ParseInLocation("2006-01-02", summary.Dates[0].PunchDate, time.Local)
 
 	// update the employee record, which also sends it up the websocket
 	cache.UpdateOtherHoursForJobAndDate(byuID, request.EmployeeJobID, date, summary)
 
 	// if successful, return nil
-	return nil
+	return "", nil
 }
 
 // UpsertWorkOrderEntry .
