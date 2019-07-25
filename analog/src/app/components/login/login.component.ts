@@ -10,7 +10,6 @@ import { Employee } from "../../objects";
   styleUrls: ["./login.component.scss"]
 })
 export class LoginComponent implements OnInit {
-  //id = "666567890";
   id = "";
   ssCounter = 0;
   ssTimeoutMax = 30;

@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, BehaviorSubject } from "rxjs";
 
 import { EmployeeRef } from "../../services/api.service";
-import { Employee, Job, Day } from "../../objects";
+import { ToastService } from "../../services/toast.service";
+import { Employee, Job, Day, JobType } from "../../objects";
 
 @Component({
   selector: "date-select",
@@ -62,7 +63,11 @@ export class DateSelectComponent implements OnInit {
     return undefined;
   }
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private toast: ToastService
+  ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -89,16 +94,10 @@ export class DateSelectComponent implements OnInit {
   }
 
   canMoveMonthBack(): boolean {
-    // if (this.minDay != null) {
-    //   return this.viewMonth > this.minDay.time.getMonth();
-    // }
     return this.viewMonth >= this.today.getMonth();
   }
 
   canMoveMonthForward(): boolean {
-    // if (this.maxDay != null) {
-    //   return this.viewMonth < (this.maxDay.time.getMonth() + 1);
-    // }
     return this.viewMonth <= this.today.getMonth();
   }
 
@@ -124,11 +123,34 @@ export class DateSelectComponent implements OnInit {
     this.getViewDays();
   }
 
-  selectDay = (day: Date) => {
+  selectDay = (date: Date) => {
     const str =
-      day.getFullYear() + "-" + (day.getMonth() + 1) + "-" + day.getDate();
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
-    this.router.navigate(["./" + str], { relativeTo: this.route });
+    const day = this.job.days.find(
+      d =>
+        d.time.getFullYear() === date.getFullYear() &&
+        d.time.getMonth() === date.getMonth() &&
+        d.time.getDate() === date.getDate()
+    );
+
+    if (!day && this.job.jobType !== JobType.FullTime) {
+      this.toast.show(
+        "No punches recorded for " + date.toDateString(),
+        "DISMISS",
+        1000
+      );
+      return;
+    }
+
+    if (!day) {
+      this.router.navigate(["./" + str], {
+        relativeTo: this.route,
+        fragment: "other-hours"
+      });
+    } else {
+      this.router.navigate(["./" + str], { relativeTo: this.route });
+    }
   };
 
   getViewDays() {
