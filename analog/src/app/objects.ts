@@ -399,8 +399,8 @@ export class Employee {
 
 @JsonObject("ClientPunchRequest")
 export class ClientPunchRequest {
-  @JsonProperty("byu-id", Number)
-  byuID: Number;
+  @JsonProperty("byu-id", String)
+  byuID: String;
 
   @JsonProperty("employee-job-id", Number)
   jobID: Number;

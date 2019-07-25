@@ -186,7 +186,7 @@ export class WoSrComponent implements OnInit {
           obs.subscribe(
             resp => {
               console.log("response data", resp);
-              this.toast.show(
+              this._toast.show(
                 "Successfully made lunch punch.",
                 "DISMISS",
                 2000

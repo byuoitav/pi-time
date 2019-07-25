@@ -65,7 +65,7 @@ export class PunchesComponent implements OnInit {
       duration: false,
       save: (hours: string, mins: string): Observable<any> => {
         const req = new ClientPunchRequest();
-        req.byuID = Number(this.byuID);
+        req.byuID = this.byuID;
         req.jobID = this.jobID;
         req.type = punch.type;
 

@@ -75,7 +75,7 @@ export class ClockComponent implements OnInit {
   clockInOut = (job: Job, state: PunchType, event?) => {
     console.log("clocking job", job.description, "to state", state);
     const data = new ClientPunchRequest();
-    data.byuID = Number(this.emp.id);
+    data.byuID = this.emp.id;
     data.jobID = job.employeeJobID;
     data.type = state;
 
@@ -189,7 +189,7 @@ export class ClockComponent implements OnInit {
   changeWorkOrder = (job: Job) => {
     console.log("changing work order for job ", job);
     const data = new ClientPunchRequest();
-    data.byuID = Number(this.emp.id);
+    data.byuID = this.emp.id;
     data.jobID = job.employeeJobID;
     data.type = PunchType.Transfer;
 

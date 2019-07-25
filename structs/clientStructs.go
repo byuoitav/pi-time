@@ -154,7 +154,7 @@ type ClientOtherHoursRequest struct {
 
 //ClientPunchRequest is the punch structure from the client on a punch in or out
 type ClientPunchRequest struct {
-	BYUID         int       `json:"byu-id"`
+	BYUID         string    `json:"byu-id"`
 	EmployeeJobID int       `json:"employee-job-id"`
 	Time          time.Time `json:"time"`
 	PunchType     string    `json:"type"`
