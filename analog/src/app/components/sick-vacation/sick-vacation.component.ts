@@ -59,7 +59,7 @@ export class SickVacationComponent implements OnInit {
         obs.subscribe(
           resp => {
             console.log("response data", resp);
-            const msg = other.trc.description + "Hours Recorded";
+            const msg = other.trc.description + " Hours Recorded";
             this.toast.show(msg, "DISMISS", 2000);
           },
           err => {
