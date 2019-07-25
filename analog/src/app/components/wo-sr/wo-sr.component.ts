@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, OnChanges } from "@angular/core";
 import {
   Day,
   Job,
@@ -40,12 +40,20 @@ export class WoSrComponent implements OnInit {
 
   ngOnInit() {}
 
+  ngOnChanges() {
+    for (const dialog of this.dialog.openDialogs) {
+      if (dialog.componentInstance instanceof WoTrcDialog) {
+        dialog.componentInstance.data.jobRef = this.job;
+      }
+    }
+  }
+
   newWorkOrder() {
     const ref = this.dialog.open(WoTrcDialog, {
       width: "50vw",
       data: {
         title: "New Work Order",
-        job: this.job,
+        jobRef: this.job,
         showTRC: this.showTRCs(),
         showWO: this.showWO(),
         showHours: true,

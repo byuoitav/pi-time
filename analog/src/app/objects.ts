@@ -169,6 +169,18 @@ export class WorkOrder {
   name: string = undefined;
 
   toString = (): string => {
+    if (!this.id && !this.name) {
+      return "";
+    }
+
+    if (!this.name) {
+      return this.id;
+    }
+
+    if (!this.id) {
+      return this.name;
+    }
+
     return this.id + ": " + this.name;
   };
 }
