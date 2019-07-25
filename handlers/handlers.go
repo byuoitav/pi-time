@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,6 +27,32 @@ func Punch(context echo.Context) error {
 
 	//call the helper
 	err = helpers.Punch(byuID, incomingRequest)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.String(http.StatusOK, "ok")
+}
+
+// FixPunch adds an in or out punch as determined by the body sent
+func FixPunch(context echo.Context) error {
+	byuID := context.Param("id")
+
+	num, err := strconv.Atoi(context.Param("seq"))
+	if err != nil {
+		return context.String(http.StatusBadRequest, fmt.Sprintf("unable to parse sequence number: %s", err))
+	}
+
+	var incomingRequest structs.ClientPunchRequest
+	err = context.Bind(&incomingRequest)
+	if err != nil {
+		return context.String(http.StatusBadRequest, err.Error())
+	}
+
+	incomingRequest.SequenceNumber = structs.Int(num)
+
+	//call the helper
+	err = helpers.FixPunch(byuID, incomingRequest)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
 	}

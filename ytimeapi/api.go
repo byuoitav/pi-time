@@ -15,10 +15,14 @@ import (
 )
 
 // SendPunchRequest sends a punch request to the YTime API and returns the response.
-func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Timesheet, *nerr.E, *http.Response) {
+func SendPunchRequest(byuID string, req structs.Punch) (structs.Timesheet, *nerr.E, *http.Response) {
 	var punchResponse structs.Timesheet
 
-	err, response, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("POST", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
+	body := make(map[string]structs.Punch)
+	body["punch"] = req
+
+	method := "POST"
+	err, response, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
@@ -27,6 +31,25 @@ func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Time
 	}
 
 	return punchResponse, nil, response
+}
+
+// SendFixPunchRequest sends a punch request to the YTime API and returns the response.
+func SendFixPunchRequest(byuID string, req structs.Punch) ([]structs.TimeClockDay, *nerr.E) {
+	var resp []structs.TimeClockDay
+
+	body := make(map[string]structs.Punch)
+	body["punch"] = req
+
+	method := "PUT"
+	err := wso2requests.MakeWSO2RequestWithHeaders(method, "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &resp, map[string]string{
+		"Content-Type": "application/json",
+		"Accept":       "application/json",
+	})
+	if err != nil {
+		return resp, nerr.Translate(err).Addf("failed to make a punch for %s: %s", byuID, err.Error())
+	}
+
+	return resp, nil
 }
 
 // SendLunchPunch sends a lunch punch request to the YTime API and returns the response.

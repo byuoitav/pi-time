@@ -417,6 +417,9 @@ export class ClientPunchRequest {
   @JsonProperty("employee-job-id", Number)
   jobID: Number;
 
+  @JsonProperty("sequence-number", Number, true)
+  sequenceNumber: Number;
+
   @JsonProperty("time", DateConverter)
   time: Date;
 

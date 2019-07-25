@@ -63,18 +63,29 @@ export class PunchesComponent implements OnInit {
     const injector = this.createInjector(overlayRef, {
       title: "Enter time for " + PunchType.toString(punch.type) + " punch.",
       duration: false,
-      save: (hours: string, mins: string): Observable<any> => {
+      save: (hours: string, mins: string, ampm: string): Observable<any> => {
+        let h = Number(hours);
+        const m = Number(mins);
+
+        if (ampm === "AM" && h === 12) {
+          h = 0;
+        }
+
+        if (ampm === "PM" && h != 12) {
+          h += 12;
+        }
+
+        const date = new Date(punch.time);
+        date.setHours(h, m, 0, 0);
+
         const req = new ClientPunchRequest();
+        req.sequenceNumber = punch.id;
         req.byuID = this.byuID;
         req.jobID = this.jobID;
         req.type = punch.type;
-
-        const date = new Date(punch.time);
-        date.setHours(Number(hours), Number(mins), 0, 0);
-
         req.time = date;
 
-        const obs = this.api.punch(req).pipe(share());
+        const obs = this.api.fixPunch(req).pipe(share());
         obs.subscribe(
           resp => {
             console.log("response data", resp);

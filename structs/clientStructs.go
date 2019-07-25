@@ -154,12 +154,13 @@ type ClientOtherHoursRequest struct {
 
 //ClientPunchRequest is the punch structure from the client on a punch in or out
 type ClientPunchRequest struct {
-	BYUID         string    `json:"byu-id"`
-	EmployeeJobID int       `json:"employee-job-id"`
-	Time          time.Time `json:"time"`
-	PunchType     string    `json:"type"`
-	WorkOrderID   *string   `json:"work-order-id,omitempty"`
-	TRCID         *string   `json:"trc-id,omitempty"`
+	BYUID          string    `json:"byu-id"`
+	EmployeeJobID  *int      `json:"employee-job-id"`
+	Time           time.Time `json:"time"`
+	PunchType      string    `json:"type"`
+	WorkOrderID    *string   `json:"work-order-id,omitempty"`
+	TRCID          *string   `json:"trc-id,omitempty"`
+	SequenceNumber *int      `json:"sequence-number"`
 }
 
 // WorkOrderUpsert .

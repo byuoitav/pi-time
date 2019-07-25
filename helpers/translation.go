@@ -7,8 +7,7 @@ import (
 	"github.com/byuoitav/pi-time/structs"
 )
 
-func translateToPunch(start structs.ClientPunchRequest) map[string]structs.Punch {
-
+func translateToPunch(start structs.ClientPunchRequest) structs.Punch {
 	var req structs.Punch
 	req.PunchType = start.PunchType
 	req.PunchTime = start.Time.Local().Format("15:04:05")
@@ -16,17 +15,13 @@ func translateToPunch(start structs.ClientPunchRequest) map[string]structs.Punch
 	req.Longitude = structs.String(cache.LONGITUDE)
 	req.LocationDescription = structs.String(os.Getenv("SYSTEM_ID"))
 	req.TimeCollectionSource = structs.String("CPI")
-	req.WorkOrderID = start.WorkOrderID
-	req.TRCID = start.TRCID
 	req.PunchDate = structs.String(start.Time.Local().Format("2006-01-02"))
-	req.EmployeeRecord = structs.Int(start.EmployeeJobID)
+	req.EmployeeRecord = start.EmployeeJobID
 	req.PunchZone = structs.String(start.Time.Local().Format("-07:00"))
 	req.InternetAddress = structs.String("")
+	req.SequenceNumber = start.SequenceNumber
 
-	wrapper := make(map[string]structs.Punch)
-	wrapper["punch"] = req
-
-	return wrapper
+	return req
 }
 
 func translateToElapsedTimeEntry(start structs.ClientOtherHoursRequest) structs.ElapsedTimeEntry {

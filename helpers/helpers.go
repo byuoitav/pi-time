@@ -26,16 +26,52 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 	if err != nil {
 		responseBody, bodyErr := ioutil.ReadAll(httpResponse.Body)
 		if bodyErr != nil {
-			log.L.Errorf("Error with punch %v, unable to ready body", err.Error())
+			return fmt.Errorf("unable to submit punch: %v. unable to read body", err.Error())
 		}
-
-		log.L.Errorf("Error with punch %v, body %s", err.Error(), responseBody)
 		// TODO put it into the db to be posted later
+
+		return fmt.Errorf("unable to submit punch: %v. response body: %s", err.Error(), responseBody)
 	}
 
 	// update the employee timesheet, which also sends it up the websocket
 	log.L.Debugf("updating employee timesheet")
 	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
+
+	//update the punches and work order entries
+	log.L.Debugf("updating employee punches and work orders because a new punch happened")
+	go cache.GetPossibleWorkOrders(byuID)
+	go cache.GetPunchesForAllJobs(byuID)
+	go cache.GetWorkOrderEntries(byuID)
+
+	// if successful, return nil
+	return nil
+}
+
+// FixPunch will record a regular punch on the employee record and report up the websocket.
+func FixPunch(byuID string, req structs.ClientPunchRequest) error {
+	if req.EmployeeJobID == nil {
+		return fmt.Errorf("employee-job-id must be set")
+	}
+
+	if req.SequenceNumber == nil {
+		return fmt.Errorf("sequence-number must be set")
+	}
+
+	// build WSO2 request
+	log.L.Debugf("translating punch request")
+	punch := translateToPunch(req)
+
+	days, err := ytimeapi.SendFixPunchRequest(byuID, punch)
+	if err != nil {
+		log.L.Warnf("Error with lunch punch: %s", err.Error())
+		return err
+	}
+
+	if len(days) == 0 || len(days) > 1 {
+		return fmt.Errorf("unexpected response from API - expected 1 day, got %v days", len(days))
+	}
+
+	cache.UpdateTimeClockDay(byuID, *req.EmployeeJobID, days[0])
 
 	//update the punches and work order entries
 	log.L.Debugf("updating employee punches and work orders because a new punch happened")

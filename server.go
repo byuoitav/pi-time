@@ -50,7 +50,8 @@ func main() {
 	//clock out
 	//transfer
 	//add missing punch
-	router.POST("/punch/:id", handlers.Punch) //will send in a ClientPunchRequest in the body
+	router.POST("/punch/:id", handlers.Punch)        //will send in a ClientPunchRequest in the body
+	router.PUT("/punch/:id/:seq", handlers.FixPunch) //will send in a ClientPunchRequest in the body
 
 	//lunchpunch
 	router.POST("/lunchpunch/:id", handlers.LunchPunch)

@@ -208,6 +208,25 @@ export class APIService {
     }
   };
 
+  fixPunch = (req: ClientPunchRequest): Observable<any> => {
+    try {
+      const json = this.jsonConvert.serialize(req);
+
+      return this.http.put(
+        "/punch/" + req.byuID + "/" + req.sequenceNumber,
+        json,
+        {
+          responseType: "text",
+          headers: new HttpHeaders({
+            "content-type": "application/json"
+          })
+        }
+      );
+    } catch (e) {
+      return throwError(e);
+    }
+  };
+
   upsertWorkOrder = (byuID: string, data: WorkOrderUpsertRequest) => {
     try {
       const json = this.jsonConvert.serialize(data);
