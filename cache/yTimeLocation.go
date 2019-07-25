@@ -13,8 +13,8 @@ import (
 
 //LAT and LONG
 var (
-	LATITUDE  string
-	LONGITUDE string
+	LATITUDE  = "40.25258"
+	LONGITUDE = "-111.657658"
 )
 
 func init() {

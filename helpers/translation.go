@@ -3,6 +3,7 @@ package helpers
 import (
 	"os"
 
+	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/structs"
 )
 
@@ -11,8 +12,8 @@ func translateToPunch(start structs.ClientPunchRequest) map[string]structs.Punch
 	var req structs.Punch
 	req.PunchType = start.PunchType
 	req.PunchTime = start.Time.Local().Format("15:04:05")
-	req.Latitude = structs.String("40.25258")
-	req.Longitude = structs.String("-111.657658")
+	req.Latitude = structs.String(cache.LATITUDE)
+	req.Longitude = structs.String(cache.LONGITUDE)
 	req.LocationDescription = structs.String(os.Getenv("SYSTEM_ID"))
 	req.TimeCollectionSource = structs.String("CPI")
 	req.WorkOrderID = start.WorkOrderID
