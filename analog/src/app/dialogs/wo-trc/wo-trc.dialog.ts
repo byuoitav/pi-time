@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, Injector } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
-import { Observable, of } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 
 import { WoSelectComponent } from "../../components/wo-select/wo-select.component";
 import { TimeEntryComponent } from "../../components/time-entry/time-entry.component";
@@ -18,17 +18,49 @@ export class WoTrcDialog implements OnInit {
   selectedPay: string;
   hours: string;
 
+  get job() {
+    if (this.data.jobRef instanceof BehaviorSubject) {
+      return this.data.jobRef.value;
+    }
+
+    return this.data.jobRef;
+  }
+
+  get showWO(): Boolean {
+    if (this.data.showWO instanceof BehaviorSubject) {
+      return this.data.showWO.value;
+    }
+
+    return this.data.showWO;
+  }
+
+  get showTRC(): Boolean {
+    if (this.data.showTRC instanceof BehaviorSubject) {
+      return this.data.showTRC.value;
+    }
+
+    return this.data.showTRC;
+  }
+
+  get showHours(): Boolean {
+    if (this.data.showHours instanceof BehaviorSubject) {
+      return this.data.showHours.value;
+    }
+
+    return this.data.showHours;
+  }
+
   constructor(
     public ref: MatDialogRef<WoTrcDialog>,
     private _overlay: Overlay,
     private _injector: Injector,
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      job: Job;
+      jobRef: Job | BehaviorSubject<Job>;
       title: string;
-      showTRC: boolean;
-      showWO: boolean;
-      showHours: boolean;
+      showTRC: boolean | BehaviorSubject<Boolean>;
+      showWO: boolean | BehaviorSubject<Boolean>;
+      showHours: boolean | BehaviorSubject<Boolean>;
       chosenWO?: WorkOrder;
       submit: (trc?: TRC, wo?: WorkOrder, hours?: string) => Observable<any>;
       delete: () => Observable<any>;
@@ -36,16 +68,21 @@ export class WoTrcDialog implements OnInit {
   ) {
     if (data.chosenWO) {
       this.selectedWO = data.chosenWO;
-    } else {
-      this.selectedWO = data.job.currentWorkOrder;
     }
 
-    this.selectedPay = data.job.currentTRC.id;
     this.hours = "";
 
-    // default to regular pay (or whatever is first in the trc's array
-    if (!this.selectedPay && data.job.trcs.length > 0) {
-      this.selectedPay = data.job.trcs[0].id;
+    if (this.job) {
+      if (!data.chosenWO) {
+        this.selectedWO = this.job.currentWorkOrder;
+      }
+
+      this.selectedPay = this.job.currentTRC.id;
+
+      // default to regular pay (or whatever is first in the trc's array
+      if (!this.selectedPay && this.job.trcs.length > 0) {
+        this.selectedPay = this.job.trcs[0].id;
+      }
     }
   }
 
@@ -58,7 +95,7 @@ export class WoTrcDialog implements OnInit {
   submit = async (): Promise<boolean> => {
     // get the trc
     const trc = this.selectedPay
-      ? this.data.job.trcs.find(t => t.id === this.selectedPay)
+      ? this.job.trcs.find(t => t.id === this.selectedPay)
       : undefined;
 
     return new Promise<boolean>((resolve, reject) => {
@@ -96,7 +133,7 @@ export class WoTrcDialog implements OnInit {
     });
 
     const injector = this.createInjector(overlayRef, {
-      workOrders: this.data.job.workOrders,
+      workOrders: this.job.workOrders,
       selectWorkOrder: (wo: WorkOrder) => {
         this.selectedWO = wo;
         overlayRef.dispose();
@@ -119,15 +156,15 @@ export class WoTrcDialog implements OnInit {
 
   stopSubmit = (): boolean => {
     if (
-      this.data.showTRC &&
+      this.showTRC &&
       (this.selectedPay == null || this.selectedPay.length == 0)
     ) {
       return true;
     }
-    if (this.data.showWO && this.selectedWO == null) {
+    if (this.showWO && this.selectedWO == null) {
       return true;
     }
-    if (this.data.showHours && (this.hours == null || this.hours.length == 0)) {
+    if (this.showHours && (this.hours == null || this.hours.length == 0)) {
       return true;
     }
 

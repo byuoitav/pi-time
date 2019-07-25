@@ -1,16 +1,16 @@
 <h1 *ngIf="data?.title" mat-dialog-title>{{data?.title}}</h1>
 
 <div mat-dialog-content>
-  <mat-form-field *ngIf="data?.showTRC" class="form-field">
+  <mat-form-field *ngIf="showTRC" class="form-field">
     <mat-label>Select a TRC</mat-label>
     <mat-select [(value)]="selectedPay">
-      <mat-option *ngFor="let t of data?.job?.trcs" [value]="t?.id">
+      <mat-option *ngFor="let t of job?.trcs" [value]="t?.id">
         {{ t?.description }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field *ngIf="data?.showWO" class="form-field">
+  <mat-form-field *ngIf="showWO" class="form-field">
     <input
       placeholder="Enter WO/SR"
       [value]="selectedWO?.toString()"
@@ -19,7 +19,7 @@
     />
   </mat-form-field>
 
-  <mat-form-field *ngIf="data?.showHours" class="form-field">
+  <mat-form-field *ngIf="showHours" class="form-field">
     <input
       placeholder="Hours"
       [(value)]="hours"

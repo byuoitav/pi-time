@@ -56,9 +56,8 @@ export class ClockComponent implements OnInit {
     });
   }
 
-  doubleClockConfirm(job: Job, state: PunchType) {
-    if (job.clockStatus === (state as string)) {
-      console.log("confirming...");
+  doubleClockConfirm(jobRef: BehaviorSubject<Job>, state: PunchType) {
+    if (jobRef.value.clockStatus === (state as string)) {
       this.dialog
         .open(ConfirmDialog, {
           data: { state: PunchType.toNormalString(state) }
@@ -66,29 +65,53 @@ export class ClockComponent implements OnInit {
         .afterClosed()
         .subscribe(confirmed => {
           if (confirmed === "confirmed") {
-            this.clockInOut(job, state, null);
+            this.clockInOut(jobRef, state, null);
           }
         });
     }
   }
 
-  clockInOut = (job: Job, state: PunchType, event?) => {
-    console.log("clocking job", job.description, "to state", state);
+  jobRef(jobID: number): BehaviorSubject<Job> {
+    const job = this.emp.jobs.find(j => j.employeeJobID === jobID);
+    const ref = new BehaviorSubject(job);
+
+    this._empRef.subject().subscribe(emp => {
+      const job = this.emp.jobs.find(j => j.employeeJobID === jobID);
+      if (job) {
+        ref.next(job);
+      }
+    });
+
+    return ref;
+  }
+
+  clockInOut = (jobRef: BehaviorSubject<Job>, state: PunchType, event?) => {
+    console.log("clocking job", jobRef.value.description, "to state", state);
     const data = new ClientPunchRequest();
     data.byuID = this.emp.id;
-    data.jobID = job.employeeJobID;
+    data.jobID = jobRef.value.employeeJobID;
     data.type = state;
 
-    if (job.isPhysicalFacilities && state === PunchType.In) {
+    const showWO = new BehaviorSubject<Boolean>(
+      jobRef.value.workOrders.length > 0
+    );
+    const showTRC = new BehaviorSubject<Boolean>(jobRef.value.trcs.length > 0);
+
+    jobRef.subscribe(job => {
+      showWO.next(job.workOrders.length > 0);
+      showTRC.next(job.trcs.length > 0);
+    });
+
+    if (jobRef.value.isPhysicalFacilities && state === PunchType.In) {
       // show work order popup to clock in
       const ref = this.dialog
         .open(WoTrcDialog, {
           width: "50vw",
           data: {
             title: "Select Work Order",
-            job: job,
-            showTRC: job.trcs.length > 0,
-            showWO: job.workOrders.length > 0,
+            jobRef: jobRef,
+            showTRC: showTRC,
+            showWO: showWO,
             showHours: false,
             submit: (trc?: TRC, wo?: WorkOrder): Observable<any> => {
               data.time = new Date();
@@ -128,7 +151,6 @@ export class ClockComponent implements OnInit {
                 "to",
                 PunchType.reverse(state)
               );
-              console.log(event);
               event.source.radioGroup.value = PunchType.reverse(state);
             }
           }
@@ -186,20 +208,30 @@ export class ClockComponent implements OnInit {
     return "";
   };
 
-  changeWorkOrder = (job: Job) => {
-    console.log("changing work order for job ", job);
+  changeWorkOrder = (jobRef: BehaviorSubject<Job>) => {
+    console.log("changing work order for job ", jobRef.value);
     const data = new ClientPunchRequest();
     data.byuID = this.emp.id;
-    data.jobID = job.employeeJobID;
+    data.jobID = jobRef.value.employeeJobID;
     data.type = PunchType.Transfer;
+
+    const showWO = new BehaviorSubject<Boolean>(
+      jobRef.value.workOrders.length > 0
+    );
+    const showTRC = new BehaviorSubject<Boolean>(jobRef.value.trcs.length > 0);
+
+    jobRef.subscribe(job => {
+      showWO.next(job.workOrders.length > 0);
+      showTRC.next(job.trcs.length > 0);
+    });
 
     const ref = this.dialog.open(WoTrcDialog, {
       width: "50vw",
       data: {
         title: "Change Work Order",
-        job: job,
-        showTRC: job.trcs.length > 0,
-        showWO: job.workOrders.length > 0,
+        jobRef: jobRef,
+        showTRC: showTRC,
+        showWO: showWO,
         showHours: false,
         submit: (trc?: TRC, wo?: WorkOrder): Observable<any> => {
           data.time = new Date();
