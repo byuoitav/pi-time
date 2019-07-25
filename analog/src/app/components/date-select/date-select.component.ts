@@ -149,7 +149,14 @@ export class DateSelectComponent implements OnInit {
         fragment: "other-hours"
       });
     } else {
-      this.router.navigate(["./" + str], { relativeTo: this.route });
+      if (day.hasWorkOrderException && !day.hasPunchException) {
+        this.router.navigate(["./" + str], {
+          relativeTo: this.route,
+          fragment: "wo/sr"
+        });
+      } else {
+        this.router.navigate(["./" + str], { relativeTo: this.route });
+      }
     }
   };
 
