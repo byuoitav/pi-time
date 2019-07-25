@@ -90,8 +90,12 @@ func OtherHours(byuID string, request structs.ClientOtherHoursRequest) error {
 		return err
 	}
 
+	log.L.Debugf("Coming back from Other hours API call: %+v", summary)
+
 	//parse the date
 	date, _ := time.ParseInLocation(summary.Dates[0].PunchDate, "2006-01-02", time.Local)
+
+	log.L.Debugf("date parse: %v %v", summary.Dates[0].PunchDate, date)
 
 	// update the employee record, which also sends it up the websocket
 	cache.UpdateOtherHoursForJobAndDate(byuID, request.EmployeeJobID, date, summary)
