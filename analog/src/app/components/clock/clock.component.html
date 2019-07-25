@@ -89,6 +89,14 @@
           </mat-radio-group>
         </mat-grid-tile>
 
+<<<<<<< HEAD
+                <ng-container *ngIf="canChangeWorkOrder(job)">
+                    <mat-grid-tile colspan="{{ emp?.showTRC() ? 4 : 3 }}" rowspan="1">
+                        {{ findDescription(job) }}
+                    </mat-grid-tile>
+                    <mat-grid-tile colspan="2" rowspan="1">
+                        <button mat-flat-button color="accent" class="change-wo" (click)="changeWorkOrder(job)">
+=======
         <ng-container *ngIf="canChangeWorkOrder(job)">
           <mat-grid-tile colspan="{{ emp?.showTRC() ? 4 : 3 }}" rowspan="1">
             {{ job?.currentWorkOrder?.id }}
@@ -100,6 +108,7 @@
               class="change-wo"
               (click)="changeWorkOrder(jobRef(job?.employeeJobID))"
             >
+>>>>>>> f7bf0a8751a61f4c11d440045e673ce48ab6a0cd
               Change WO
             </button>
           </mat-grid-tile>

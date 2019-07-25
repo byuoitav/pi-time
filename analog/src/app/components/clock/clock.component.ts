@@ -259,4 +259,20 @@ export class ClockComponent implements OnInit {
       }
     });
   };
+
+  findDescription(job: Job): string {
+    if (job == null || job.currentWorkOrder == null) {
+      return "";
+    }
+
+    const wo = job.workOrders.find(
+      wo => wo.id === job.currentWorkOrder.id
+    );
+
+    if (wo == null) {
+      return "";
+    }
+    
+    return wo.toString()
+  }
 }
