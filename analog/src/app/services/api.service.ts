@@ -186,7 +186,8 @@ export class APIService {
       ref.afterClosed().subscribe(result => {
         this.router.navigate([], {
           queryParams: { error: null },
-          queryParamsHandling: "merge"
+          queryParamsHandling: "merge",
+          preserveFragment: true
         });
       });
     }

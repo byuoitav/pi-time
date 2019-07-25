@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Inject, Injector } from "@angular/core";
 import { Router } from "@angular/router";
+import { HttpErrorResponse } from "@angular/common/http";
 import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 import { Observable } from "rxjs";
@@ -68,15 +69,21 @@ export class SickVacationComponent implements OnInit {
 
         return obs;
       },
-      error: () => {
+      error: err => {
+        let msg =
+          "Unable to update " +
+          other.trc.description +
+          " hours. Please try again.";
+        if (err instanceof HttpErrorResponse) {
+          msg = err.error;
+        }
+
         this.router.navigate([], {
           queryParams: {
-            error:
-              "Unable to update " +
-              other.trc.description +
-              " hours. Please try again."
+            error: msg
           },
-          queryParamsHandling: "merge"
+          queryParamsHandling: "merge",
+          preserveFragment: true
         });
       }
     });

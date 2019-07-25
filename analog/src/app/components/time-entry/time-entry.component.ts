@@ -29,6 +29,8 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   public time = "";
   public ampm: AMPM;
 
+  private errToReturn: any; // i hate that i'm doing this btw
+
   get value(): string {
     if (!this.time) {
       return "--:--";
@@ -61,7 +63,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       title: string;
       duration: boolean;
       save: (hours: string, mins: string, ampm?: string) => Observable<any>;
-      error: () => void;
+      error: (err?: any) => void;
     }
   ) {}
 
@@ -242,6 +244,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
         },
         err => {
           resolve(false);
+          this.errToReturn = err;
         }
       );
     });
@@ -253,7 +256,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   error = () => {
     this.keyboard.destroy();
-    this.data.error();
+    this.data.error(this.errToReturn);
     this.ref.dispose();
   };
 }
