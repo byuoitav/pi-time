@@ -61,14 +61,17 @@ func LunchPunch(byuID string, req structs.LunchPunch) error {
 	req.LocationDescription = os.Getenv("SYSTEM_ID")
 	req.PunchZone = structs.String(req.StartTime.Local().Format("-07:00"))
 
-	timesheet, err := ytimeapi.SendLunchPunch(byuID, req)
+	days, err := ytimeapi.SendLunchPunch(byuID, req)
 	if err != nil {
 		log.L.Warnf("Error with lunch punch: %s", err.Error())
 		return err
 	}
 
-	// update the employee timesheet, which also sends it up the websocket
-	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
+	if len(days) == 0 || len(days) > 1 {
+		return fmt.Errorf("unexpected response from API - expected 1 day, got %v days", len(days))
+	}
+
+	cache.UpdateTimeClockDay(byuID, *req.EmployeeJobID, days[0])
 
 	//update the punches and work order entries
 	log.L.Debug("updating employee punches and work orders because a new lunch punch happened")

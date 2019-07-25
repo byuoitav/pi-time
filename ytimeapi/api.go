@@ -30,18 +30,21 @@ func SendPunchRequest(byuID string, body map[string]structs.Punch) (structs.Time
 }
 
 // SendLunchPunch sends a lunch punch request to the YTime API and returns the response.
-func SendLunchPunch(byuID string, req structs.LunchPunch) (structs.Timesheet, *nerr.E) {
-	var punchResponse structs.Timesheet
+func SendLunchPunch(byuID string, req structs.LunchPunch) ([]structs.TimeClockDay, *nerr.E) {
+	var resp []structs.TimeClockDay
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/ytime_lunch_punch/v1/"+byuID, req, &punchResponse, map[string]string{
+	body := make(map[string]structs.LunchPunch)
+	body["lunch_punch"] = req
+
+	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/ytime_lunch_punch/v1/"+byuID, body, &resp, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
 	if err != nil {
-		return punchResponse, nerr.Translate(err).Addf("failed to make a lunch punch for %s: %s", byuID, err.Error())
+		return resp, nerr.Translate(err).Addf("failed to make a lunch punch for %s: %s", byuID, err.Error())
 	}
 
-	return punchResponse, nil
+	return resp, nil
 }
 
 // SendOtherHoursRequest sends a sick/vacation request to the YTime API and returns the response (if no problem), and error, as well as the http response and body
