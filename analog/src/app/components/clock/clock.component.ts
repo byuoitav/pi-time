@@ -246,7 +246,7 @@ export class ClockComponent implements OnInit {
           obs.subscribe(
             resp => {
               console.log("response data", resp);
-              const msg = "Transferred punch successfully!";
+              const msg = "Successfully transferred WO/SR to " + wo.id;
               this.toast.show(msg, "DISMISS", 2000);
             },
             err => {
@@ -265,14 +265,12 @@ export class ClockComponent implements OnInit {
       return "";
     }
 
-    const wo = job.workOrders.find(
-      wo => wo.id === job.currentWorkOrder.id
-    );
+    const wo = job.workOrders.find(wo => wo.id === job.currentWorkOrder.id);
 
     if (wo == null) {
       return "";
     }
-    
-    return wo.toString()
+
+    return wo.toString();
   }
 }

@@ -43,8 +43,7 @@ export class JobSelectComponent implements OnInit {
   };
 
   goBack() {
-    this.router.navigate(["../"], {
-      relativeTo: this.route.parent,
+    this.router.navigate(["/employee/" + this.emp.id], {
       queryParamsHandling: "preserve"
     });
   }

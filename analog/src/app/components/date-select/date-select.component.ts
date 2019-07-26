@@ -87,10 +87,15 @@ export class DateSelectComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(["../../"], {
-      relativeTo: this.route.parent,
-      queryParamsHandling: "preserve"
-    });
+    if (this.emp.jobs.length > 0) {
+      this.router.navigate(["/employee/" + this.emp.id + "/job"], {
+        queryParamsHandling: "preserve"
+      });
+    } else {
+      this.router.navigate(["/employee/" + this.emp.id], {
+        queryParamsHandling: "preserve"
+      });
+    }
   }
 
   canMoveMonthBack(): boolean {
