@@ -82,13 +82,12 @@ export class APIService {
         if (snapshot && snapshot.queryParams && snapshot.queryParams.error) {
           this.error(snapshot.queryParams.error);
         }
+
+        if (snapshot.queryParams && snapshot.queryParams.theme) {
+          this.theme = snapshot.queryParams.theme;
+        }
       }
     });
-
-    this.urlParams = new URLSearchParams(window.location.search);
-    if (this.urlParams.has("theme")) {
-      this.theme = this.urlParams.get("theme");
-    }
   }
 
   public switchTheme(name: string) {
