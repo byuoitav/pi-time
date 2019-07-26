@@ -502,7 +502,7 @@ export class WorkOrderUpsertRequest {
   @JsonProperty("punch_date", DateConverter)
   punchDate: Date = undefined;
 
-  @JsonProperty("trc_id", String)
+  @JsonProperty("trc_id", String, true)
   trcID: string = undefined;
 
   @JsonProperty("work_order_id", String, true)

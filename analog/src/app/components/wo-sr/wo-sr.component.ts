@@ -63,9 +63,12 @@ export class WoSrComponent implements OnInit {
           req.employeeRecord = this.job.employeeJobID.valueOf();
           req.timeReportingCodeHours = hours;
           req.punchDate = this.day.time;
-          req.trcID = trc.id;
           req.workOrderID = wo.id;
           req.sequenceNumber = 0;
+
+          if (trc) {
+            req.trcID = trc.id;
+          }
 
           const obs = this.api.upsertWorkOrder(this.emp.id, req).pipe(share());
 
