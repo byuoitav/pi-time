@@ -43,8 +43,8 @@ export class JobSelectComponent implements OnInit {
   };
 
   goBack() {
-    this.router.navigate(["../../../"], {
-      relativeTo: this.route,
+    this.router.navigate(["../"], {
+      relativeTo: this.route.parent,
       queryParamsHandling: "preserve"
     });
   }
@@ -55,7 +55,6 @@ export class JobSelectComponent implements OnInit {
         j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
       )
     ) {
-      // return "⚠";
       return "!";
     }
 
