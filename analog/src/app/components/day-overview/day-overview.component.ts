@@ -59,7 +59,7 @@ export class DayOverviewComponent implements OnInit {
       case "other-hours":
         return 2;
       default:
-        return 0;
+        return undefined;
     }
   }
 
@@ -93,25 +93,33 @@ export class DayOverviewComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this._jobID = +params.get("jobid");
-      this._date = params.get("date");
+      if (params) {
+        this._jobID = +params.get("jobid");
+        this._date = params.get("date");
+      }
     });
 
     this.route.data.subscribe(data => {
-      this._empRef = data.empRef;
+      if (data) {
+        this._empRef = data.empRef;
+      }
     });
 
     this.route.fragment.subscribe(frag => {
-      this.selectedTab = frag;
+      if (frag) {
+        this.selectedTab = frag;
+      }
     });
   }
 
   goBack() {
-    this.router.navigate(["../"], {
-      relativeTo: this.route,
-      preserveFragment: false,
-      queryParamsHandling: "preserve"
-    });
+    this.router.navigate(
+      ["/employee/" + this.emp.id + "/job/" + this.job.employeeJobID + "/date"],
+      {
+        preserveFragment: false,
+        queryParamsHandling: "preserve"
+      }
+    );
   }
 
   logout = () => {
@@ -123,6 +131,7 @@ export class DayOverviewComponent implements OnInit {
       return "";
     } else if (this.day.hasPunchException) {
       let count = 0;
+
       for (const p of this.day.punches) {
         if (p.time == undefined) {
           count++;
@@ -138,11 +147,6 @@ export class DayOverviewComponent implements OnInit {
     } else {
       if (this.day.hasWorkOrderException) {
         let count = 1;
-        // for (const w of this.day.workOrderEntries) {
-        //   if (w.hoursBilled == undefined) {
-        //     count++;
-        //   }
-        // }
         return String(count);
       }
     }

@@ -1,83 +1,123 @@
 <mat-toolbar color="primary">
-    <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
-    <span>Y-Time</span> <span class="header-spacer"></span>
-    <span>{{ emp?.name }}</span>
-    <button (click)="logout()" mat-icon-button>
+  <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
+  <span>Y-Time</span> <span class="header-spacer"></span>
+  <span>{{ emp?.name }}</span>
+  <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
 
 <div class="container">
-    <mat-card class="card totals mat-elevation-z2">
-        <span>Week Total: {{ emp?.totalTime?.week }}</span>
-        <span>Pay Period Total: {{ emp?.totalTime?.payPeriod }}</span>
-    </mat-card>
+  <mat-card class="card totals mat-elevation-z2">
+    <span>Week Total: {{ emp?.totalTime?.week }}</span>
+    <span>Pay Period Total: {{ emp?.totalTime?.payPeriod }}</span>
+  </mat-card>
 
-    <mat-card class="jobs card mat-elevation-z2">
-        <mat-grid-list class="grid" cols="{{ emp?.showTRC() ? 6 : 5 }}" rowHeight="12vh" gutterSize=".2vh">
-            <!-- headers -->
-            <mat-grid-tile colspan="1" rowspan="1" class="header title">
-                Job Title
-            </mat-grid-tile>
-            <mat-grid-tile colspan="1" rowspan="1" class="header">
-                Week
-            </mat-grid-tile>
-            <mat-grid-tile colspan="1" rowspan="1" class="header">
-                Pay Period
-            </mat-grid-tile>
-            <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1" class="tile header">
-                TRC
-            </mat-grid-tile>
-            <mat-grid-tile colspan="2" rowspan="1" class="header">Clock</mat-grid-tile>
-            <ng-container *ngFor="let job of emp?.jobs">
-                <!-- name -->
-                <mat-grid-tile colspan="1" rowspan="1">
-                    {{ job?.description }}
-                </mat-grid-tile>
+  <mat-card class="jobs card mat-elevation-z2">
+    <mat-grid-list
+      class="grid"
+      cols="{{ emp?.showTRC() ? 6 : 5 }}"
+      rowHeight="12vh"
+      gutterSize=".2vh"
+    >
+      <!-- headers -->
+      <mat-grid-tile colspan="1" rowspan="1" class="header title">
+        Job Title
+      </mat-grid-tile>
+      <mat-grid-tile colspan="1" rowspan="1" class="header">
+        Week
+      </mat-grid-tile>
+      <mat-grid-tile colspan="1" rowspan="1" class="header">
+        Pay Period
+      </mat-grid-tile>
+      <mat-grid-tile
+        *ngIf="emp?.showTRC()"
+        colspan="1"
+        rowspan="1"
+        class="tile header"
+      >
+        TRC
+      </mat-grid-tile>
+      <mat-grid-tile colspan="2" rowspan="1" class="header"
+        >Clock</mat-grid-tile
+      >
+      <ng-container *ngFor="let job of emp?.jobs">
+        <!-- name -->
+        <mat-grid-tile colspan="1" rowspan="1">
+          {{ job?.description }}
+        </mat-grid-tile>
 
-                <!-- week total -->
-                <mat-grid-tile colspan="1" rowspan="1">
-                    {{ job?.subtotals?.week }}
-                </mat-grid-tile>
+        <!-- week total -->
+        <mat-grid-tile colspan="1" rowspan="1">
+          {{ job?.subtotals?.week }}
+        </mat-grid-tile>
 
-                <!-- pay period total -->
-                <mat-grid-tile colspan="1" rowspan="1">
-                    {{ job?.subtotals?.payPeriod }}
-                </mat-grid-tile>
+        <!-- pay period total -->
+        <mat-grid-tile colspan="1" rowspan="1">
+          {{ job?.subtotals?.payPeriod }}
+        </mat-grid-tile>
 
-                <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
-                    {{ job?.currentTRC?.id ? job?.currentTRC?.id : "N/A" }}
-                </mat-grid-tile>
+        <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
+          {{ job?.currentTRC?.id ? job?.currentTRC?.id : "N/A" }}
+        </mat-grid-tile>
 
-                <!-- clock in/out -->
-                <mat-grid-tile colspan="2" rowspan="1">
-                    <mat-radio-group class="clock-group" [value]="job?.clockStatus" (change)="
+        <!-- clock in/out -->
+        <mat-grid-tile colspan="2" rowspan="1">
+          <mat-radio-group
+            class="clock-group"
+            [value]="job?.clockStatus"
+            (change)="
               clockInOut(jobRef(job?.employeeJobID), $event.value, $event)
-            ">
-                        <mat-radio-button class="clock-button in" [value]="punchType.In" (click)="
+            "
+          >
+            <mat-radio-button
+              class="clock-button in"
+              [value]="punchType.In"
+              (click)="
                 doubleClockConfirm(jobRef(job?.employeeJobID), punchType.In)
-              ">IN</mat-radio-button>
-                        <mat-radio-button class="clock-button out" [value]="punchType.Out" (click)="
+              "
+              >IN</mat-radio-button
+            >
+            <mat-radio-button
+              class="clock-button out"
+              [value]="punchType.Out"
+              (click)="
                 doubleClockConfirm(jobRef(job?.employeeJobID), punchType.Out)
-              ">OUT</mat-radio-button>
-                    </mat-radio-group>
-                </mat-grid-tile>
+              "
+              >OUT</mat-radio-button
+            >
+          </mat-radio-group>
+        </mat-grid-tile>
 
-                <ng-container *ngIf="canChangeWorkOrder(job)">
-                    <mat-grid-tile colspan="{{ emp?.showTRC() ? 4 : 3 }}" rowspan="1">
-                        {{ findDescription(job) }}
-                    </mat-grid-tile>
-                    <mat-grid-tile colspan="2" rowspan="1">
-                        <button mat-flat-button color="accent" class="change-wo" (click)="changeWorkOrder(jobRef(job?.employeeJobID))">
+        <ng-container *ngIf="canChangeWorkOrder(job)">
+          <mat-grid-tile colspan="{{ emp?.showTRC() ? 4 : 3 }}" rowspan="1">
+            {{ job?.currentWorkOrder?.toString() }}
+          </mat-grid-tile>
+          <mat-grid-tile colspan="2" rowspan="1">
+            <button
+              mat-flat-button
+              color="accent"
+              class="change-wo"
+              (click)="changeWorkOrder(jobRef(job?.employeeJobID))"
+            >
               Transfer WO
             </button>
-                    </mat-grid-tile>
-                </ng-container>
-            </ng-container>
-        </mat-grid-list>
-    </mat-card>
+          </mat-grid-tile>
+        </ng-container>
+      </ng-container>
+    </mat-grid-list>
+  </mat-card>
 
-    <button class="view-timesheet" color="accent" (click)="toTimesheet()" [disabled]="offline" [matBadge]="hasTimesheetException()" matBadgeColor="warn" matBadgeSize="medium" mat-raised-button>
+  <button
+    class="view-timesheet"
+    color="accent"
+    (click)="toTimesheet()"
+    [disabled]="offline"
+    [matBadge]="hasTimesheetException()"
+    matBadgeColor="warn"
+    matBadgeSize="medium"
+    mat-raised-button
+  >
     View Timesheet
   </button>
 </div>
