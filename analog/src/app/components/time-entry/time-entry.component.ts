@@ -33,7 +33,11 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   get value(): string {
     if (!this.time) {
-      return "--:--";
+      if (this.ampm) {
+        return "hh:mm " + this.ampm;
+      }
+
+      return "hh:mm";
     }
 
     const hour = this.getHours();
@@ -65,7 +69,9 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       save: (hours: string, mins: string, ampm?: string) => Observable<any>;
       error: (err?: any) => void;
     }
-  ) {}
+  ) {
+    this.ampm = AMPM.AM;
+  }
 
   ngOnInit() {}
 
@@ -87,7 +93,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
         }
       ],
       maxLength: {
-        default: this.data.duration ? 5 : 4
+        default: 4
       }
     });
 
@@ -110,7 +116,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
           case 0:
             valid = key === 0 ? false : true;
             break;
-          case 5:
+          case 4:
             valid = false;
             break;
           default:
