@@ -79,3 +79,11 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
     background-color: rgba(0, 0, 0, 0.45) !important;
     opacity: 0.45;
 }
+
+.dismiss {
+    color: #ffffff;
+}
+
+.dismiss button {
+    color: #ffc107;
+}

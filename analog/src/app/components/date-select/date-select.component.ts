@@ -138,7 +138,7 @@ export class DateSelectComponent implements OnInit {
       this.toast.show(
         "No punches recorded for " + date.toDateString(),
         "DISMISS",
-        1000
+        1500
       );
       return;
     }

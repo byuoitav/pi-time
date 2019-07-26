@@ -228,7 +228,7 @@ export class ClockComponent implements OnInit {
     const ref = this.dialog.open(WoTrcDialog, {
       width: "50vw",
       data: {
-        title: "Change Work Order",
+        title: "Transfer Work Order",
         jobRef: jobRef,
         showTRC: showTRC,
         showWO: showWO,
