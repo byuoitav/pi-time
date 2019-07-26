@@ -33,7 +33,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
   get value(): string {
     if (!this.time) {
-      if (this.ampm) {
+      if (!this.data.duration && this.ampm) {
         return "hh:mm " + this.ampm;
       }
 
@@ -68,6 +68,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
       duration: boolean;
       save: (hours: string, mins: string, ampm?: string) => Observable<any>;
       error: (err?: any) => void;
+      cancel: () => void;
     }
   ) {
     this.ampm = AMPM.AM;
@@ -257,6 +258,10 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   };
 
   cancel = () => {
+    if (this.data.cancel) {
+      this.data.cancel();
+    }
+
     this.ref.dispose();
   };
 

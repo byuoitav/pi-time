@@ -108,6 +108,9 @@ export class PunchesComponent implements OnInit {
           },
           queryParamsHandling: "merge"
         });
+      },
+      cancel: () => {
+        punch.time = undefined;
       }
     });
 
