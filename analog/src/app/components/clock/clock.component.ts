@@ -175,7 +175,6 @@ export class ClockComponent implements OnInit {
   };
 
   toTimesheet = () => {
-    console.log("going to job select");
     this.router.navigate(["./job/"], { relativeTo: this.route });
   };
 

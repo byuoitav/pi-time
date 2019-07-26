@@ -87,11 +87,13 @@ export class DateSelectComponent implements OnInit {
   }
 
   goBack() {
-    if (this.emp.jobs.length > 0) {
+    if (this.emp.jobs.length > 1) {
+      // job select
       this.router.navigate(["/employee/" + this.emp.id + "/job"], {
         queryParamsHandling: "preserve"
       });
     } else {
+      // clock
       this.router.navigate(["/employee/" + this.emp.id], {
         queryParamsHandling: "preserve"
       });
