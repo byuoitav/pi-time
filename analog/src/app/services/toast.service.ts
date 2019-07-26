@@ -10,7 +10,8 @@ export class ToastService {
   show = (message: string, action: string, duration: number) => {
     this._snackbar.open(message, action, {
       duration: duration,
-      verticalPosition: "bottom"
+      verticalPosition: "bottom",
+      panelClass: "dismiss"
     });
   };
 
