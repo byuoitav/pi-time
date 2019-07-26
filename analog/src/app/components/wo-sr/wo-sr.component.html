@@ -26,6 +26,11 @@
         </div>
 
         <mat-grid-list cols="{{ showTRCs() ? 5 : 4 }}" rowHeight="8vh" gutterSize=".1vh">
+            <mat-grid-tile colspan="{{ showTRCs() ? 5 : 4 }}" rowspan="1">
+                <div class="do-row">
+                    <span class="do-message" [class.exception]="day?.hasWorkOrderException">Billed and Total should be equal</span>
+                </div>
+            </mat-grid-tile>
             <mat-grid-tile colspan="2" rowspan="1" class="do-header">
                 WO/SR
             </mat-grid-tile>
@@ -71,11 +76,7 @@
                 </mat-grid-tile>
             </ng-container>
 
-            <mat-grid-tile colspan="{{ showTRCs() ? 5 : 4 }}" rowspan="1">
-                <div class="do-row">
-                    <span class="do-message">Billed and Total should be equal</span>
-                </div>
-            </mat-grid-tile>
+
         </mat-grid-list>
     </mat-card>
 </div>
