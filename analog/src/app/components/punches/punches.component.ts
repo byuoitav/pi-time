@@ -16,7 +16,8 @@ import {
   PORTAL_DATA,
   ClientPunchRequest,
   LunchPunch,
-  DeletePunch
+  DeletePunch,
+  Job
 } from "../../objects";
 import { ToastService } from "src/app/services/toast.service";
 import { DeletePunchDialog } from "src/app/dialogs/delete-punch/delete-punch.dialog";
@@ -32,6 +33,7 @@ export class PunchesComponent implements OnInit {
   @Input() byuID: string;
   @Input() jobID: number;
   @Input() day: Day;
+  @Input() job: Job;
 
   constructor(
     private api: APIService,
