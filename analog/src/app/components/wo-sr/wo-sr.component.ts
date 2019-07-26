@@ -56,26 +56,29 @@ export class WoSrComponent implements OnInit {
         jobRef: this.job,
         showTRC: this.showTRCs(),
         showWO: this.showWO(),
+        chosenWO: new WorkOrder(),
         showHours: true,
-        submit: (
-          trc?: TRC,
-          wo?: WorkOrder,
-          hours?: string
-        ): Observable<any> => {
+        submit: (trc: TRC, wo: WorkOrder, hours: string): Observable<any> => {
           const req = new WorkOrderUpsertRequest();
           req.employeeRecord = this.job.employeeJobID.valueOf();
           req.timeReportingCodeHours = hours;
           req.punchDate = this.day.time;
           req.trcID = trc.id;
           req.workOrderID = wo.id;
+          req.sequenceNumber = 0;
 
           const obs = this.api.upsertWorkOrder(this.emp.id, req).pipe(share());
 
           obs.subscribe(
             resp => {
-              const msg = "Work Order Entry added sucessfully!";
-              this._toast.show(msg, "DISMISS", 2000);
               console.log("response data", resp);
+              const msg =
+                "Successfully billed " +
+                req.timeReportingCodeHours +
+                " to " +
+                req.workOrderID +
+                ".";
+              this._toast.show(msg, "DISMISS", 2000);
             },
             err => {
               console.warn("response ERROR", err);
