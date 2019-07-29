@@ -12,7 +12,7 @@ import { Employee } from "../../objects";
 export class LoginComponent implements OnInit {
   id = "";
   ssCounter = 0;
-  ssTimeoutMax = 30;
+  ssTimeoutMax = 20;
   ssTimer: any;
 
   constructor(public api: APIService, private router: Router) {
@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
       if (this.ssCounter >= this.ssTimeoutMax) {
         this.ssCounter = 0;
         clearInterval(this.ssTimer);
+        this.id = "";
         this.router.navigate(["/screensaver"]);
       }
     }, 1000);
