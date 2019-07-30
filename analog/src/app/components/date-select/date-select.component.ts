@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, BehaviorSubject } from "rxjs";
 
-import { EmployeeRef } from "../../services/api.service";
+import { EmployeeRef, APIService } from "../../services/api.service";
 import { ToastService } from "../../services/toast.service";
 import { Employee, Job, Day, JobType } from "../../objects";
 
@@ -64,6 +64,7 @@ export class DateSelectComponent implements OnInit {
   }
 
   constructor(
+    public api: APIService,
     private route: ActivatedRoute,
     private router: Router,
     private toast: ToastService

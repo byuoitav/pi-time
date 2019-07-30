@@ -3,7 +3,7 @@
     <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
   </button>
   <span>{{ job?.description }}</span> <span class="header-spacer"></span>
-  <span>{{ emp?.name }}</span>
+  <span (click)="api?.hiddenDarkMode()">{{ emp?.name }}</span>
   <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>

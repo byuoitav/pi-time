@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import Keyboard from "simple-keyboard";
 
-import { EmployeeRef } from "../../services/api.service";
+import { EmployeeRef, APIService } from "../../services/api.service";
 import { Employee, Job, Day, JobType } from "../../objects";
 
 @Component({
@@ -89,7 +89,7 @@ export class DayOverviewComponent implements OnInit {
     });
   }
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(public api: APIService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {

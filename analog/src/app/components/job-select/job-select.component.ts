@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BehaviorSubject } from "rxjs";
 
-import { EmployeeRef } from "../../services/api.service";
+import { EmployeeRef, APIService } from "../../services/api.service";
 import { Employee } from "../../objects";
 
 @Component({
@@ -20,7 +20,7 @@ export class JobSelectComponent implements OnInit {
     return undefined;
   }
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router, public api: APIService) {}
 
   ngOnInit() {
     this.route.data.subscribe(data => {

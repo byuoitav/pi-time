@@ -1,8 +1,68 @@
 @import "~@angular/material/theming";
 @include mat-core();
+
+/* custom templates */
+
+// mat-card
+@mixin mat-card-theme($theme) {
+  // get the colors i need
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, warn);
+  $warn: map-get($theme, accent);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  .mat-card {
+    background-color: mat-color($background, card);
+    color: mat-color($foreground, text);
+  }
+}
+
+@mixin mat-card-typography($config) {
+  .mat-card {
+    font {
+      family: mat-font-family($config, body-1);
+      size: mat-font-size($config, body-1);
+      weight: mat-font-weight($config, body-1);
+    }
+  }
+}
+
+@mixin overlay-theme($theme) {
+  // get the colors i need
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, warn);
+  $warn: map-get($theme, accent);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  .overlay {
+    &.wo-select-overlay {
+      background-color: mat-color($background, background);
+      color: mat-color($foreground, text);
+    }
+
+    &.time-entry-overlay {
+      background-color: mat-color($background, background);
+      color: mat-color($foreground, text);
+    }
+  }
+}
+
+@mixin overlay-typography($config) {
+  .mat-card {
+    font {
+      family: mat-font-family($config, body-1);
+      size: mat-font-size($config, body-1);
+      weight: mat-font-weight($config, body-1);
+    }
+  }
+}
+
 // mixin for any of my themes for custom templates
 @mixin custom($theme) {
   @include mat-card-theme($theme);
+  @include overlay-theme($theme);
 }
 
 $byu-blue: (
@@ -35,6 +95,7 @@ $warning-red: (
     700: #ffffff
   )
 );
+
 // default (light) theme
 $default-primary: mat-palette($byu-blue, 500, 300, 700);
 $default-accent: mat-palette($light-blue, 500, 300, 700);
@@ -42,6 +103,7 @@ $default-warn: mat-palette($warning-red, 500, 300, 700);
 $default: mat-light-theme($default-primary, $default-accent, $default-warn);
 @include angular-material-theme($default);
 @include custom($default);
+
 // theme for status (success/warning/error) colors
 $status-primary: mat-palette($mat-green);
 $status-accent: mat-palette($mat-yellow);
@@ -57,37 +119,9 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
 .dark-theme {
   @include angular-material-theme($dark);
   @include custom($dark);
-}
 
-/* custom templates */
-
-// mat-card
-@mixin mat-card-theme($theme) {
-  // get the colors i need
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, warn);
-  $warn: map-get($theme, accent);
-  .mat-card {
-    background-color: mat-color($primary);
-  }
-}
-
-@mixin mat-card-theme($config) {
-  .mat-card {
-    font {
-      family: mat-font-family($config, body-1);
-      size: mat-font-size($config, body-1);
-      weight: mat-font-weight($config, body-1);
-    }
-  }
-}
-
-.overlay {
-  &.wo-select-overlay {
-    background-color: white;
-  }
-  &.time-entry-overlay {
-    background-color: white;
+  .mat-app-background {
+    background-color: mat-color($default-primary, darker);
   }
 }
 

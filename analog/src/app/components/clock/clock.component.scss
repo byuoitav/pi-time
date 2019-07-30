@@ -1,126 +1,133 @@
 $card-width: 95%;
 .header-spacer {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .sidenav-container {
-    height: 100%;
+  height: 100%;
 }
 
 .container {
-    margin: 0.5em auto;
-    width: 98%;
-    column-gap: 1em;
-    column-fill: initial;
-    column-count: 1;
-    transition: all 0.5s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .card {
-        margin: 0 0 0.5em;
-        break-inside: avoid;
-    }
+  padding: 0.5em 1%;
+  width: 98%;
+  column-gap: 1em;
+  column-fill: initial;
+  column-count: 1;
+  transition: all 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .card {
+    margin: 0 0 0.5em;
+    break-inside: avoid;
+  }
 }
 
 .totals {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    width: $card-width;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: $card-width;
 }
 
 .jobs {
-    overflow-y: auto;
-    height: 53vh;
+  overflow-y: auto;
+  height: 53vh;
+  width: $card-width;
+
+  &::-webkit-scrollbar {
+    width: 0.6em;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #ffffff;
+    border-radius: 3vh;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #969595;
+    border-radius: 3vh;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #aaaaaa;
+  }
+
+  .card {
+    height: 100%;
+  }
+  .grid {
     width: $card-width;
-    &::-webkit-scrollbar {
-        width: 7px;
+    margin-left: 3vw;
+  }
+  .mat-grid-tile {
+    &.header {
+      &:after {
+        $width: 45%;
+        position: absolute;
+        bottom: 29%;
+        height: 3%;
+        width: $width;
+        margin-left: (100% - $width) / 2;
+        background-color: #c5c5c5;
+        content: "";
+      }
     }
-    &::-webkit-scrollbar-track {
-        background: #ffffff;
+    .work-order {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center;
     }
-    &::-webkit-scrollbar-thumb {
-        background: #969595;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-        background: #aaaaaa;
-    }
-    .card {
-        height: 100%;
-    }
-    .grid {
-        width: $card-width;
-        margin-left: 3vw;
-    }
-    .mat-grid-tile {
-        &.header {
-            &:after {
-                $width: 45%;
-                position: absolute;
-                bottom: 29%;
-                height: 3%;
-                width: $width;
-                margin-left: (100% - $width) / 2;
-                background-color: #c5c5c5;
-                content: "";
-            }
-        }
-        .work-order {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items: center;
-        }
-    }
+  }
 }
 
 .view-timesheet {
-    width: $card-width + 2%;
-    height: 10vh;
-    margin: 0 0 0.5em;
+  width: $card-width + 2%;
+  height: 10vh;
+  margin: 0 0 0.5em;
 }
 
 .clock-group {
-    height: 100%;
-    width: 90%;
+  height: 100%;
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  .clock-button {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
     align-items: center;
-    .clock-button {
-        display: flex;
-        align-items: center;
-        min-height: 6vh;
-        min-width: 7vw;
-        padding: 0.8vh 0.55vw;
-        border: 0.3vh solid #b3b3b3;
-        border-radius: 12px; // fully rounded
-        &.in {
-            /deep/.mat-radio-outer-circle {
-                border-color: #009245 !important;
-            }
-            /deep/.mat-radio-inner-circle {
-                background-color: #009245 !important;
-            }
-        }
-        &.out {
-            /deep/.mat-radio-outer-circle {
-                border-color: #C1272D !important;
-            }
-            /deep/.mat-radio-inner-circle {
-                background-color: #C1272D !important;
-            }
-        }
+    min-height: 6vh;
+    min-width: 7vw;
+    padding: 0.8vh 0.55vw;
+    border: 0.3vh solid #b3b3b3;
+    border-radius: 12px; // fully rounded
+    &.in {
+      /deep/.mat-radio-outer-circle {
+        border-color: #009245 !important;
+      }
+      /deep/.mat-radio-inner-circle {
+        background-color: #009245 !important;
+      }
     }
+    &.out {
+      /deep/.mat-radio-outer-circle {
+        border-color: #c1272d !important;
+      }
+      /deep/.mat-radio-inner-circle {
+        background-color: #c1272d !important;
+      }
+    }
+  }
 }
 
 .change-wo {
-    width: 80%;
+  width: 80%;
 }
 
 .title {
-    display: flex;
-    justify-content: flex-start;
+  display: flex;
+  justify-content: flex-start;
 }

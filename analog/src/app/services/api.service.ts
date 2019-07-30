@@ -65,6 +65,8 @@ export class APIService {
   private jsonConvert: JsonConvert;
   private urlParams: URLSearchParams;
 
+  private _hiddenDarkModeCount = 0;
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -84,7 +86,9 @@ export class APIService {
         }
 
         if (snapshot.queryParams && snapshot.queryParams.theme) {
+          document.body.classList.remove(this.theme + "-theme");
           this.theme = snapshot.queryParams.theme;
+          document.body.classList.add(this.theme + "-theme");
         }
       }
     });
@@ -93,14 +97,26 @@ export class APIService {
   public switchTheme(name: string) {
     console.log("switching theme to", name);
 
-    this.theme = name;
-    this.urlParams.set("theme", name);
-    window.history.replaceState(
-      null,
-      "BYU Time Clock",
-      window.location.pathname + "?" + this.urlParams.toString()
-    );
+    this.router.navigate([], {
+      queryParams: { theme: name },
+      queryParamsHandling: "merge"
+    });
   }
+
+  hiddenDarkMode = () => {
+    if (this.theme === "dark") {
+      return;
+    }
+
+    this._hiddenDarkModeCount++;
+    setTimeout(() => {
+      this._hiddenDarkModeCount--;
+    }, 3000);
+
+    if (this._hiddenDarkModeCount > 4) {
+      this.switchTheme("dark");
+    }
+  };
 
   getEmployee = (id: string | number): EmployeeRef => {
     const employee = new BehaviorSubject<Employee>(undefined);
