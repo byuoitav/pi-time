@@ -89,6 +89,9 @@ export class APIService {
           document.body.classList.remove(this.theme + "-theme");
           this.theme = snapshot.queryParams.theme;
           document.body.classList.add(this.theme + "-theme");
+        } else if (snapshot.queryParams && !snapshot.queryParams.theme) {
+          document.body.classList.remove(this.theme + "-theme");
+          this.theme = "";
         }
       }
     });
@@ -132,6 +135,9 @@ export class APIService {
 
       // no more employee values
       employee.complete();
+
+      // reset theme
+      this.switchTheme("");
 
       // route to login page
       this.router.navigate(["/login"], { replaceUrl: true });
