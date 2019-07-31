@@ -45,7 +45,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
     if (!hour) {
       if (!this.data.duration && this.ampm) {
-        return ":" + min + " " + this.ampm;
+        return "00:" + min + " " + this.ampm;
       }
 
       return ":" + min;
@@ -179,11 +179,13 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   getHours = (): string => {
     switch (this.time.length) {
       case 0:
-        return "";
+        return "00";
       case 1:
-        return "";
+        return "00";
       case 2:
-        return "";
+        return "00";
+      case 3:
+        return "0" + this.time.slice(0, this.time.length - 2);
       default:
         return this.time.slice(0, this.time.length - 2);
     }
@@ -192,9 +194,9 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
   getMinutes = (): string => {
     switch (this.time.length) {
       case 0:
-        return "";
+        return "00";
       case 1:
-        return this.time.slice(0, 1);
+        return "0" + this.time.slice(0, 1);
       case 2:
         return this.time.slice(0, 2);
       default:
@@ -235,14 +237,6 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
 
     let hours = this.getHours();
     let mins = this.getMinutes();
-
-    while (hours.length < 2) {
-      hours = "0" + hours;
-    }
-
-    while (mins.length < 2) {
-      mins = "0" + mins;
-    }
 
     return new Promise<boolean>((resolve, reject) => {
       this.data.save(hours, mins, this.ampm).subscribe(
