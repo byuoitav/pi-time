@@ -47,6 +47,7 @@ export class SickVacationComponent implements OnInit {
     const injector = this.createInjector(overlayRef, {
       title: "Enter time for " + other.trc.description + " hours.",
       duration: true,
+      allowZero: true,
       save: (hours: string, mins: string): Observable<any> => {
         const req = new OtherHourRequest();
         req.jobID = this.jobID;

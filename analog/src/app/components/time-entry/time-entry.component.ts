@@ -66,6 +66,7 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
     public data: {
       title: string;
       duration: boolean;
+      allowZero: boolean;
       save: (hours: string, mins: string, ampm?: string) => Observable<any>;
       error: (err?: any) => void;
       cancel: () => void;
@@ -116,6 +117,10 @@ export class TimeEntryComponent implements OnInit, AfterViewInit {
         switch (this.time.length) {
           case 0:
             valid = key === 0 ? false : true;
+
+            if (this.data.allowZero && key === 0) {
+              valid = true;
+            }
             break;
           case 4:
             valid = false;
