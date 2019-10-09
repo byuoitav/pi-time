@@ -45,7 +45,7 @@ export class ClockComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private api: APIService,
+    public api: APIService,
     public dialog: MatDialog,
     private toast: ToastService
   ) {}
