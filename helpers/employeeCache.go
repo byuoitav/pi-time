@@ -191,6 +191,10 @@ func MonitorLogFiles() {
 		dateToDelete := time.Now().Add(-30 * 24 * time.Hour)
 
 		for _, file := range files {
+			if len(file.Name()) < 10 {
+				// Skip files that are not at least 10 characters long
+				continue
+			}
 			dateToParse := file.Name()[:10]
 			date, err := time.ParseInLocation("2006-01-02", dateToParse, time.Local)
 			if err == nil {
