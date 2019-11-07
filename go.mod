@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/byuoitav/central-event-system v0.0.0-20190603175952-a34290e5e8c4
 	github.com/byuoitav/common v0.0.0-20190722210946-6eb714fb3ada
-	github.com/byuoitav/wso2services v0.0.0-20190725042859-a89925ca0ae9
+	github.com/byuoitav/wso2services v0.0.0-20190911022430-c396c6091bcc
 	github.com/common-nighthawk/go-figure v0.0.0-20190529165535-67e0ed34491a
 	github.com/dgraph-io/badger v1.6.0
 	github.com/fatih/color v1.7.0 // indirect

@@ -124,7 +124,12 @@ export class APIService {
   getEmployee = (id: string | number): EmployeeRef => {
     const employee = new BehaviorSubject<Employee>(undefined);
 
-    const endpoint = "ws://" + window.location.host + "/id/" + id;
+    let protocol = "ws:";
+    if (window.location.protocol === "https:") {
+      protocol = "wss:";
+    }
+
+    const endpoint = protocol + "//" + window.location.host + "/id/" + id;
     const ws = new WebSocket(endpoint);
 
     const empRef = new EmployeeRef(employee, () => {
