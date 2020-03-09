@@ -37,7 +37,7 @@ export class DayOverviewComponent implements OnInit {
   private _date: string;
   get day(): Day {
     if (this.job) {
-      const date = new Date(this._date);
+      const date = new Date(this._date + " 00:00:00");
       return this.job.days.find(
         d =>
           d.time.getFullYear() === date.getFullYear() &&
