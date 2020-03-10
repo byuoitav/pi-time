@@ -174,3 +174,11 @@ type YTimeLocation struct {
 type ServerErrorMessage struct {
 	Message string `json:"message"`
 }
+
+//ServerLoginErrorMessage .
+type ServerLoginErrorMessage struct {
+	Status struct {
+		Code    string `json:"code"`
+		Message string `json:"message"`
+	}
+}

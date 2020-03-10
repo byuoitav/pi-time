@@ -35,7 +35,7 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
       empRef .subject()
         .pipe(takeUntil(unsubscribe))
         .subscribe(
-          val => {
+          val => {            
             if (val instanceof Employee) {
               if (val.message !== undefined && val.message.length > 0) {
                 this.toast.showIndefinitely(val.message as string, "DISMISS");
@@ -46,9 +46,10 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
             }
           },
           err => {
+            console.log("login error", err)
             this.router.navigate(["/login"], {
               queryParams: {
-                error: "No employee found with the given ID."
+                error: err
               },
               queryParamsHandling: "merge"
             });

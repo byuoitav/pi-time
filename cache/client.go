@@ -98,3 +98,19 @@ func (c *Client) write() {
 		}
 	}
 }
+
+func (c *Client) CloseWithReason(msg string) {
+	defer c.conn.Close()
+
+	cmsg := websocket.FormatCloseMessage(4000, msg)
+
+	if len(cmsg) > 125 {
+		cmsg = cmsg[:125]
+	}
+
+	err := c.conn.WriteMessage(websocket.CloseMessage, cmsg)
+
+	if err != nil {
+		log.L.Warnf("unable to write close message %v", err)
+	}
+}

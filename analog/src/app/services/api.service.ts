@@ -149,6 +149,7 @@ export class APIService {
     });
 
     ws.onmessage = event => {
+      console.log("web socket data", event.data)
       const data: Message = JSON.parse(event.data);
 
       console.debug("key: '" + data.key + "', value:", data.value);
@@ -188,7 +189,12 @@ export class APIService {
 
     ws.onerror = event => {
       console.error("websocket error", event);
-      employee.error("No employee found with the given ID.");
+      employee.error("Error with employee - " + event.returnValue);
+    };
+
+    ws.onclose = event => {
+      console.error("websocket close", event);
+      employee.error(event.reason);
     };
 
     return empRef;

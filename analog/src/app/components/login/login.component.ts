@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   constructor(public api: APIService, private router: Router) {
     this.ssTimer = setInterval(() => {
       this.ssCounter++;
-      console.log("counter", this.ssCounter);
+      //console.log("counter", this.ssCounter);
 
       if (this.ssCounter >= this.ssTimeoutMax) {
         this.ssCounter = 0;
@@ -30,6 +30,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {}
+
+  restartTimer() {
+    this.ssCounter = 0;
+  }
 
   addToID(num: string) {
     if (this.id.length < 9) {

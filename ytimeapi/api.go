@@ -2,6 +2,7 @@ package ytimeapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -148,31 +149,48 @@ func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 
 	var timesheet structs.Timesheet
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://api.byu.edu:443/domains/erp/hr/timesheet/v1/"+byuid, "", &timesheet, map[string]string{
+	err, httpResponse, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("GET", "https://api.byu.edu:443/domains/erp/hr/timesheet/v1/"+byuid, "", &timesheet, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
+
 	if err != nil {
 		log.L.Debugf("Error when making WSO2 request to get timesheet %v", err)
 
-		//look in the cache
-		employeeRecord, innerErr := offline.GetEmployeeFromCache(byuid)
-		if innerErr != nil {
-			//not found
-			log.L.Debugf("No cached timesheet found")
-			return timesheet, false, err
+		if httpResponse.StatusCode/100 == 5 {
+			//500 code, then we look in cache
+			//look in the cache
+			employeeRecord, innerErr := offline.GetEmployeeFromCache(byuid)
+
+			if innerErr != nil {
+				//not found
+				log.L.Debugf("No cached timesheet found")
+				return timesheet, false, errors.New("System offline - employee not found")
+			}
+
+			log.L.Debugf("Cached timesheet found")
+
+			timesheet := structs.Timesheet{
+				PersonName:           employeeRecord.Name,
+				WeeklyTotal:          "--:--",
+				PeriodTotal:          "--:--",
+				InternationalMessage: "",
+				Jobs:                 employeeRecord.Jobs,
+			}
+
+			return timesheet, true, nil
 		}
 
-		log.L.Debugf("Cached timesheet found")
-		timesheet := structs.Timesheet{
-			PersonName:           employeeRecord.Name,
-			WeeklyTotal:          "--:--",
-			PeriodTotal:          "--:--",
-			InternationalMessage: "",
-			Jobs:                 employeeRecord.Jobs,
+		var messageStruct structs.ServerLoginErrorMessage
+
+		testForMessageErr := json.Unmarshal([]byte(responseBody), &messageStruct)
+		if testForMessageErr != nil {
+			return timesheet, false, errors.New("Employee not found")
 		}
 
-		return timesheet, true, nil
+		errMessage := messageStruct.Status.Message
+
+		return timesheet, false, errors.New(errMessage)
 	}
 
 	return timesheet, false, nil

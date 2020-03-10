@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"net/http"
-
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/ytimeapi"
@@ -12,7 +10,9 @@ import (
 
 //LogInUser will authenticate a user, upgrade to websocket, and return the timesheet and offline mode to the web socket
 func LogInUser(context echo.Context) error {
-	//do something to authenticate the user, then upgrade to a websocket
+
+	//upgrade the connection to a websocket
+	webSocketClient := cache.ServeWebsocket(context.Response().Writer, context.Request())
 
 	//get the id
 	byuID := context.Param("id")
@@ -22,11 +22,10 @@ func LogInUser(context echo.Context) error {
 	timesheet, isOffline, err := ytimeapi.GetTimesheet(byuID)
 
 	if err != nil {
-		return context.String(http.StatusForbidden, "invalid BYU ID")
+		//return context.String(http.StatusForbidden, err.Error())
+		webSocketClient.CloseWithReason(err.Error())
+		return nil
 	}
-
-	//upgrade the connection to a websocket
-	webSocketClient := cache.ServeWebsocket(context.Response().Writer, context.Request())
 
 	//store the websocket connection in a map so we can get to it later for that employee id
 	cache.AddConnection(byuID, webSocketClient)
