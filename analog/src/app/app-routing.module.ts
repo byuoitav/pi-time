@@ -20,7 +20,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    component: AppComponent,
+    // component: AppComponent,
     children: [
       {
         path: "screensaver",

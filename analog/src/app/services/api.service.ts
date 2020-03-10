@@ -40,9 +40,21 @@ export class EmployeeRef {
     return undefined;
   }
 
-  constructor(employee: BehaviorSubject<Employee>, logout: () => void) {
+  constructor(employee: BehaviorSubject<Employee>, logout: () => void, router: Router) {
     this._employee = employee;
     this._logout = logout;
+
+    router.events.subscribe(event => {
+      if (event instanceof ActivationEnd) {
+        const snapshot = event.snapshot;
+        
+        console.log("URL", snapshot.url.length, snapshot.url[0].path)
+
+        if (snapshot.url.length <= 2 || snapshot.url[0].path != "employee") {          
+          this._logout()
+        }
+      }
+    });
   }
 
   logout = () => {
@@ -146,7 +158,8 @@ export class APIService {
 
       // route to login page
       this.router.navigate(["/login"], { replaceUrl: true });
-    });
+    }, 
+    this.router);
 
     ws.onmessage = event => {
       console.log("web socket data", event.data)

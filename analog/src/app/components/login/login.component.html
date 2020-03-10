@@ -3,7 +3,7 @@
   <span>Y-Time</span> <span class="header-spacer"></span>
 </mat-toolbar>
 
-<div class="login" (click)="restartTimer()">
+<div class="login">
   <div class="input">
     <span *ngIf="id?.length > 0" class="id">{{ id | byuID }}</span>
     <span *ngIf="id?.length == 0" class="id">Enter BYU ID</span>
