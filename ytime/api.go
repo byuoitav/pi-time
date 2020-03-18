@@ -4,24 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/byuoitav/auth/wso2"
-	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/pi-time/offline"
 	"github.com/byuoitav/pi-time/structs"
-	"github.com/byuoitav/wso2services/wso2requests"
 )
-
-type Client interface {
-	SendPunchRequest(context.Context, string, structs.Punch) (structs.Timesheet, error)
-}
 
 type client struct {
 	host     string
@@ -100,239 +90,184 @@ func (c *client) SendPunchRequest(ctx context.Context, id string, punch structs.
 }
 
 // SendFixPunchRequest sends a punch request to the YTime API and returns the response.
-func SendFixPunchRequest(byuID string, req structs.Punch) ([]structs.TimeClockDay, *nerr.E) {
-	var resp []structs.TimeClockDay
+func (c *client) SendFixPunchRequest(ctx context.Context, id string, punch structs.Punch) ([]structs.TimeClockDay, error) {
+	var ret []structs.TimeClockDay
 
 	body := make(map[string]structs.Punch)
-	body["punch"] = req
+	body["punch"] = punch
 
-	method := "PUT"
-	err := wso2requests.MakeWSO2RequestWithHeaders(method, "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &resp, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-	if err != nil {
-		return resp, nerr.Translate(err).Addf("failed to make a punch for %s: %s", byuID, err.Error())
+	if err := c.sendRequest(ctx, http.MethodPut, "/punches/v1/"+id, body, &ret); err != nil {
+		return ret, err
 	}
 
-	return resp, nil
+	return ret, nil
 }
 
 // SendLunchPunch sends a lunch punch request to the YTime API and returns the response.
-func SendLunchPunch(byuID string, req structs.LunchPunch) ([]structs.TimeClockDay, *nerr.E) {
-	var resp []structs.TimeClockDay
+func (c *client) SendLunchPunch(ctx context.Context, id string, punch structs.LunchPunch) ([]structs.TimeClockDay, error) {
+	var ret []structs.TimeClockDay
 
 	body := make(map[string]structs.LunchPunch)
-	body["lunch_punch"] = req
+	body["lunch_punch"] = punch
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("POST", "https://api.byu.edu:443/domains/erp/hr/ytime_lunch_punch/v1/"+byuID, body, &resp, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-	if err != nil {
-		return resp, nerr.Translate(err).Addf("failed to make a lunch punch for %s: %s", byuID, err.Error())
+	if err := c.sendRequest(ctx, http.MethodPost, "/ytime_lunch_punch/v1/"+id, body, &ret); err != nil {
+		return ret, err
 	}
 
-	return resp, nil
+	return ret, nil
 }
 
 // SendOtherHoursRequest sends a sick/vacation request to the YTime API and returns the response (if no problem), and error, as well as the http response and body
-func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs.ElapsedTimeSummary, *nerr.E, *http.Response, string) {
-	var otherResponse structs.ElapsedTimeSummary
+func (c *client) SendOtherHoursRequest(ctx context.Context, id string, entry structs.ElapsedTimeEntry) (structs.ElapsedTimeSummary, error) {
+	var ret structs.ElapsedTimeSummary
 
-	var wrapper structs.ElapsedTimeEntryWrapper
-
-	wrapper.ElapsedTimeEntry = body
-
-	test, _ := json.Marshal(body)
-
-	log.L.Debugf("Body to send to other hours WSO2: %s", test)
-
-	err, response, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, wrapper, &otherResponse, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-
-	if err != nil {
-		return otherResponse, nerr.Translate(err).Addf("failed to record sick hours for %s", byuID), response, responseBody
+	wrapper := structs.ElapsedTimeEntryWrapper{
+		ElapsedTimeEntry: entry,
 	}
 
-	return otherResponse, nil, response, responseBody
+	if err := c.sendRequest(ctx, http.MethodPost, "/elapsed_time_punch/v1/"+id, wrapper, &ret); err != nil {
+		return ret, err
+	}
+
+	return ret, nil
 }
 
 // SendWorkOrderUpsertRequest .
-func SendWorkOrderUpsertRequest(byuID string, req structs.WorkOrderUpsert) (structs.WorkOrderDaySummary, *nerr.E) {
-	var resp structs.WorkOrderDaySummary
+func (c *client) SendWorkOrderUpsertRequest(ctx context.Context, id string, upsert structs.WorkOrderUpsert) (structs.WorkOrderDaySummary, error) {
+	var ret structs.WorkOrderDaySummary
 
-	url := fmt.Sprintf("https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/%s", byuID)
-
-	err := wso2requests.MakeWSO2RequestWithHeaders("POST", url, req, &resp, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-	if err != nil {
-		return resp, nerr.Translate(err).Addf("failed to send a work order entry for %s", byuID)
+	if err := c.sendRequest(ctx, http.MethodPost, "/work_order_entry/v1/"+id, upsert, &ret); err != nil {
+		return ret, err
 	}
 
-	return resp, nil
+	return ret, nil
 }
 
 // SendDeletePunchRequest sends a delete punch request to the YTime API and returns the response.
-func SendDeletePunchRequest(byuID string, req structs.DeletePunch) ([]structs.TimeClockDay, *nerr.E) {
-	var resp []structs.TimeClockDay
+func (c *client) SendDeletePunchRequest(ctx context.Context, id string, punch structs.DeletePunch) ([]structs.TimeClockDay, error) {
+	var ret []structs.TimeClockDay
 
-	url := fmt.Sprintf("https://api.byu.edu:443/domains/erp/hr/punches/v1/%s,%d,%s,%d", byuID, *req.EmployeeJobID, req.PunchTime.Local().Format("2006-01-02"), *req.SequenceNumber)
+	endpoint := fmt.Sprintf("/punches/v1/%s,%d,%s,%d", id, *punch.EmployeeJobID, punch.PunchTime.Local().Format("2006-01-02"), *punch.SequenceNumber)
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", url, nil, &resp, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-	if err != nil {
-		return resp, nerr.Translate(err).Addf("failed to delete punch")
+	if err := c.sendRequest(ctx, http.MethodDelete, endpoint, nil, &ret); err != nil {
+		return ret, err
 	}
 
-	return resp, nil
+	return ret, nil
 }
 
 // SendDeleteWorkOrderEntryRequest sends a delete work order entry request to the YTime API and returns the response
-func SendDeleteWorkOrderEntryRequest(byuID string, jobID string, punchDate string, sequenceNumber string) (structs.WorkOrderDaySummary, *nerr.E) {
-	var response structs.WorkOrderDaySummary
+func (c *client) SendDeleteWorkOrderEntryRequest(ctx context.Context, id, jobID, punchDate, sequenceNumber string) (structs.WorkOrderDaySummary, error) {
+	var ret structs.WorkOrderDaySummary
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("DELETE", "https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID+","+jobID+","+punchDate+","+sequenceNumber, "", &response, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-	if err != nil {
-		return response, nerr.Translate(err).Addf("failed to delete work order entry for %s", byuID)
+	endpoint := fmt.Sprintf("/work_order_entry/v1/%s,%s,%s,%s", id, jobID, punchDate, sequenceNumber)
+
+	if err := c.sendRequest(ctx, http.MethodDelete, endpoint, nil, &ret); err != nil {
+		return ret, err
 	}
 
-	return response, nil
+	return ret, nil
 }
 
-// GetTimesheet returns a timesheet, a bool if the timesheet was returned in offline mode (from cache), and possible error
-func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
-
-	var timesheet structs.Timesheet
-
-	err, httpResponse, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("GET", "https://api.byu.edu:443/domains/erp/hr/timesheet/v1/"+byuid, "", &timesheet, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-
-	if err != nil {
-		log.L.Debugf("Error when making WSO2 request to get timesheet %v", err)
-
-		if httpResponse.StatusCode/100 == 5 {
-			//500 code, then we look in cache
-			//look in the cache
-			employeeRecord, innerErr := offline.GetEmployeeFromCache(byuid)
-
-			if innerErr != nil {
-				//not found
-				log.L.Debugf("No cached timesheet found")
-				return timesheet, false, errors.New("System offline - employee not found")
-			}
-
-			log.L.Debugf("Cached timesheet found")
-
-			timesheet := structs.Timesheet{
-				PersonName:           employeeRecord.Name,
-				WeeklyTotal:          "--:--",
-				PeriodTotal:          "--:--",
-				InternationalMessage: "",
-				Jobs:                 employeeRecord.Jobs,
-			}
-
-			return timesheet, true, nil
-		}
-
-		var messageStruct structs.ServerLoginErrorMessage
-
-		testForMessageErr := json.Unmarshal([]byte(responseBody), &messageStruct)
-		if testForMessageErr != nil {
-			return timesheet, false, errors.New("Employee not found")
-		}
-
-		errMessage := messageStruct.Status.Message
-
-		return timesheet, false, errors.New(errMessage)
-	}
-
-	return timesheet, false, nil
-}
+// TODO GetTimesheet returns a timesheet, a bool if the timesheet was returned in offline mode (from cache), and possible error
+//func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
+//
+//	var timesheet structs.Timesheet
+//
+//	err, httpResponse, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("GET", "https://api.byu.edu:443/domains/erp/hr/timesheet/v1/"+byuid, "", &timesheet, map[string]string{
+//		"Content-Type": "application/json",
+//		"Accept":       "application/json",
+//	})
+//
+//	if err != nil {
+//		log.L.Debugf("Error when making WSO2 request to get timesheet %v", err)
+//
+//		if httpResponse.StatusCode/100 == 5 {
+//			//500 code, then we look in cache
+//			//look in the cache
+//			employeeRecord, innerErr := offline.GetEmployeeFromCache(byuid)
+//
+//			if innerErr != nil {
+//				//not found
+//				log.L.Debugf("No cached timesheet found")
+//				return timesheet, false, errors.New("System offline - employee not found")
+//			}
+//
+//			log.L.Debugf("Cached timesheet found")
+//
+//			timesheet := structs.Timesheet{
+//				PersonName:           employeeRecord.Name,
+//				WeeklyTotal:          "--:--",
+//				PeriodTotal:          "--:--",
+//				InternationalMessage: "",
+//				Jobs:                 employeeRecord.Jobs,
+//			}
+//
+//			return timesheet, true, nil
+//		}
+//
+//		var messageStruct structs.ServerLoginErrorMessage
+//
+//		testForMessageErr := json.Unmarshal([]byte(responseBody), &messageStruct)
+//		if testForMessageErr != nil {
+//			return timesheet, false, errors.New("Employee not found")
+//		}
+//
+//		errMessage := messageStruct.Status.Message
+//
+//		return timesheet, false, errors.New(errMessage)
+//	}
+//
+//	return timesheet, false, nil
+//}
 
 // GetPunchesForJob gets a list of serverside TimeClockDay structures from WSO2
-func GetPunchesForJob(byuID string, jobID int) []structs.TimeClockDay {
-	var WSO2Response []structs.TimeClockDay
+func (c *client) GetPunchesForJob(ctx context.Context, id string, jobID int) ([]structs.TimeClockDay, error) {
+	var ret []structs.TimeClockDay
 
-	log.L.Debugf("Sending WSO2 GET request to %v", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+strconv.Itoa(jobID))
+	endpoint := fmt.Sprintf("/punches/v1/%s,%d", id, jobID)
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
-		"https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+strconv.Itoa(jobID), "", &WSO2Response, map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "application/json",
-		})
-
-	if err != nil {
-		log.L.Errorf("Error when retrieving punches for employee and job %s %v %s", byuID, jobID, err.Error())
+	if err := c.sendRequest(ctx, http.MethodGet, endpoint, nil, &ret); err != nil {
+		return ret, err
 	}
 
-	return WSO2Response
+	return ret, nil
 }
 
 // GetWorkOrders gets all the possilbe work orders for the day from WSO2
-func GetWorkOrders(operatingUnit string) []structs.WorkOrder {
-	var WSO2Response []structs.WorkOrder
+func (c *client) GetWorkOrders(ctx context.Context, operatingUnit string) ([]structs.WorkOrder, error) {
+	var ret []structs.WorkOrder
 
-	log.L.Debugf("Getting work orders for operating unit %v", operatingUnit)
-
-	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
-		"https://api.byu.edu:443/domains/erp/hr/work_orders_by_operating_unit/v1/"+operatingUnit, "", &WSO2Response, map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "application/json",
-		})
-
-	if err != nil {
-		log.L.Errorf("Error when retrieving possible work orders for operating unit %v", err.Error())
+	if err := c.sendRequest(ctx, http.MethodGet, "/work_orders_by_operating_unit/v1"+operatingUnit, nil, &ret); err != nil {
+		return ret, err
 	}
 
-	return WSO2Response
+	return ret, nil
 }
 
 // GetWorkOrderEntries gets all the work order entries for a particular job from WSO2
-func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDaySummary {
-	var WSO2Response []structs.WorkOrderDaySummary
+func (c *client) GetWorkOrderEntries(ctx context.Context, id string, jobID int) ([]structs.WorkOrderDaySummary, error) {
+	var ret []structs.WorkOrderDaySummary
 
-	log.L.Debugf("Getting work orders for employee and job %v %v", byuID, employeeJobID)
+	endpoint := fmt.Sprintf("/work_order_entry/v1/%s,%d", id, jobID)
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
-		"https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response, map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "application/json",
-		})
-
-	if err != nil {
-		log.L.Errorf("Error when retrieving possible work orders for operating unit %v", err.Error())
+	if err := c.sendRequest(ctx, http.MethodGet, endpoint, nil, &ret); err != nil {
+		return ret, err
 	}
 
-	return WSO2Response
+	return ret, nil
 }
 
 // GetOtherHoursForDate gets the other hours for a job for a specitic date from WSO2
-func GetOtherHoursForDate(byuID string, employeeJobID int, date time.Time) structs.ElapsedTimeSummary {
-	var WSO2Response structs.ElapsedTimeSummary
+func (c *client) GetOtherHoursForDate(ctx context.Context, id string, jobID int, date time.Time) (structs.ElapsedTimeSummary, error) {
+	var ret structs.ElapsedTimeSummary
 
-	log.L.Debugf("Getting other hours for employee and and date job %v %v", byuID, employeeJobID, date)
+	// TODO should the date format have .Local()?
+	endpoint := fmt.Sprintf("/elapsed_time_punch/v1/%s,%d,%s", id, jobID, date.Format("2006-01-02"))
 
-	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
-		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID)+","+date.Format("2006-01-02"), "", &WSO2Response, map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "application/json",
-		})
-
-	if err != nil {
-		log.L.Errorf("Error when retrieving other hours for date %v %v", date, err.Error())
+	if err := c.sendRequest(ctx, http.MethodGet, endpoint, nil, &ret); err != nil {
+		return ret, err
 	}
 
-	return WSO2Response
+	return ret, nil
 }
