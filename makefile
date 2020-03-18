@@ -1,119 +1,94 @@
-# vars
-ORG=$(shell echo $(CIRCLE_PROJECT_USERNAME))
-BRANCH=$(shell echo $(CIRCLE_BRANCH))
-NAME=$(shell echo $(CIRCLE_PROJECT_REPONAME))
+NAME := pi-time
+OWNER := byuoitav
+PKG := github.com/${OWNER}/${NAME}
+DOCKER_URL := docker.pkg.github.com
 
-ifeq ($(NAME),)
-NAME := $(shell basename "$(PWD)")
+# version:
+# use the git tag, if this commit
+# doesn't have a tag, use the git hash
+COMMIT_HASH := $(shell git rev-parse --short HEAD)
+VERSION := $(shell git rev-parse --short HEAD)
+ifneq ($(shell git describe --exact-match --tags HEAD 2> /dev/null),)
+	VERSION = $(shell git describe --exact-match --tags HEAD)
 endif
 
-ifeq ($(ORG),)
-ORG=byuoitav
-endif
+# go stuff
+PKG_LIST := $(shell go list ${PKG}/...)
 
-ifeq ($(BRANCH),)
-BRANCH:= $(shell git rev-parse --abbrev-ref HEAD)
-endif
+.PHONY: all deps build test test-cov clean
 
-# go
-GOCMD=go
-GOBUILD=$(GOCMD) build
-GOCLEAN=$(GOCMD) clean
-GOTEST=$(GOCMD) test
-GOGET=$(GOCMD) get
-VENDOR=gvt fetch -branch $(BRANCH)
-
-# docker 
-DOCKER=docker
-DOCKER_BUILD=$(DOCKER) build
-DOCKER_LOGIN=$(DOCKER) login -u $(UNAME) -p $(PASS)
-DOCKER_PUSH=$(DOCKER) push
-DOCKER_FILE=dockerfile
-DOCKER_FILE_ARM=dockerfile-arm
-
-UNAME=$(shell echo $(DOCKER_USERNAME))
-EMAIL=$(shell echo $(DOCKER_EMAIL))
-PASS=$(shell echo $(DOCKER_PASSWORD))
-
-# angular
-NPM=npm
-NPM_INSTALL=$(NPM) install
-NPM_BUILD=$(NPM) run-script build
-NG1=analog
-
-build: build-x86 build-arm build-web
-
-build-x86:
-	env GOOS=linux CGO_ENABLED=0 $(GOBUILD) -o $(NAME)-bin -v
-
-build-arm: 
-	env GOOS=linux GOARCH=arm $(GOBUILD) -o $(NAME)-arm -v
-
-build-web: $(NG1)
-	# ng1
-	cd $(NG1) && $(NPM_INSTALL) && $(NPM_BUILD)
-	mv $(NG1)/dist/$(NG1) $(NG1)-dist
+all: clean build
 
 test:
-	$(GOTEST) -v -race $(go list ./... | grep -v /vendor/) 
+	@go test -v ${PKG_LIST}
 
-clean:
-	$(GOCLEAN)
-	rm -f $(NAME)-bin
-	rm -f $(NAME)-arm
-	rm -rf $(NG1)-dist
+test-cov:
+	@go test -coverprofile=coverage.txt -covermode=atomic ${PKG_LIST}
 
-run: $(NAME)-bin $(NG1)-dist
-	./$(NAME)-bin
+lint:
+	@golangci-lint run --tests=false
 
 deps:
-	npm config set unsafe-perm true
-	$(NPM_INSTALL) -g @angular/cli@latest
+	@echo Downloading backend dependencies...
+	@go mod download
 
-docker: docker-x86 docker-arm
+	@echo Downloading frontend dependencies for analog...
+	@cd analog && npm install
 
-docker-x86: $(NAME)-bin $(NG1)-dist
-ifeq "$(BRANCH)" "master"
-	$(eval BRANCH=development)
-endif
-ifeq "$(BRANCH)" "production"
-	$(eval BRANCH=latest)
-endif
-	$(DOCKER_BUILD) --build-arg NAME=$(NAME) -f $(DOCKER_FILE) -t $(ORG)/$(NAME):$(BRANCH) .
-	@echo logging in to dockerhub...
-	@$(DOCKER_LOGIN)
-	$(DOCKER_PUSH) $(ORG)/$(NAME):$(BRANCH)
-ifeq "$(BRANCH)" "latest"
-	$(eval BRANCH=production)
-endif
-ifeq "$(BRANCH)" "development"
-	$(eval BRANCH=master)
+build: deps
+	@mkdir -p dist
+
+	@echo
+	@echo Building backend for linux-amd64...
+	@env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o ./dist/${NAME}-linux-amd64 ${PKG}
+
+	@echo
+	@echo Building backend for linux-arm...
+	@env CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -v -o ./dist/${NAME}-linux-arm ${PKG}
+
+	@echo
+	@echo Building analog...
+	@cd analog && npm run-script build && mv ./dist/analog ../dist/ && rmdir ./dist
+
+	@echo
+	@echo Build output is located in ./dist/.
+
+docker: clean build
+# if the commit hash and release are different, this is a tagged build and we should build the tagged version
+ifneq (${COMMIT_HASH},${VERSION})
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION} dist
+
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION} dist
+else
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH} dist
+
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH} dist
 endif
 
-docker-arm: $(NAME)-arm $(NG1)-dist
-ifeq "$(BRANCH)" "master"
-	$(eval BRANCH=development)
-endif
-ifeq "$(BRANCH)" "production"
-	$(eval BRANCH=latest)
-endif
-	$(DOCKER_BUILD) --build-arg NAME=$(NAME) -f $(DOCKER_FILE_ARM) -t $(ORG)/rpi-$(NAME):$(BRANCH) .
-	@echo logging in to dockerhub...
-	@$(DOCKER_LOGIN)
-	$(DOCKER_PUSH) $(ORG)/rpi-$(NAME):$(BRANCH)
-ifeq "$(BRANCH)" "latest"
-	$(eval BRANCH=production)
-endif
-ifeq "$(BRANCH)" "development"
-	$(eval BRANCH=master)
+deploy: docker
+	@echo Logging into Github Package Registry
+	@docker login ${DOCKER_URL} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+
+# if the commit hash and release are different, this is a tagged build and we should deploy the tagged version
+ifneq (${COMMIT_HASH},${VERSION})
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
+
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
+else
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
+
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
 endif
 
-### deps
-$(NAME)-bin:
-	$(MAKE) build-x86
-
-$(NAME)-arm:
-	$(MAKE) build-arm
-
-$(NG1)-dist:
-	$(MAKE) build-web
+clean:
+	@go clean
+	@cd analog && rm -rf dist node_modules
+	@rm -rf dist/

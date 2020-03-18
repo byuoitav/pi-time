@@ -39,7 +39,12 @@ func main() {
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
 
-	router := echo.New() // TODO use common.NewRouter()
+	router := echo.New()
+
+	// health endpoint
+	router.GET("/healthz", func(c echo.Context) error {
+		return c.String(http.StatusOK, "healthy")
+	})
 
 	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.LogInUser)
@@ -83,7 +88,7 @@ func main() {
 
 	//serve the angular web page
 	router.Group("/analog", middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:   "analog-dist",
+		Root:   "analog",
 		Index:  "index.html",
 		HTML5:  true,
 		Browse: true,
