@@ -28,18 +28,17 @@ func main() {
 	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
 
 	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
-	go helpers.WatchForOfflinePunchesAndSend()
-
-	//start a go routine that will monitor a channel for some persistent logging that we want to send to a json file
-	go helpers.StartLogChannel()
-
-	//start a go routine that will monitor the log files we've created and clear them out periodically
-	go helpers.MonitorLogFiles()
+	//TODO
 
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
 
-	router := echo.New() // TODO use common.NewRouter()
+	router := echo.New()
+
+	// health endpoint
+	router.GET("/healthz", func(c echo.Context) error {
+		return c.String(http.StatusOK, "healthy")
+	})
 
 	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.LogInUser)
@@ -83,7 +82,7 @@ func main() {
 
 	//serve the angular web page
 	router.Group("/analog", middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:   "analog-dist",
+		Root:   "analog",
 		Index:  "index.html",
 		HTML5:  true,
 		Browse: true,

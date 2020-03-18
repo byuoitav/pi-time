@@ -15,3 +15,5 @@ vendor/
 pi-time-bin
 pi-time-arm
 analog-dist
+
+dist/

@@ -2,8 +2,6 @@ package helpers
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	syslog "log"
 	"os"
 	"time"
 
@@ -132,78 +130,4 @@ func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
 	}
 
 	return empRecord, nil
-}
-
-//WatchForOfflinePunchesAndSend .
-func WatchForOfflinePunchesAndSend() {
-
-}
-
-//StartLogChannel .
-func StartLogChannel() {
-	logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
-
-	if len(logLocation) == 0 {
-		//assume they don't want this logging to a file - just output to console
-		for message := range LogChannel {
-			log.L.Debugf("log - " + message)
-		}
-	}
-
-	date := time.Now().Format("2006-01-02")
-	logFileName := date + ".log"
-
-	f, err := os.OpenFile(logLocation+"/"+logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.L.Fatalf("Error creating log file: %v", err.Error())
-	}
-	defer f.Close()
-
-	logger := syslog.New(f, "pi-time ", syslog.LstdFlags)
-
-	for message := range LogChannel {
-		log.L.Debugf(message)
-		logger.Println(message)
-
-		testdate := time.Now().Format("2006-01-02")
-		if date != testdate {
-			go StartLogChannel()
-			break
-		}
-	}
-}
-
-//MonitorLogFiles .
-func MonitorLogFiles() {
-	for {
-		logLocation := os.Getenv("PI_TIME_LOG_LOCATION")
-
-		if len(logLocation) == 0 {
-			//assume they don't want this logging
-			return
-		}
-
-		files, err := ioutil.ReadDir(logLocation)
-		if err != nil {
-			log.L.Fatalf(err.Error())
-		}
-
-		dateToDelete := time.Now().Add(-30 * 24 * time.Hour)
-
-		for _, file := range files {
-			if len(file.Name()) < 10 {
-				// Skip files that are not at least 10 characters long
-				continue
-			}
-			dateToParse := file.Name()[:10]
-			date, err := time.ParseInLocation("2006-01-02", dateToParse, time.Local)
-			if err == nil {
-				if date.Before(dateToDelete) {
-					os.Remove(logLocation + "/" + file.Name())
-				}
-			}
-		}
-
-		time.Sleep(8 * time.Hour)
-	}
 }
