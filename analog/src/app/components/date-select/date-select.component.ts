@@ -132,6 +132,8 @@ export class DateSelectComponent implements OnInit {
   }
 
   selectDay = (date: Date) => {
+    console.log("Selecting Day:" + date)
+    
     const str =
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
