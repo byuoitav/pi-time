@@ -9,7 +9,7 @@ import (
 )
 
 //LogInUser will authenticate a user, upgrade to websocket, and return the timesheet and offline mode to the web socket
-func LogInUser(context echo.Context) error {
+func (y *YTime) LogInUser(context echo.Context) error {
 
 	//upgrade the connection to a websocket
 	webSocketClient := cache.ServeWebsocket(context.Response().Writer, context.Request())

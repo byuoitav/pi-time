@@ -14,6 +14,7 @@ require (
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/echo/v4 v4.1.6
 	github.com/sevenNt/echo-pprof v0.1.0 // indirect
+	github.com/spf13/pflag v1.0.3
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0

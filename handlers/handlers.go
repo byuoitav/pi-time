@@ -7,16 +7,19 @@ import (
 	"time"
 
 	"github.com/byuoitav/common/log"
-	commonEvents "github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
-	eventsender "github.com/byuoitav/pi-time/events"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/labstack/echo/v4"
 )
 
+type YTime struct {
+	ClientKey    string
+	ClientSecret string
+}
+
 // Punch adds an in or out punch as determined by the body sent
-func Punch(context echo.Context) error {
+func (y *YTime) Punch(context echo.Context) error {
 	byuID := context.Param("id")
 
 	var incomingRequest structs.ClientPunchRequest
@@ -35,7 +38,7 @@ func Punch(context echo.Context) error {
 }
 
 // FixPunch adds an in or out punch as determined by the body sent
-func FixPunch(context echo.Context) error {
+func (y *YTime) FixPunch(context echo.Context) error {
 	byuID := context.Param("id")
 
 	num, err := strconv.Atoi(context.Param("seq"))
@@ -61,7 +64,7 @@ func FixPunch(context echo.Context) error {
 }
 
 // LunchPunch adds a lunch punch
-func LunchPunch(context echo.Context) error {
+func (y *YTime) LunchPunch(context echo.Context) error {
 	//byu id passed in the url
 	byuID := context.Param("id")
 
@@ -81,7 +84,7 @@ func LunchPunch(context echo.Context) error {
 }
 
 // OtherHours adds entry to sick time
-func OtherHours(context echo.Context) error {
+func (y *YTime) OtherHours(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date are all passed in the url
 	byuID := context.Param("id")
 
@@ -104,7 +107,7 @@ func OtherHours(context echo.Context) error {
 }
 
 // UpsertWorkOrderEntry .
-func UpsertWorkOrderEntry(ectx echo.Context) error {
+func (y *YTime) UpsertWorkOrderEntry(ectx echo.Context) error {
 	byuID := ectx.Param("id")
 
 	var req structs.WorkOrderUpsert
@@ -122,7 +125,7 @@ func UpsertWorkOrderEntry(ectx echo.Context) error {
 }
 
 // DeletePunch deletes an added punch
-func DeletePunch(ectx echo.Context) error {
+func (y *YTime) DeletePunch(ectx echo.Context) error {
 	byuID := ectx.Param("id")
 
 	var req structs.DeletePunch
@@ -140,7 +143,7 @@ func DeletePunch(ectx echo.Context) error {
 }
 
 // DeleteWorkOrderEntry deletes a work order entry
-func DeleteWorkOrderEntry(context echo.Context) error {
+func (y *YTime) DeleteWorkOrderEntry(context echo.Context) error {
 	//BYU ID is passed in the url
 	byuID := context.Param("id")
 
@@ -166,22 +169,8 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 	return context.String(http.StatusOK, "ok")
 }
 
-//SendEvent passes an event to the messenger
-func SendEvent(context echo.Context) error {
-	var event commonEvents.Event
-	gerr := context.Bind(&event)
-	if gerr != nil {
-		return context.String(http.StatusBadRequest, gerr.Error())
-	}
-
-	eventsender.MyMessenger.SendEvent(event)
-
-	log.L.Debugf("sent event from UI: %+v", event)
-	return context.String(http.StatusOK, "success")
-}
-
 //GetSickAndVacationForJobAndDate handles ensuring that we have the sick and vacation for a day
-func GetSickAndVacationForJobAndDate(context echo.Context) error {
+func (y *YTime) GetSickAndVacationForJobAndDate(context echo.Context) error {
 	//BYU ID, EmployeeJobID, Punch Date, and Sequence Number are all passed in the url
 	byuID := context.Param("id")
 	jobIDString := context.Param("jobid")
