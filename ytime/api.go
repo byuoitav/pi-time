@@ -1,13 +1,17 @@
-package ytimeapi
+package ytime
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/byuoitav/auth/wso2"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/pi-time/offline"
@@ -15,23 +19,84 @@ import (
 	"github.com/byuoitav/wso2services/wso2requests"
 )
 
-// SendPunchRequest sends a punch request to the YTime API and returns the response.
-func SendPunchRequest(byuID string, req structs.Punch) (structs.Timesheet, *nerr.E, *http.Response) {
-	var punchResponse structs.Timesheet
+type Client interface {
+	SendPunchRequest(context.Context, string, structs.Punch) (structs.Timesheet, error)
+}
 
-	body := make(map[string]structs.Punch)
-	body["punch"] = req
+type client struct {
+	host     string
+	endpoint string
 
-	method := "POST"
-	err, response, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "application/json",
-	})
-	if err != nil {
-		return punchResponse, nerr.Translate(err).Addf("failed to make a punch for %s: %s", byuID, err.Error()), response
+	client *wso2.Client
+}
+
+const (
+	_defaultHost     = "api.byu.edu:443"
+	_defaultEndpoint = "/domains/erp/hr"
+)
+
+func NewClient(id, secret string) Client {
+	return &client{
+		host:     _defaultHost,
+		endpoint: _defaultEndpoint,
+		client: &wso2.Client{
+			GatewayURL:   "https://api.byu.edu/",
+			ClientID:     id,
+			ClientSecret: secret,
+		},
+	}
+}
+
+func (c *client) sendRequest(ctx context.Context, method string, endpoint string, reqBody interface{}, structToFill interface{}) error {
+	var reqBytes []byte
+
+	if reqBody != nil {
+		var err error
+		if reqBytes, err = json.Marshal(reqBody); err != nil {
+			return fmt.Errorf("unable to marshal body: %w", err)
+		}
 	}
 
-	return punchResponse, nil, response
+	url := fmt.Sprintf("https://%s%s%s", c.host, c.endpoint, endpoint)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(reqBytes))
+	if err != nil {
+		return fmt.Errorf("unable to build request: %w", err)
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("unable to make request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("unable to read response: %w", err)
+	}
+
+	if err := json.Unmarshal(respBody, &structToFill); err != nil {
+		return fmt.Errorf("unable to parse response: %w", err)
+	}
+
+	return nil
+}
+
+// SendPunchRequest sends a punch request to the YTime API and returns the response.
+func (c *client) SendPunchRequest(ctx context.Context, id string, punch structs.Punch) (structs.Timesheet, error) {
+	var ret structs.Timesheet
+
+	body := make(map[string]structs.Punch)
+	body["punch"] = punch
+
+	if err := c.sendRequest(ctx, http.MethodPost, "/punches/v1/"+id, body, &ret); err != nil {
+		return ret, err
+	}
+
+	return ret, nil
 }
 
 // SendFixPunchRequest sends a punch request to the YTime API and returns the response.
@@ -252,25 +317,6 @@ func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDay
 
 	return WSO2Response
 }
-
-// // GetOtherHours gets the other hours for a job from WSO2
-// func GetOtherHours(byuID string, employeeJobID int) structs.ElapsedTimeSummary {
-// 	var WSO2Response structs.ElapsedTimeSummary
-
-// 	log.L.Debugf("Getting other hours for employee and job %v %v", byuID, employeeJobID)
-
-// 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
-// 		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response, map[string]string{
-// 			"Content-Type": "application/json",
-// 			"Accept":       "application/json",
-// 		})
-
-// 	if err != nil {
-// 		log.L.Errorf("Error when retrieving other hours %v", err.Error())
-// 	}
-
-// 	return WSO2Response
-// }
 
 // GetOtherHoursForDate gets the other hours for a job for a specitic date from WSO2
 func GetOtherHoursForDate(byuID string, employeeJobID int, date time.Time) structs.ElapsedTimeSummary {

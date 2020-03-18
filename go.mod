@@ -3,8 +3,9 @@ module github.com/byuoitav/pi-time
 go 1.12
 
 require (
+	github.com/byuoitav/auth v0.1.2
 	github.com/byuoitav/central-event-system v0.0.0-20190603175952-a34290e5e8c4
-	github.com/byuoitav/common v0.0.0-20190722210946-6eb714fb3ada
+	github.com/byuoitav/common v0.0.0-20191002152922-df81767c74ab
 	github.com/byuoitav/wso2services v0.0.0-20190911022430-c396c6091bcc
 	github.com/common-nighthawk/go-figure v0.0.0-20190529165535-67e0ed34491a
 	github.com/dgraph-io/badger v1.6.0
@@ -16,7 +17,6 @@ require (
 	github.com/sevenNt/echo-pprof v0.1.0 // indirect
 	github.com/spf13/pflag v1.0.3
 	go.uber.org/atomic v1.4.0 // indirect
-	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/arch v0.0.0-20190312162104-788fe5ffcd8c // indirect
 )
