@@ -30,29 +30,39 @@ data "aws_ssm_parameter" "dev_client_secret" {
   name = "/env/ytime/dev-client-secret"
 }
 
-module "deployment" {
-  source = "github.com/byuoitav/terraform//modules/kubernetes-deployment"
+data "aws_ssm_parameter" "dev_hub_address" {
+  name = "/env/dev-hub-address"
+}
+
+data "aws_ssm_parameter" "wso2_token_refresh_url" {
+  name = "/env/wso2-token-refresh-url"
+}
+
+module "statefulset" {
+  source = "github.com/byuoitav/terraform//modules/kubernetes-statefulset"
 
   // required
-  name           = "pi-time-dev"
-  image          = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
-  image_version  = "fbbf239"
-  container_port = 8080
-  repo_url       = "https://github.com/byuoitav/pi-time"
+  name                 = "pi-time-dev"
+  image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
+  image_version        = "02e60c7"
+  container_port       = 8463
+  repo_url             = "https://github.com/byuoitav/pi-time"
+  storage_mount_path   = "/opt/pi-time/"
+  storage_request_size = "10Gi"
 
   // optional
   image_pull_secret = "github-docker-registry"
   public_urls       = ["ytime-dev.av.byu.edu"]
   container_env = {
-    "DB_ADDRESS"       = data.aws_ssm_parameter.dev_couch_address.value
-    "DB_USERNAME"      = data.aws_ssm_parameter.dev_couch_username.value
-    "DB_PASSWORD"      = data.aws_ssm_parameter.dev_couch_password.value
-    "STOP_REPLICATION" = "true"
-    "CODE_SERVICE_URL" = data.aws_ssm_parameter.dev_code_service_address.value
-    "HUB_ADDRESS"      = data.aws_ssm_parameter.dev_hub_address.value
+    "CACHE_DATABASE_LOCATION" = "/opt/pi-time/cache.db"
+    "CLIENT_KEY"              = data.aws_ssm_parameter.dev_client_key.value
+    "CLIENT_SECRET"           = data.aws_ssm_parameter.dev_client_secret.value
+    "HUB_ADDRESS"             = data.aws_ssm_parameter.dev_hub_address.value
+    "TOKEN_REFRESH_URL"       = data.aws_ssm_parameter.wso2_token_refresh_url.value
+    "SYSTEM_ID"               = "ITB-AWS-TC1"
   }
   container_args = [
-    "--port", "8080",
-    "--log-level", "1", // set log level to info
+    //    "--port", "8080",
+    //    "--log-level", "1", // set log level to info
   ]
 }
