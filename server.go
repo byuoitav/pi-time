@@ -7,6 +7,7 @@ import (
 
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/log"
+	"github.com/byuoitav/pi-time/ytime"
 	figure "github.com/common-nighthawk/go-figure"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/pflag"
@@ -27,14 +28,14 @@ func main() {
 		port     int
 		logLevel int
 
-		clientKey     string
+		clientID      string
 		clientSecret  string
 		cacheLocation string
 	)
 
 	pflag.IntVarP(&port, "port", "P", 8080, "port to run the server on")
 	pflag.IntVarP(&logLevel, "log-level", "L", 2, "level of logging wanted. 1=DEBUG, 2=INFO, 3=WARN, 4=ERROR, 5=PANIC")
-	pflag.StringVarP(&clientKey, "key", "k", "", "client key for ytime api")
+	pflag.StringVarP(&clientID, "id", "i", "", "client id for ytime api")
 	pflag.StringVarP(&clientSecret, "secret", "s", "", "client secret for ytime api")
 	pflag.StringVarP(&cacheLocation, "cache", "c", "./cache/", "path location to where to cache data")
 	pflag.Parse()
@@ -44,12 +45,14 @@ func main() {
 	}
 
 	// check key/secret
+	if len(clientID) == 0 || len(clientSecret) == 0 {
+		log.P.Fatalf("client id (--id) and secret (--secret) must be set")
+	}
 
 	e := echo.New()
 
 	yth := handlers.YTime{
-		ClientKey:    clientKey,
-		ClientSecret: clientSecret,
+		Client: ytime.New(clientID, clientSecret),
 	}
 
 	//start a go routine to go and get the latitude and longitude from the building struct

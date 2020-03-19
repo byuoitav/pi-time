@@ -11,17 +11,15 @@ import (
 	"github.com/byuoitav/wso2services/wso2requests"
 )
 
-//LAT and LONG
 var (
-	LATITUDE  = "40.25258"
-	LONGITUDE = "-111.657658"
+	_latitude  = "40.25258"
+	_longitude = "-111.657658"
 )
 
 func init() {
 	if len(os.Getenv("SYSTEM_ID")) == 0 {
 		log.L.Fatalf("Must have SYSTEM_ID set")
 	}
-
 }
 
 //GetYtimeLocation will get the latitude and longitude for the pi based on the building

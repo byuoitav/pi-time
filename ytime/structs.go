@@ -1,4 +1,4 @@
-package structs
+package ytime
 
 //This file is all of the structs that will come back from the WSO2 services
 
@@ -157,17 +157,16 @@ type DeleteWorkOrderEntry struct {
 	SequenceNumber int    `json:"sequence-number"`
 }
 
-//YTimeLocation .
-type YTimeLocation struct {
-	YtimeLocation             string      `json:"ytime_location"`
-	UpdatedByName             string      `json:"updated_by_name"`
-	LocationSource            string      `json:"location_source"`
-	YtimeLocationCode         string      `json:"ytime_location_code"`
-	UpdatedDatetime           interface{} `json:"updated_datetime"`
-	Latitude                  float64     `json:"latitude"`
-	YtimeLocationAbbreviation string      `json:"ytime_location_abbreviation"`
-	Status                    string      `json:"status"`
-	Longitude                 float64     `json:"longitude"`
+type Location struct {
+	Location        string      `json:"ytime_location"`
+	UpdatedBy       string      `json:"updated_by_name"`
+	Source          string      `json:"location_source"`
+	Code            string      `json:"ytime_location_code"`
+	UpdatedDatetime interface{} `json:"updated_datetime"`
+	Latitude        float64     `json:"latitude"`
+	Longitude       float64     `json:"longitude"`
+	Abbreviation    string      `json:"ytime_location_abbreviation"`
+	Status          string      `json:"status"`
 }
 
 //ServerErrorMessage .

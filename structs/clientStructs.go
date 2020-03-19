@@ -13,15 +13,6 @@ type WebSocketMessage struct {
 	Value interface{} `json:"value"`
 }
 
-//Employee is all of the information about an employee for their timeclock session
-type Employee struct {
-	ID        string        `json:"id"`
-	Name      string        `json:"name"`
-	Jobs      []EmployeeJob `json:"jobs"`
-	TotalTime TotalTime     `json:"total-time"`
-	Message   string        `json:"international-message"`
-}
-
 //TotalTime is a struct to hold pay period and total kinds of time
 type TotalTime struct {
 	Week      string `json:"week"`

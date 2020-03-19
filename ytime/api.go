@@ -11,8 +11,6 @@ import (
 
 	"github.com/byuoitav/auth/wso2"
 	"github.com/byuoitav/pi-time/offline"
-
-	"github.com/byuoitav/pi-time/structs"
 )
 
 type Client struct {
@@ -78,10 +76,10 @@ func (c *Client) sendRequest(ctx context.Context, method string, endpoint string
 }
 
 // SendPunchRequest sends a punch request to the YTime API and returns the response.
-func (c *Client) SendPunchRequest(ctx context.Context, id string, punch structs.Punch) (structs.Timesheet, error) {
-	var ret structs.Timesheet
+func (c *Client) SendPunchRequest(ctx context.Context, id string, punch Punch) (Timesheet, error) {
+	var ret Timesheet
 
-	body := make(map[string]structs.Punch)
+	body := make(map[string]Punch)
 	body["punch"] = punch
 
 	if err := c.sendRequest(ctx, http.MethodPost, "/punches/v1/"+id, body, &ret); err != nil {
@@ -92,10 +90,10 @@ func (c *Client) SendPunchRequest(ctx context.Context, id string, punch structs.
 }
 
 // SendFixPunchRequest sends a punch request to the YTime API and returns the response.
-func (c *Client) SendFixPunchRequest(ctx context.Context, id string, punch structs.Punch) ([]structs.TimeClockDay, error) {
-	var ret []structs.TimeClockDay
+func (c *Client) SendFixPunchRequest(ctx context.Context, id string, punch Punch) ([]TimeClockDay, error) {
+	var ret []TimeClockDay
 
-	body := make(map[string]structs.Punch)
+	body := make(map[string]Punch)
 	body["punch"] = punch
 
 	if err := c.sendRequest(ctx, http.MethodPut, "/punches/v1/"+id, body, &ret); err != nil {
@@ -106,10 +104,10 @@ func (c *Client) SendFixPunchRequest(ctx context.Context, id string, punch struc
 }
 
 // SendLunchPunch sends a lunch punch request to the YTime API and returns the response.
-func (c *Client) SendLunchPunch(ctx context.Context, id string, punch structs.LunchPunch) ([]structs.TimeClockDay, error) {
-	var ret []structs.TimeClockDay
+func (c *Client) SendLunchPunch(ctx context.Context, id string, punch LunchPunch) ([]TimeClockDay, error) {
+	var ret []TimeClockDay
 
-	body := make(map[string]structs.LunchPunch)
+	body := make(map[string]LunchPunch)
 	body["lunch_punch"] = punch
 
 	if err := c.sendRequest(ctx, http.MethodPost, "/ytime_lunch_punch/v1/"+id, body, &ret); err != nil {
@@ -120,10 +118,10 @@ func (c *Client) SendLunchPunch(ctx context.Context, id string, punch structs.Lu
 }
 
 // SendOtherHoursRequest sends a sick/vacation request to the YTime API and returns the response (if no problem), and error, as well as the http response and body
-func (c *Client) SendOtherHoursRequest(ctx context.Context, id string, entry structs.ElapsedTimeEntry) (structs.ElapsedTimeSummary, error) {
-	var ret structs.ElapsedTimeSummary
+func (c *Client) SendOtherHoursRequest(ctx context.Context, id string, entry ElapsedTimeEntry) (ElapsedTimeSummary, error) {
+	var ret ElapsedTimeSummary
 
-	wrapper := structs.ElapsedTimeEntryWrapper{
+	wrapper := ElapsedTimeEntryWrapper{
 		ElapsedTimeEntry: entry,
 	}
 
@@ -135,8 +133,8 @@ func (c *Client) SendOtherHoursRequest(ctx context.Context, id string, entry str
 }
 
 // SendWorkOrderUpsertRequest .
-func (c *Client) SendWorkOrderUpsertRequest(ctx context.Context, id string, upsert structs.WorkOrderUpsert) (structs.WorkOrderDaySummary, error) {
-	var ret structs.WorkOrderDaySummary
+func (c *Client) SendWorkOrderUpsertRequest(ctx context.Context, id string, upsert WorkOrderUpsert) (WorkOrderDaySummary, error) {
+	var ret WorkOrderDaySummary
 
 	if err := c.sendRequest(ctx, http.MethodPost, "/work_order_entry/v1/"+id, upsert, &ret); err != nil {
 		return ret, err
@@ -146,10 +144,10 @@ func (c *Client) SendWorkOrderUpsertRequest(ctx context.Context, id string, upse
 }
 
 // SendDeletePunchRequest sends a delete punch request to the YTime API and returns the response.
-func (c *Client) SendDeletePunchRequest(ctx context.Context, id string, punch structs.DeletePunch) ([]structs.TimeClockDay, error) {
-	var ret []structs.TimeClockDay
+func (c *Client) SendDeletePunchRequest(ctx context.Context, id string, jobID int, date time.Time, seqNumber int) ([]TimeClockDay, error) {
+	var ret []TimeClockDay
 
-	endpoint := fmt.Sprintf("/punches/v1/%s,%d,%s,%d", id, *punch.EmployeeJobID, punch.PunchTime.Local().Format("2006-01-02"), *punch.SequenceNumber)
+	endpoint := fmt.Sprintf("/punches/v1/%s,%d,%s,%d", id, jobID, date.Local().Format("2006-01-02"), seqNumber)
 
 	if err := c.sendRequest(ctx, http.MethodDelete, endpoint, nil, &ret); err != nil {
 		return ret, err
@@ -159,8 +157,8 @@ func (c *Client) SendDeletePunchRequest(ctx context.Context, id string, punch st
 }
 
 // SendDeleteWorkOrderEntryRequest sends a delete work order entry request to the YTime API and returns the response
-func (c *Client) SendDeleteWorkOrderEntryRequest(ctx context.Context, id, jobID, punchDate, sequenceNumber string) (structs.WorkOrderDaySummary, error) {
-	var ret structs.WorkOrderDaySummary
+func (c *Client) SendDeleteWorkOrderEntryRequest(ctx context.Context, id, jobID, punchDate, sequenceNumber string) (WorkOrderDaySummary, error) {
+	var ret WorkOrderDaySummary
 
 	endpoint := fmt.Sprintf("/work_order_entry/v1/%s,%s,%s,%s", id, jobID, punchDate, sequenceNumber)
 
@@ -172,7 +170,7 @@ func (c *Client) SendDeleteWorkOrderEntryRequest(ctx context.Context, id, jobID,
 }
 
 // GetTimesheet returns a timesheet, a bool if the timesheet was returned in offlie mode (from cache), and possible error
-func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet structs.Timesheet, cached bool, err error) {
+func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet Timesheet, cached bool, err error) {
 	// if there is an error, try to return the cached version
 	defer func() {
 		if err == nil {
@@ -187,7 +185,7 @@ func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet structs
 
 		// overwrite return values
 		cached = true
-		timesheet = structs.Timesheet{
+		timesheet = Timesheet{
 			PersonName:           emp.Name,
 			WeeklyTotal:          "--:--",
 			PeriodTotal:          "--:--",
@@ -220,7 +218,7 @@ func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet structs
 		return
 	}
 
-	// TODO different status codes - unmarshal into structs.ServerLoginErrorMessage?
+	// TODO different status codes - unmarshal into ServerLoginErrorMessage?
 	if resp.StatusCode/100 == 5 {
 		err = fmt.Errorf("%v response received from API", resp.StatusCode)
 		return
@@ -235,8 +233,8 @@ func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet structs
 }
 
 // GetPunchesForJob gets a list of serverside TimeClockDay structures from WSO2
-func (c *Client) GetPunchesForJob(ctx context.Context, id string, jobID int) ([]structs.TimeClockDay, error) {
-	var ret []structs.TimeClockDay
+func (c *Client) GetPunchesForJob(ctx context.Context, id string, jobID int) ([]TimeClockDay, error) {
+	var ret []TimeClockDay
 
 	endpoint := fmt.Sprintf("/punches/v1/%s,%d", id, jobID)
 
@@ -248,8 +246,8 @@ func (c *Client) GetPunchesForJob(ctx context.Context, id string, jobID int) ([]
 }
 
 // GetWorkOrders gets all the possilbe work orders for the day from WSO2
-func (c *Client) GetWorkOrders(ctx context.Context, operatingUnit string) ([]structs.WorkOrder, error) {
-	var ret []structs.WorkOrder
+func (c *Client) GetWorkOrders(ctx context.Context, operatingUnit string) ([]WorkOrder, error) {
+	var ret []WorkOrder
 
 	if err := c.sendRequest(ctx, http.MethodGet, "/work_orders_by_operating_unit/v1"+operatingUnit, nil, &ret); err != nil {
 		return ret, err
@@ -259,8 +257,8 @@ func (c *Client) GetWorkOrders(ctx context.Context, operatingUnit string) ([]str
 }
 
 // GetWorkOrderEntries gets all the work order entries for a particular job from WSO2
-func (c *Client) GetWorkOrderEntries(ctx context.Context, id string, jobID int) ([]structs.WorkOrderDaySummary, error) {
-	var ret []structs.WorkOrderDaySummary
+func (c *Client) GetWorkOrderEntries(ctx context.Context, id string, jobID int) ([]WorkOrderDaySummary, error) {
+	var ret []WorkOrderDaySummary
 
 	endpoint := fmt.Sprintf("/work_order_entry/v1/%s,%d", id, jobID)
 
@@ -272,13 +270,23 @@ func (c *Client) GetWorkOrderEntries(ctx context.Context, id string, jobID int) 
 }
 
 // GetOtherHoursForDate gets the other hours for a job for a specitic date from WSO2
-func (c *Client) GetOtherHoursForDate(ctx context.Context, id string, jobID int, date time.Time) (structs.ElapsedTimeSummary, error) {
-	var ret structs.ElapsedTimeSummary
+func (c *Client) GetOtherHoursForDate(ctx context.Context, id string, jobID int, date time.Time) (ElapsedTimeSummary, error) {
+	var ret ElapsedTimeSummary
 
 	// TODO should the date format have .Local()?
 	endpoint := fmt.Sprintf("/elapsed_time_punch/v1/%s,%d,%s", id, jobID, date.Format("2006-01-02"))
 
 	if err := c.sendRequest(ctx, http.MethodGet, endpoint, nil, &ret); err != nil {
+		return ret, err
+	}
+
+	return ret, nil
+}
+
+func (c *Client) GetLocation(ctx context.Context, building string) (Location, error) {
+	var ret Location
+
+	if err := c.sendRequest(ctx, http.MethodGet, "/locations/v1/"+building, nil, &ret); err != nil {
 		return ret, err
 	}
 

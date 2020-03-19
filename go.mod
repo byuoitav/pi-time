@@ -14,9 +14,14 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/echo/v4 v4.1.6
+	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/sevenNt/echo-pprof v0.1.0 // indirect
 	github.com/spf13/pflag v1.0.3
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/arch v0.0.0-20190312162104-788fe5ffcd8c // indirect
+	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
+	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
+	golang.org/x/tools v0.0.0-20200319192054-9a0fabac018a // indirect
+	golang.org/x/tools/gopls v0.3.4 // indirect
 )

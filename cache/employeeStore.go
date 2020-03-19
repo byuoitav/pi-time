@@ -17,16 +17,6 @@ func init() {
 	employeeCache = make(map[string]*structs.Employee)
 }
 
-//AddEmployee adds a blank employee record to the cache
-func AddEmployee(byuID string) {
-	//put it in the map
-	employeeCacheMutex.Lock()
-	defer employeeCacheMutex.Unlock()
-	employeeCache[byuID] = &structs.Employee{
-		ID: byuID,
-	}
-}
-
 //RemoveEmployeeFromStore removes the employee record from the cache
 func RemoveEmployeeFromStore(byuID string) {
 	//wait for 30 seconds and then if the byuid is still closed in the web socket, get rid of it
@@ -37,13 +27,6 @@ func RemoveEmployeeFromStore(byuID string) {
 		defer employeeCacheMutex.Unlock()
 		delete(employeeCache, byuID)
 	}
-}
-
-//GetEmployeeFromStore to retrieve the cached employee record
-func GetEmployeeFromStore(byuID string) *structs.Employee {
-	employeeCacheMutex.Lock()
-	defer employeeCacheMutex.Unlock()
-	return employeeCache[byuID]
 }
 
 //UpdateEmployeeFromTimesheet updates the employee struct from the server Timesheet struct

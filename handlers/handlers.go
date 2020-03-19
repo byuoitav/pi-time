@@ -10,12 +10,12 @@ import (
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/structs"
+	"github.com/byuoitav/pi-time/ytime"
 	"github.com/labstack/echo/v4"
 )
 
 type YTime struct {
-	ClientKey    string
-	ClientSecret string
+	*ytime.Client
 }
 
 // Punch adds an in or out punch as determined by the body sent
@@ -28,7 +28,6 @@ func (y *YTime) Punch(context echo.Context) error {
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	//call the helper
 	err = helpers.Punch(byuID, incomingRequest)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
@@ -54,7 +53,6 @@ func (y *YTime) FixPunch(context echo.Context) error {
 
 	incomingRequest.SequenceNumber = structs.Int(num)
 
-	//call the helper
 	err = helpers.FixPunch(byuID, incomingRequest)
 	if err != nil {
 		return context.String(http.StatusInternalServerError, err.Error())
