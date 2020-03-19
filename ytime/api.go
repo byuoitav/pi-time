@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/byuoitav/auth/wso2"
+	"github.com/byuoitav/pi-time/offline"
+
 	"github.com/byuoitav/pi-time/structs"
 )
 
@@ -169,57 +171,68 @@ func (c *client) SendDeleteWorkOrderEntryRequest(ctx context.Context, id, jobID,
 	return ret, nil
 }
 
-// TODO GetTimesheet returns a timesheet, a bool if the timesheet was returned in offline mode (from cache), and possible error
-//func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
-//
-//	var timesheet structs.Timesheet
-//
-//	err, httpResponse, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("GET", "https://api.byu.edu:443/domains/erp/hr/timesheet/v1/"+byuid, "", &timesheet, map[string]string{
-//		"Content-Type": "application/json",
-//		"Accept":       "application/json",
-//	})
-//
-//	if err != nil {
-//		log.L.Debugf("Error when making WSO2 request to get timesheet %v", err)
-//
-//		if httpResponse.StatusCode/100 == 5 {
-//			//500 code, then we look in cache
-//			//look in the cache
-//			employeeRecord, innerErr := offline.GetEmployeeFromCache(byuid)
-//
-//			if innerErr != nil {
-//				//not found
-//				log.L.Debugf("No cached timesheet found")
-//				return timesheet, false, errors.New("System offline - employee not found")
-//			}
-//
-//			log.L.Debugf("Cached timesheet found")
-//
-//			timesheet := structs.Timesheet{
-//				PersonName:           employeeRecord.Name,
-//				WeeklyTotal:          "--:--",
-//				PeriodTotal:          "--:--",
-//				InternationalMessage: "",
-//				Jobs:                 employeeRecord.Jobs,
-//			}
-//
-//			return timesheet, true, nil
-//		}
-//
-//		var messageStruct structs.ServerLoginErrorMessage
-//
-//		testForMessageErr := json.Unmarshal([]byte(responseBody), &messageStruct)
-//		if testForMessageErr != nil {
-//			return timesheet, false, errors.New("Employee not found")
-//		}
-//
-//		errMessage := messageStruct.Status.Message
-//
-//		return timesheet, false, errors.New(errMessage)
-//	}
-//
-//	return timesheet, false, nil
-//}
+// GetTimesheet returns a timesheet, a bool if the timesheet was returned in offlie mode (from cache), and possible error
+func (c *client) GetTimesheet(ctx context.Context, id string) (timesheet structs.Timesheet, cached bool, err error) {
+	// if there is an error, try to return the cached version
+	defer func() {
+		if err == nil {
+			return
+		}
+
+		// don't overwrite the return value err
+		emp, err2 := offline.GetEmployeeFromCache(id)
+		if err2 != nil {
+			return
+		}
+
+		// overwrite return values
+		cached = true
+		timesheet = structs.Timesheet{
+			PersonName:           emp.Name,
+			WeeklyTotal:          "--:--",
+			PeriodTotal:          "--:--",
+			InternationalMessage: "",
+			Jobs:                 emp.Jobs,
+		}
+	}()
+
+	url := fmt.Sprintf("https://%s%s%s%s", c.host, c.endpoint, "/timesheet/v1/", id)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		err = fmt.Errorf("unable to build request: %w", err)
+		return
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		err = fmt.Errorf("unable to make request: %w", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = fmt.Errorf("unable to read response: %w", err)
+		return
+	}
+
+	// TODO different status codes - unmarshal into structs.ServerLoginErrorMessage?
+	if resp.StatusCode/100 == 5 {
+		err = fmt.Errorf("%v response received from API", resp.StatusCode)
+		return
+	}
+
+	if err = json.Unmarshal(respBody, &timesheet); err != nil {
+		err = fmt.Errorf("unable to unmarshal response: %w", err)
+		return
+	}
+
+	return
+}
 
 // GetPunchesForJob gets a list of serverside TimeClockDay structures from WSO2
 func (c *client) GetPunchesForJob(ctx context.Context, id string, jobID int) ([]structs.TimeClockDay, error) {

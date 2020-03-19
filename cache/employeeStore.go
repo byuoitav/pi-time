@@ -6,7 +6,6 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/structs"
-	"github.com/byuoitav/pi-time/ytimeapi"
 )
 
 var (
