@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/ytimeapi"
 
 	"github.com/labstack/echo/v4"
@@ -16,7 +16,7 @@ func LogInUser(context echo.Context) error {
 
 	//get the id
 	byuID := context.Param("id")
-	log.L.Debugf("Logging in " + byuID)
+	log.P.Debug("Logging in " + byuID)
 
 	//get the timesheet for this guy
 	timesheet, isOffline, err := ytimeapi.GetTimesheet(byuID)

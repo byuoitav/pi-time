@@ -1,10 +1,11 @@
 package cache
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
-	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/pi-time/ytimeapi"
 )
@@ -54,7 +55,7 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 
 	employee := employeeCache[byuID]
 	if employee == nil {
-		log.L.Debugf("Employee is nil when updating from timesheet for %v", byuID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when updating from timesheet for %v", byuID))
 		return
 	}
 
@@ -111,17 +112,17 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 	employeeCacheMutex.Lock()
 	defer employeeCacheMutex.Unlock()
 
-	//log.L.Debugf("Job: %v, Work Orders: %v+", jobID, workOrderArray)
+	//log.P.Debug("Job: %v, Work Orders: %v+", jobID, workOrderArray)
 
 	employee := employeeCache[byuID]
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when updating possible work orders for %v", byuID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when updating possible work orders for %v", byuID))
 		return
 	}
 
 	for i := range employee.Jobs {
-		log.L.Debugf("employeejobID: %v, jobID: %v", employee.Jobs[i].EmployeeJobID, jobID)
+		log.P.Debug(fmt.Sprintf("employeejobID: %v, jobID: %v", employee.Jobs[i].EmployeeJobID, jobID))
 		if employee.Jobs[i].EmployeeJobID == jobID {
 			employee.Jobs[i].WorkOrders = []structs.ClientWorkOrder{}
 
@@ -129,7 +130,7 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 				var newClientWorkOrder structs.ClientWorkOrder
 				newClientWorkOrder.ID = serverWorkOrder.WorkOrderID
 				newClientWorkOrder.Name = serverWorkOrder.WorkOrderDescription
-				//log.L.Debugf("Adding %+v", newClientWorkOrder)
+				//log.P.Debug("Adding %+v", newClientWorkOrder)
 				employee.Jobs[i].WorkOrders = append(employee.Jobs[i].WorkOrders, newClientWorkOrder)
 			}
 
@@ -147,7 +148,7 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 // 	employee := employeeCache[byuID]
 
 // 	if employee == nil {
-// 		log.L.Debugf("Employee is nil when updating other hours for job for %v, %v", byuID, jobID)
+// 		log.P.Debug("Employee is nil when updating other hours for job for %v, %v", byuID, jobID)
 // 		return
 // 	}
 
@@ -211,12 +212,12 @@ func UpdateOtherHoursForJobAndDate(byuID string, jobID int, date time.Time, elap
 	employee := employeeCache[byuID]
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when updating other hours for job for %v, %v", byuID, jobID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when updating other hours for job for %v, %v", byuID, jobID))
 		return
 	}
 
 	if len(elapsedTimeSummary.Dates) != 1 {
-		log.L.Debugf("More/Less than one day showing up when updating other hours for job and date")
+		log.P.Debug("More/Less than one day showing up when updating other hours for job and date")
 		return
 	}
 
@@ -225,12 +226,12 @@ func UpdateOtherHoursForJobAndDate(byuID string, jobID int, date time.Time, elap
 	serverDate, err := time.ParseInLocation("2006-01-02", elapsedTimeDay.PunchDate, time.Local)
 	if err != nil {
 		//freak out
-		log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error())
+		log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error()))
 	}
 
-	log.L.Debugf("server date: %v, date: %v", serverDate, date)
+	log.P.Debug(fmt.Sprintf("server date: %v, date: %v", serverDate, date))
 	if serverDate != date {
-		log.L.Fatalf("ElapsedTimeSummary date does not match the date passed in")
+		log.P.Panic("ElapsedTimeSummary date does not match the date passed in")
 	}
 
 	for i := range employee.Jobs {
@@ -302,7 +303,7 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 	employee := employeeCache[byuID]
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when updating work order entries for job for %v, %v", byuID, jobID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when updating work order entries for job for %v, %v", byuID, jobID))
 		return
 	}
 
@@ -313,7 +314,7 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
-					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error())
+					log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
 				}
 
 				//find this day in the client array
@@ -353,7 +354,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 	employee := employeeCache[byuID]
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when updating employee punches for job for %v, %v", byuID, jobID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when updating employee punches for job for %v, %v", byuID, jobID))
 		return
 	}
 
@@ -365,7 +366,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
-					log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error())
+					log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
 				}
 
 				//find this day in the client array
@@ -404,7 +405,7 @@ func DeleteWorkOrderEntry(byuID string, id int, date string, seqNum string, resp
 	employee := employeeCache[byuID]
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when updating work order entries for job for %v, %v", byuID, id)
+		log.P.Debug(fmt.Sprintf("Employee is nil when updating work order entries for job for %v, %v", byuID, id))
 	}
 }
 
@@ -469,7 +470,7 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 		if len(serverPunch.PunchTime) > 0 {
 			newPunch.Time, err = time.ParseInLocation("2006-01-02 15:04:05", serverDay.Date+" "+serverPunch.PunchTime, time.Local)
 			if err != nil {
-				log.L.Fatalf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date+" "+serverPunch.PunchTime, err.Error())
+				log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date+" "+serverPunch.PunchTime, err.Error()))
 			}
 		}
 
@@ -536,7 +537,7 @@ func GetPunchesForAllJobs(byuID string) {
 	employeeCacheMutex.Unlock()
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when getting all punches for %v", byuID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when getting all punches for %v", byuID))
 		return
 	}
 
@@ -557,7 +558,7 @@ func GetPossibleWorkOrders(byuID string) {
 	employeeCacheMutex.Unlock()
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when getting possible work orders for %v", byuID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when getting possible work orders for %v", byuID))
 		return
 	}
 
@@ -565,7 +566,7 @@ func GetPossibleWorkOrders(byuID string) {
 		if job.IsPhysicalFacilities != nil && *job.IsPhysicalFacilities {
 			//call WSO2 to get work orders for job
 			workOrders := ytimeapi.GetWorkOrders(job.OperatingUnit)
-			//log.L.Debugf("Work orders: %+v", workOrders)
+			//log.P.Debug("Work orders: %+v", workOrders)
 			//update the work orders
 			UpdatePossibleWorkOrders(byuID, job.EmployeeJobID, workOrders)
 		}
@@ -581,7 +582,7 @@ func GetWorkOrderEntries(byuID string) {
 	employeeCacheMutex.Unlock()
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when getting work order entries for %v", byuID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when getting work order entries for %v", byuID))
 		return
 	}
 
@@ -605,7 +606,7 @@ func GetWorkOrderEntries(byuID string) {
 // 	employeeCacheMutex.Unlock()
 
 // 	if employee == nil {
-// 		log.L.Debugf("Employee is nil when getting other hours for %v", byuID)
+// 		log.P.Debug("Employee is nil when getting other hours for %v", byuID)
 // 		return
 // 	}
 
@@ -628,7 +629,7 @@ func GetOtherHoursForJobAndDate(byuID string, jobID int, date time.Time) {
 	employeeCacheMutex.Unlock()
 
 	if employee == nil {
-		log.L.Debugf("Employee is nil when getting other hours for %v", byuID)
+		log.P.Debug(fmt.Sprintf("Employee is nil when getting other hours for %v", byuID))
 		return
 	}
 

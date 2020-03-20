@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 )
 
@@ -52,7 +52,7 @@ func AddConnection(byuID string, connectionToAdd *Client) {
 func SendMessageToClient(byuID string, messageType string, toSend interface{}) error {
 
 	if toSend == nil {
-		log.L.Debugf("Nothing to send down web socket")
+		log.P.Debug("Nothing to send down web socket")
 		return fmt.Errorf("Nothing to send down web socket for %v", byuID)
 	}
 

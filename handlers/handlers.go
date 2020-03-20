@@ -6,11 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/byuoitav/common/log"
 	commonEvents "github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
-	eventsender "github.com/byuoitav/pi-time/events"
 	"github.com/byuoitav/pi-time/helpers"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/labstack/echo/v4"
 )
@@ -88,15 +87,15 @@ func OtherHours(context echo.Context) error {
 	var incomingRequest structs.ClientOtherHoursRequest
 	err := context.Bind(&incomingRequest)
 	if err != nil {
-		log.L.Debugf("Bad incoming request for other hours %v", err.Error())
+		log.P.Debug(fmt.Sprintf("Bad incoming request for other hours %v", err.Error()))
 		return context.String(http.StatusBadRequest, err.Error())
 	}
 
-	log.L.Debugf("Processing other hours request: %+v", incomingRequest)
+	log.P.Debug(fmt.Sprintf("Processing other hours request: %+v", incomingRequest))
 
 	errMessage, err := helpers.OtherHours(byuID, incomingRequest)
 	if err != nil {
-		log.L.Debugf("Error processing other hours %v, %v", errMessage, err.Error())
+		log.P.Debug(fmt.Sprintf("Error processing other hours %v, %v", errMessage, err.Error()))
 		return context.String(http.StatusInternalServerError, errMessage)
 	}
 
@@ -151,7 +150,7 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 	}
 	date, err := time.ParseInLocation("2006-1-2", incomingRequest.Date, time.Local)
 	if err != nil {
-		log.L.Debugf("Invalid date sent %v", incomingRequest.Date)
+		log.P.Debug(fmt.Sprintf("Invalid date sent %v", incomingRequest.Date))
 		return context.String(http.StatusInternalServerError, "invalid date")
 	}
 
@@ -159,7 +158,7 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 
 	ne := helpers.DeleteWorkOrderEntry(byuID, incomingRequest)
 	if ne != nil {
-		log.L.Error(ne)
+		log.P.Error(fmt.Sprintf("%w", ne))
 		return context.String(http.StatusInternalServerError, ne.Error())
 	}
 
@@ -168,6 +167,7 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 
 //SendEvent passes an event to the messenger
 func SendEvent(context echo.Context) error {
+	//TODO change to using http
 	var event commonEvents.Event
 	gerr := context.Bind(&event)
 	if gerr != nil {
@@ -176,7 +176,7 @@ func SendEvent(context echo.Context) error {
 
 	eventsender.MyMessenger.SendEvent(event)
 
-	log.L.Debugf("sent event from UI: %+v", event)
+	log.P.Debug(fmt.Sprintf("sent event from UI: %+v", event))
 	return context.String(http.StatusOK, "success")
 }
 
@@ -191,7 +191,7 @@ func GetSickAndVacationForJobAndDate(context echo.Context) error {
 	date, err := time.ParseInLocation("2006-1-2", dateString, time.Local)
 
 	if err != nil {
-		log.L.Debugf("Invalid date sent %v", dateString)
+		log.P.Debug(fmt.Sprintf("Invalid date sent %v", dateString))
 		return context.String(http.StatusInternalServerError, "invalid date")
 	}
 

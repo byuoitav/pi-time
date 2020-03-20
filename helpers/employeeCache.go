@@ -2,10 +2,11 @@ package helpers
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"time"
 
-	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
 	"github.com/dgraph-io/badger"
@@ -20,7 +21,7 @@ func init() {
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
 
 	if len(dbLoc) == 0 {
-		log.L.Fatalf("Need CACHE_DATABASE_LOCATION variable")
+		log.P.Panic("Need CACHE_DATABASE_LOCATION variable")
 	}
 }
 
@@ -33,9 +34,9 @@ func WatchForCachedEmployees(updateNowChan chan struct{}) {
 		//wait for 4 hours and then do it again
 		select {
 		case <-time.After(4 * time.Hour):
-			log.L.Infof("4 hour timeout reached")
+			log.P.Info("4 hour timeout reached")
 		case <-updateNowChan:
-			log.L.Infof("4 updating now")
+			log.P.Info("4 updating now")
 		}
 	}
 }
@@ -45,26 +46,26 @@ func DownloadCachedEmployees() error {
 	var cacheList structs.EmployeeCache
 
 	//make a WSO2 request to get the cache
-	log.L.Debugf("Making call to get employee cache")
+	log.P.Debug("Making call to get employee cache")
 	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://psws.byu.edu/PSIGW/BYURESTListeningConnector2/PSFT_HR/clock_employees.v1/", "", &cacheList, map[string]string{"sm_user": "timeclock"})
 
 	if ne != nil {
-		log.L.Errorf("Unable to get the cache list: %v", ne)
+		log.P.Error(fmt.Sprintf("Unable to get the cache list: %v", ne))
 		return ne
 	}
 
 	//open our badger db
 	//initialize the badger db
-	log.L.Debugf("Initializing Badger DB")
+	log.P.Debug("Initializing Badger DB")
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
 	opts := badger.DefaultOptions(dbLoc)
 
 	db, err := badger.Open(opts)
 	if err != nil {
-		log.L.Fatal(err)
+		log.P.Panic(fmt.Sprintf("%v", err))
 	}
 
-	log.L.Debugf("Adding %v employees to the cache", len(cacheList.Employees))
+	log.P.Debug(fmt.Sprintf("Adding %v employees to the cache", len(cacheList.Employees)))
 
 	//put it into the badger cache
 	for _, employee := range cacheList.Employees {
@@ -76,7 +77,7 @@ func DownloadCachedEmployees() error {
 		})
 
 		if err != nil {
-			log.L.Errorf("Unable to get the add to badgerdb: %v", err)
+			log.P.Error(fmt.Sprintf("Unable to get the add to badgerdb: %v", err))
 			return err
 		}
 	}
@@ -94,7 +95,7 @@ func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
 
 	db, err := badger.Open(opts)
 	if err != nil {
-		log.L.Fatal(err)
+		log.P.Panic(fmt.Sprintf("%v", err))
 	}
 
 	defer db.Close()
