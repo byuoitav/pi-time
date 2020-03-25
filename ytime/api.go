@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -171,13 +172,24 @@ func (c *Client) SendDeleteWorkOrderEntryRequest(ctx context.Context, id, jobID,
 
 // GetTimesheet returns a timesheet, a bool if the timesheet was returned in offlie mode (from cache), and possible error
 func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet Timesheet, cached bool, err error) {
-	// if there is an error, try to return the cached version
-	defer func() {
-		if err == nil {
-			return
-		}
+	url := fmt.Sprintf("https://%s%s%s%s", c.host, c.endpoint, "/timesheet/v1/", id)
 
-		// don't overwrite the return value err
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		err = fmt.Errorf("unable to build request: %w", err)
+		return
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := c.client.Do(req)
+	switch {
+	case errors.Is(err, context.DeadlineExceeded):
+		// return cached version
 		emp, err2 := offline.GetEmployeeFromCache(id)
 		if err2 != nil {
 			return
@@ -192,21 +204,8 @@ func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet Timeshe
 			InternationalMessage: "",
 			Jobs:                 emp.Jobs,
 		}
-	}()
-
-	url := fmt.Sprintf("https://%s%s%s%s", c.host, c.endpoint, "/timesheet/v1/", id)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		err = fmt.Errorf("unable to build request: %w", err)
 		return
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
-
-	resp, err := c.client.Do(req)
-	if err != nil {
+	case err != nil:
 		err = fmt.Errorf("unable to make request: %w", err)
 		return
 	}
@@ -218,8 +217,9 @@ func (c *Client) GetTimesheet(ctx context.Context, id string) (timesheet Timeshe
 		return
 	}
 
-	// TODO different status codes - unmarshal into ServerLoginErrorMessage?
-	if resp.StatusCode/100 == 5 {
+	switch resp.StatusCode / 100 {
+	case 5:
+		// TODO unmarshal into ServerLoginErrorMessage?
 		err = fmt.Errorf("%v response received from API", resp.StatusCode)
 		return
 	}
