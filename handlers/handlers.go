@@ -1,17 +1,27 @@
 package handlers
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/byuoitav/common/events"
+	"github.com/byuoitav/common/nerr"
 	commonEvents "github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/labstack/echo/v4"
+)
+
+var (
+	eventProcessorHost = os.Getenv("EVENT_PROCESSOR_HOST")
 )
 
 // Punch adds an in or out punch as determined by the body sent
@@ -167,6 +177,45 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 
 //SendEvent passes an event to the messenger
 func SendEvent(context echo.Context) error {
+	var event events.Event
+	err := c.Bind(&event)
+	eventProcessorHostList := strings.Split(eventProcessorHost, ",")
+	// TODO i see why you weren't returning, i'll just put smee prd first for now
+	for _, hostName := range eventProcessorHostList {
+		// create the request
+		log.P.Debug(fmt.Sprintf("Sending event to address %s", hostName))
+
+		req, err := http.NewRequest("POST", hostName, bytes.NewReader(event))
+		if err != nil {
+			return nerr.Translate(err)
+		}
+
+		// add headers
+		req.Header.Add("content-type", "application/json")
+
+		client := http.Client{
+			Timeout: 5 * time.Second,
+		}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return nerr.Translate(err)
+		}
+		defer resp.Body.Close()
+
+		// read the resp
+		if resp.StatusCode/100 != 2 {
+			respBody, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nerr.Translate(err).Addf("non-200 response: %v. unable to read response body", resp.StatusCode)
+			}
+
+			return nerr.Createf("error", "non-200 response: %v. response body: %s", resp.StatusCode, respBody)
+		}
+	}
+
+	return nil
+
 	//TODO change to using http
 	var event commonEvents.Event
 	gerr := context.Bind(&event)

@@ -131,6 +131,7 @@ export class DateSelectComponent implements OnInit {
     this.getViewDays();
   }
 
+  //TODO: ADD EVENT
   selectDay = (date: Date) => {
     console.log("Selecting Day:" + date)
     

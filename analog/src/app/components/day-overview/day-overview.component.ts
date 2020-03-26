@@ -36,7 +36,6 @@ export class DayOverviewComponent implements OnInit {
 
   private _date: string;
   get day(): Day {
-    console.log("Hello World");
     if (this.job) {
       const date = new Date(this._date + " 00:00:00");
       return this.job.days.find(
@@ -123,6 +122,7 @@ export class DayOverviewComponent implements OnInit {
     );
   }
 
+  //TODO: ADD EVENT
   logout = () => {
     this._empRef.logout();
   };
