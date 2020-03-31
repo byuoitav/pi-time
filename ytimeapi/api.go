@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
-	"github.com/byuoitav/pi-time/offline"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
 )
@@ -160,7 +160,7 @@ func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 		if httpResponse.StatusCode/100 == 5 {
 			//500 code, then we look in cache
 			//look in the cache
-			employeeRecord, innerErr := offline.GetEmployeeFromCache(byuid)
+			employeeRecord, innerErr := helpers.GetEmployeeFromCache(byuid)
 
 			if innerErr != nil {
 				//not found

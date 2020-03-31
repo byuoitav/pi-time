@@ -9,7 +9,7 @@ import (
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
-	"github.com/dgraph-io/badger"
+	bolt "go.etcd.io/bbolt"
 )
 
 //LogChannel channel to send log messages
@@ -54,35 +54,51 @@ func DownloadCachedEmployees() error {
 		return ne
 	}
 
-	//open our badger db
-	//initialize the badger db
-	log.P.Debug("Initializing Badger DB")
-	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	opts := badger.DefaultOptions(dbLoc)
-
-	db, err := badger.Open(opts)
-	if err != nil {
-		log.P.Panic(fmt.Sprintf("%v", err))
-	}
-
+	//open our bolt db
+	//initialize the bolt db
 	log.P.Debug(fmt.Sprintf("Adding %v employees to the cache", len(cacheList.Employees)))
 
-	//put it into the badger cache
-	for _, employee := range cacheList.Employees {
-		err := db.Update(func(txn *badger.Txn) error {
-			employeeJSON, _ := json.Marshal(employee)
-
-			err := txn.Set([]byte(employee.BYUID), []byte(employeeJSON))
-			return err
-		})
-
-		if err != nil {
-			log.P.Error(fmt.Sprintf("Unable to get the add to badgerdb: %v", err))
-			return err
-		}
+	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
+	db, err := bolt.Open(dbLoc, 0600, nil)
+	if err != nil {
+		log.P.Panic(fmt.Sprintf("error opening the db: %s", err))
+		return fmt.Errorf("error opening the db: %s", err)
 	}
 
-	db.Close()
+	err = db.Update(func(tx *bolt.Tx) error {
+		//create punch bucket if it does not exist
+		log.P.Debug("Checking if employee Bucket Exists")
+		_, err := tx.CreateBucketIfNotExists([]byte("employee"))
+		if err != nil {
+			log.P.Panic("failed to create employeeBucket")
+			return fmt.Errorf("error creating the employee bucket: %s", err)
+		}
+
+		for _, employee := range cacheList.Employees {
+			err := db.Batch(func(tx *bolt.Tx) error {
+				employeeJSON, _ := json.Marshal(employee)
+
+				bucket := tx.Bucket([]byte("employee"))
+				if bucket != nil {
+				}
+
+				return bucket.Put([]byte(employee.BYUID), []byte(employeeJSON))
+			})
+
+			if err != nil {
+				log.P.Error(fmt.Sprintf("Unable to get the add to boltdb: %v", err))
+				return err
+			}
+		}
+
+		log.P.Debug("Successfully added punch to the bucket")
+
+		return nil
+	})
+
+	if err != nil {
+		log.P.Panic(fmt.Sprintf("an error occured while adding the punch to the bucket: %s", err))
+	}
 
 	return nil
 }
@@ -91,32 +107,24 @@ func DownloadCachedEmployees() error {
 func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
 
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	opts := badger.DefaultOptions(dbLoc)
-
-	db, err := badger.Open(opts)
+	db, err := bolt.Open(dbLoc, 0600, nil)
 	if err != nil {
-		log.P.Panic(fmt.Sprintf("%v", err))
+		log.P.Panic(fmt.Sprintf("error opening the db: %s", err))
 	}
 
 	defer db.Close()
 
 	var empRecord structs.EmployeeRecord
 
-	err = db.View(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte(byuID))
-		if err != nil {
+	err = db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("employee"))
+		item := b.Get([]byte(byuID))
+		if item == nil {
 			//not found, return it
-			return err
+			return fmt.Errorf("unable to find the employee in the cache")
 		}
 
-		valCopy, err := item.ValueCopy(nil)
-		if err != nil {
-			//weirdness
-			return err
-		}
-
-		//per danny, reuse variable called 'err'
-		err = json.Unmarshal(valCopy, &empRecord)
+		err = json.Unmarshal(item, &empRecord)
 		if err != nil {
 			return err
 		}

@@ -18,6 +18,9 @@ import (
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/labstack/echo/v4"
+
+	bolt "go.etcd.io/bbolt"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -37,10 +40,53 @@ func Punch(context echo.Context) error {
 	//call the helper
 	err = helpers.Punch(byuID, incomingRequest)
 	if err != nil {
-		return context.String(http.StatusInternalServerError, err.Error())
+		//Add the punch to the bucket if it failed for any reason
+		gerr = addPunchToBucket(byuId, incomingRequest)
+		if gerr != nil {
+			return context.String(http.StatusInternalServerError, fmt.Errorf("two errors occured:%s and %s",err,gerr))
+		}
+		return nil
 	}
 
 	return context.String(http.StatusOK, "ok")
+}
+
+func addPunchToBucket(byuId string, request structs.ClientPunchRequest) error {
+	db, err := bolt.Open("./cache.db", 0600, nil)
+	if err != nil {
+		log.P.Panic(fmt.Sprintf("error opening the db: %s",err))
+		return fmt.Errorf("error opening the db: %s",err)
+	}
+​
+	err = db.Update(func(tx *bolt.Tx) error {
+		//create punch bucket if it does not exist
+		log.P.Debug("Checking if Punch Bucket Exists")
+		_, err := tx.CreateBucketIfNotExists([]byte("punches"))
+		if err != nil {
+			log.P.Panic("failed to create punchBucket")
+			return fmt.Errorf("error creating the punch bucket: %s",err)
+		}
+
+		key := []byte(fmt.Sprintf("%s%s"),byuId, time.Now())
+		​
+		// create a punch
+		log.P.Debug("adding punch to bucket")
+		return db.Batch(func(tx *bolt.Tx) error {
+			bucket := tx.Bucket([]byte("punches"))
+			if bucket != nil {
+			}
+			​		 
+			return bucket.Put(key, []byte(request))
+		})
+		log.P.Debug("Successfully added punch to the bucket")
+​
+		return nil
+	})
+	if err != nil {
+		log.P.Panic(fmt.Sprintf("an error occured while adding the punch to the bucket: %s", err))
+	}
+
+	return nil
 }
 
 // FixPunch adds an in or out punch as determined by the body sent

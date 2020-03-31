@@ -12,117 +12,47 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
-func init() {
-	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	if len(dbLoc) == 0 {
-		log.P.Panic("Need CACHE_DATABASE_LOCATION variable")
-	}
-}
+func resendPunches(){
 
-//WatchForCachedEmployees will start a timer and download the cache every 4 hours
-func WatchForCachedEmployees(updateNowChan chan struct{}) {
+	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
+	db, err := bolt.Open(dbLoc, 0600, nil)
+	if err != nil {
+		log.P.Panic(fmt.Sprintf("error opening the db: %s", err))
+	}
+
+	ticker := time.NewTicker(30 * time.Second)
+	defer ticker.Stop()
+
 	for {
-
-		DownloadCachedEmployees()
-
-		//wait for 4 hours and then do it again
 		select {
-		case <-time.After(4 * time.Hour):
-			log.P.Info("4 hour timeout reached")
-		case <-updateNowChan:
-			log.P.Info("4 updating now")
+		case <-ticker.C:
+			err := db.View(func(tx *bolt.Tx) error {
+				bucket := tx.Bucket([]byte([]byte("punches")))
+				if bucket != nil {
+				}
+
+				errg, err := errgroup.WithContext(context.Background())
+
+				return bucket.ForEach(func(key, value []byte) error {
+					fmt.Printf("trying to post %s\n", key)
+					​
+					errg.Go(func() error {
+						err = helpers.Punch(key, value)
+						if err != nil {
+							// don't delete it
+							return err
+						}
+​
+						// delete it
+						return nil
+					})
+				})
+​
+				err := errg.Wait()
+				if err != nil {
+					panic(err)
+				}
+			})
 		}
 	}
-}
-
-//DownloadCachedEmployees makes a call to WSO2 to get the employee cache
-func DownloadCachedEmployees() error {
-	var cacheList structs.EmployeeCache
-
-	//make a WSO2 request to get the cache
-	log.P.Debug("Making call to get employee cache")
-	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://psws.byu.edu/PSIGW/BYURESTListeningConnector2/PSFT_HR/clock_employees.v1/", "", &cacheList, map[string]string{"sm_user": "timeclock"})
-
-	if ne != nil {
-		log.P.Error(fmt.Sprintf("Unable to get the cache list: %v", ne))
-		return ne
-	}
-
-	//open our badger db
-	//initialize the badger db
-	log.P.Debug("Initializing Badger DB")
-	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	opts := badger.DefaultOptions(dbLoc)
-
-	db, err := badger.Open(opts)
-	if err != nil {
-		log.P.Panic(fmt.Sprintf("%v", err))
-	}
-
-	log.P.Debug(fmt.Sprintf("Adding %v employees to the cache", len(cacheList.Employees)))
-
-	//put it into the badger cache
-	for _, employee := range cacheList.Employees {
-		err := db.Update(func(txn *badger.Txn) error {
-			employeeJSON, _ := json.Marshal(employee)
-
-			err := txn.Set([]byte(employee.BYUID), []byte(employeeJSON))
-			return err
-		})
-
-		if err != nil {
-			log.P.Error(fmt.Sprintf("Unable to get the add to badgerdb: %v", err))
-			return err
-		}
-	}
-
-	db.Close()
-
-	return nil
-}
-
-//GetEmployeeFromCache looks up an employee in the cache
-func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
-
-	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	opts := badger.DefaultOptions(dbLoc)
-
-	db, err := badger.Open(opts)
-	if err != nil {
-		log.P.Panic(fmt.Sprintf("%v", err))
-	}
-
-	defer db.Close()
-
-	var empRecord structs.EmployeeRecord
-
-	err = db.View(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte(byuID))
-		if err != nil {
-			//not found, return it
-			return err
-		}
-
-		valCopy, err := item.ValueCopy(nil)
-		if err != nil {
-			//weirdness
-			return err
-		}
-
-		//per danny, reuse variable called 'err'
-		err = json.Unmarshal(valCopy, &empRecord)
-		if err != nil {
-			return err
-		}
-
-		//no error in db.View
-		return nil
-	})
-
-	if err != nil {
-		//unable to retrieve from cache for whatever reason
-		return empRecord, err
-	}
-
-	return empRecord, nil
 }

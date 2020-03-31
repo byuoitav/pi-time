@@ -8,9 +8,9 @@ import (
 	figure "github.com/common-nighthawk/go-figure"
 	"github.com/labstack/echo/v4"
 
-	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/handlers"
 	"github.com/byuoitav/pi-time/helpers"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/labstack/echo/v4/middleware"
 )
 
@@ -28,7 +28,11 @@ func main() {
 	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
 
 	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
-	//TODO
+	//TODO Smitty
+	//three endpoints
+	//how many in pending and error bucket - stats
+	//get all error punches
+	//delete specific error punch by ID
 
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
