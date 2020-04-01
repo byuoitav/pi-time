@@ -12,7 +12,6 @@ import (
 
 	"github.com/byuoitav/common/events"
 	"github.com/byuoitav/common/nerr"
-	commonEvents "github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
@@ -20,7 +19,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	bolt "go.etcd.io/bbolt"
-	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -41,11 +39,14 @@ func Punch(context echo.Context) error {
 	err = helpers.Punch(byuID, incomingRequest)
 	if err != nil {
 		//Add the punch to the bucket if it failed for any reason
-		gerr = addPunchToBucket(byuId, incomingRequest)
+		gerr := addPunchToBucket(byuID, incomingRequest)
 		if gerr != nil {
-			return context.String(http.StatusInternalServerError, fmt.Errorf("two errors occured:%s and %s",err,gerr))
+			return fmt.Errorf("two errors occured:%s and %s", err, gerr)
 		}
 		return nil
+	}
+	if err != nil {
+		return context.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
 	}
 
 	return context.String(http.StatusOK, "ok")
@@ -54,32 +55,32 @@ func Punch(context echo.Context) error {
 func addPunchToBucket(byuId string, request structs.ClientPunchRequest) error {
 	db, err := bolt.Open("./cache.db", 0600, nil)
 	if err != nil {
-		log.P.Panic(fmt.Sprintf("error opening the db: %s",err))
-		return fmt.Errorf("error opening the db: %s",err)
+		log.P.Panic(fmt.Sprintf("error opening the db: %s", err))
+		return fmt.Errorf("error opening the db: %s", err)
 	}
-​
+
 	err = db.Update(func(tx *bolt.Tx) error {
 		//create punch bucket if it does not exist
 		log.P.Debug("Checking if Punch Bucket Exists")
 		_, err := tx.CreateBucketIfNotExists([]byte("punches"))
 		if err != nil {
 			log.P.Panic("failed to create punchBucket")
-			return fmt.Errorf("error creating the punch bucket: %s",err)
+			return fmt.Errorf("error creating the punch bucket: %s", err)
 		}
 
-		key := []byte(fmt.Sprintf("%s%s"),byuId, time.Now())
-		​
+		key := []byte(fmt.Sprintf("%s%s", byuId, time.Now()))
+
 		// create a punch
 		log.P.Debug("adding punch to bucket")
 		return db.Batch(func(tx *bolt.Tx) error {
 			bucket := tx.Bucket([]byte("punches"))
 			if bucket != nil {
 			}
-			​		 
-			return bucket.Put(key, []byte(request))
+
+			return bucket.Put(key, []byte(fmt.Sprintf("%v", request)))
 		})
 		log.P.Debug("Successfully added punch to the bucket")
-​
+
 		return nil
 	})
 	if err != nil {
@@ -224,7 +225,11 @@ func DeleteWorkOrderEntry(context echo.Context) error {
 //SendEvent passes an event to the messenger
 func SendEvent(context echo.Context) error {
 	var event events.Event
-	err := c.Bind(&event)
+	err := context.Bind(&event)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
+	}
+
 	eventProcessorHostList := strings.Split(eventProcessorHost, ",")
 	// TODO i see why you weren't returning, i'll just put smee prd first for now
 	for _, hostName := range eventProcessorHostList {
@@ -261,18 +266,6 @@ func SendEvent(context echo.Context) error {
 	}
 
 	return nil
-
-	//TODO change to using http
-	var event commonEvents.Event
-	gerr := context.Bind(&event)
-	if gerr != nil {
-		return context.String(http.StatusBadRequest, gerr.Error())
-	}
-
-	eventsender.MyMessenger.SendEvent(event)
-
-	log.P.Debug(fmt.Sprintf("sent event from UI: %+v", event))
-	return context.String(http.StatusOK, "success")
 }
 
 //GetSickAndVacationForJobAndDate handles ensuring that we have the sick and vacation for a day

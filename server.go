@@ -28,11 +28,6 @@ func main() {
 	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
 
 	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
-	//TODO Smitty
-	//three endpoints
-	//how many in pending and error bucket - stats
-	//get all error punches
-	//delete specific error punch by ID
 
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
@@ -43,6 +38,15 @@ func main() {
 	router.GET("/healthz", func(c echo.Context) error {
 		return c.String(http.StatusOK, "healthy")
 	})
+
+	//TODO Smitty
+	//three endpoints
+	//how many in pending and error bucket - stats
+	//get all error punches
+	//delete specific error punch by ID
+	router.GET("/buckets/stats", handlers.GetBucketStats)
+	router.GET("/buckets/error/punches", handlers.ErrorBucketPunches)
+	router.GET("/buckets/error/punches/:punchId/delete", handlers.DeletePunchFromErrorBucket)
 
 	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.LogInUser)
