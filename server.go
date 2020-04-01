@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/byuoitav/pi-time/cache"
 	figure "github.com/common-nighthawk/go-figure"
@@ -11,7 +12,9 @@ import (
 	"github.com/byuoitav/pi-time/handlers"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
+	"github.com/byuoitav/pi-time/offline"
 	"github.com/labstack/echo/v4/middleware"
+	bolt "go.etcd.io/bbolt"
 )
 
 var updateCacheNowChannel = make(chan struct{})
@@ -39,14 +42,27 @@ func main() {
 		return c.String(http.StatusOK, "healthy")
 	})
 
-	//TODO Smitty
-	//three endpoints
-	//how many in pending and error bucket - stats
-	//get all error punches
-	//delete specific error punch by ID
-	router.GET("/buckets/stats", handlers.GetBucketStats)
-	router.GET("/buckets/error/punches", handlers.ErrorBucketPunches)
-	router.GET("/buckets/error/punches/:punchId/delete", handlers.DeletePunchFromErrorBucket)
+	//TODO Smitty - open db and pass it in to the functions
+	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
+	db, err := bolt.Open(dbLoc, 0600, nil)
+	if err != nil {
+		panic(fmt.Sprintf("could not open db: %s", err))
+	}
+
+	go offline.ResendPunches(db)
+
+	router.GET("/buckets/stats", func(c echo.Context) error {
+		err := offline.GetBucketStats(c, db)
+		return err
+	})
+	router.GET("/buckets/error/punches", func(c echo.Context) error {
+		err := offline.ErrorBucketPunches(c, db)
+		return err
+	})
+	router.GET("/buckets/error/punches/:punchId/delete", func(c echo.Context) error {
+		err := offline.DeletePunchFromErrorBucket(c, db)
+		return err
+	})
 
 	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.LogInUser)
@@ -57,7 +73,12 @@ func main() {
 	//clock out
 	//transfer
 	//add missing punch
-	router.POST("/punch/:id", handlers.Punch)        //will send in a ClientPunchRequest in the body
+	router.POST("/punch/:id", func(c echo.Context) error {
+		err := handlers.Punch(c, db)
+		return err
+	})
+
+	//will send in a ClientPunchRequest in the body
 	router.PUT("/punch/:id/:seq", handlers.FixPunch) //will send in a ClientPunchRequest in the body
 
 	//lunchpunch

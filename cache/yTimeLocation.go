@@ -19,7 +19,7 @@ var (
 
 func init() {
 	if len(os.Getenv("SYSTEM_ID")) == 0 {
-		log.P.Panic("Must have SYSTEM_ID set")
+		log.P.Warn("Must have SYSTEM_ID set")
 	}
 
 }

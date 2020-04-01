@@ -226,12 +226,12 @@ func UpdateOtherHoursForJobAndDate(byuID string, jobID int, date time.Time, elap
 	serverDate, err := time.ParseInLocation("2006-01-02", elapsedTimeDay.PunchDate, time.Local)
 	if err != nil {
 		//freak out
-		log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error()))
+		log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error()))
 	}
 
 	log.P.Debug(fmt.Sprintf("server date: %v, date: %v", serverDate, date))
 	if serverDate != date {
-		log.P.Panic("ElapsedTimeSummary date does not match the date passed in")
+		log.P.Warn("ElapsedTimeSummary date does not match the date passed in")
 	}
 
 	for i := range employee.Jobs {
@@ -314,7 +314,7 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
-					log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
+					log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
 				}
 
 				//find this day in the client array
@@ -366,7 +366,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
-					log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
+					log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
 				}
 
 				//find this day in the client array
@@ -470,7 +470,7 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 		if len(serverPunch.PunchTime) > 0 {
 			newPunch.Time, err = time.ParseInLocation("2006-01-02 15:04:05", serverDay.Date+" "+serverPunch.PunchTime, time.Local)
 			if err != nil {
-				log.P.Panic(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date+" "+serverPunch.PunchTime, err.Error()))
+				log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date+" "+serverPunch.PunchTime, err.Error()))
 			}
 		}
 

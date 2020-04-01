@@ -21,7 +21,7 @@ func init() {
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
 
 	if len(dbLoc) == 0 {
-		log.P.Panic("Need CACHE_DATABASE_LOCATION variable")
+		log.P.Warn("Need CACHE_DATABASE_LOCATION variable")
 	}
 }
 
@@ -61,7 +61,7 @@ func DownloadCachedEmployees() error {
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
 	db, err := bolt.Open(dbLoc, 0600, nil)
 	if err != nil {
-		log.P.Panic(fmt.Sprintf("error opening the db: %s", err))
+		log.P.Warn(fmt.Sprintf("error opening the db: %s", err))
 		return fmt.Errorf("error opening the db: %s", err)
 	}
 
@@ -70,7 +70,7 @@ func DownloadCachedEmployees() error {
 		log.P.Debug("Checking if employee Bucket Exists")
 		_, err := tx.CreateBucketIfNotExists([]byte("employee"))
 		if err != nil {
-			log.P.Panic("failed to create employeeBucket")
+			log.P.Warn("failed to create employeeBucket")
 			return fmt.Errorf("error creating the employee bucket: %s", err)
 		}
 
@@ -97,7 +97,7 @@ func DownloadCachedEmployees() error {
 	})
 
 	if err != nil {
-		log.P.Panic(fmt.Sprintf("an error occured while adding the punch to the bucket: %s", err))
+		log.P.Warn(fmt.Sprintf("an error occured while adding the punch to the bucket: %s", err))
 	}
 
 	return nil
@@ -109,7 +109,7 @@ func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
 	db, err := bolt.Open(dbLoc, 0600, nil)
 	if err != nil {
-		log.P.Panic(fmt.Sprintf("error opening the db: %s", err))
+		log.P.Warn(fmt.Sprintf("error opening the db: %s", err))
 	}
 
 	defer db.Close()
