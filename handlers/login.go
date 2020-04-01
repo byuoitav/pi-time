@@ -9,20 +9,20 @@ import (
 )
 
 //LogInUser will authenticate a user, upgrade to websocket, and return the timesheet and offline mode to the web socket
-func LogInUser(context echo.Context) error {
+func LogInUser(c echo.Context) error {
 
 	//upgrade the connection to a websocket
-	webSocketClient := cache.ServeWebsocket(context.Response().Writer, context.Request())
+	webSocketClient := cache.ServeWebsocket(c.Response().Writer, c.Request())
 
 	//get the id
-	byuID := context.Param("id")
+	byuID := c.Param("id")
 	log.P.Debug("Logging in " + byuID)
 
 	//get the timesheet for this guy
 	timesheet, isOffline, err := ytimeapi.GetTimesheet(byuID)
 
 	if err != nil {
-		//return context.String(http.StatusForbidden, err.Error())
+		//return c.String(http.StatusForbidden, err.Error())
 		webSocketClient.CloseWithReason(err.Error())
 		return nil
 	}
