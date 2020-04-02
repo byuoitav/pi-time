@@ -1,4 +1,4 @@
-package helpers
+package employee
 
 import (
 	"encoding/json"
@@ -104,15 +104,7 @@ func DownloadCachedEmployees() error {
 }
 
 //GetEmployeeFromCache looks up an employee in the cache
-func GetEmployeeFromCache(byuID string) (structs.EmployeeRecord, error) {
-
-	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	db, err := bolt.Open(dbLoc, 0600, nil)
-	if err != nil {
-		log.P.Warn(fmt.Sprintf("error opening the db: %s", err))
-	}
-
-	defer db.Close()
+func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, error) {
 
 	var empRecord structs.EmployeeRecord
 

@@ -27,30 +27,32 @@ var (
 )
 
 // Punch adds an in or out punch as determined by the body sent
-func Punch(c echo.Context, db *bolt.DB) error {
-	byuID := c.Param("id")
+func GetPunchHandler(db *bolt.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		byuID := c.Param("id")
 
-	var incomingRequest structs.ClientPunchRequest
-	err := c.Bind(&incomingRequest)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-
-	//call the helper
-	err = helpers.Punch(byuID, incomingRequest)
-	if err != nil {
-		//Add the punch to the bucket if it failed for any reason
-		gerr := offline.AddPunchToBucket(byuID, incomingRequest, db)
-		if gerr != nil {
-			return fmt.Errorf("two errors occured:%s and %s", err, gerr)
+		var incomingRequest structs.ClientPunchRequest
+		err := c.Bind(&incomingRequest)
+		if err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
 		}
-		return nil
-	}
-	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
-	}
 
-	return c.String(http.StatusOK, "ok")
+		//call the helper
+		err = helpers.Punch(byuID, incomingRequest)
+		if err != nil {
+			//Add the punch to the bucket if it failed for any reason
+			gerr := offline.AddPunchToBucket(byuID, incomingRequest, db)
+			if gerr != nil {
+				return fmt.Errorf("two errors occured:%s and %s", err, gerr)
+			}
+			return nil
+		}
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
+		}
+
+		return c.String(http.StatusOK, "ok")
+	}
 }
 
 // FixPunch adds an in or out punch as determined by the body sent

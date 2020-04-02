@@ -9,8 +9,8 @@ import (
 	figure "github.com/common-nighthawk/go-figure"
 	"github.com/labstack/echo/v4"
 
+	"github.com/byuoitav/pi-time/employee"
 	"github.com/byuoitav/pi-time/handlers"
-	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/offline"
 	"github.com/labstack/echo/v4/middleware"
@@ -28,7 +28,7 @@ func main() {
 	go cache.GetYtimeLocation()
 
 	//start a go routine that will pull the cache information for offline mode
-	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
+	go employee.WatchForCachedEmployees(updateCacheNowChannel)
 
 	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
 
@@ -51,21 +51,12 @@ func main() {
 
 	go offline.ResendPunches(db)
 
-	router.GET("/buckets/stats", func(c echo.Context) error {
-		err := offline.GetBucketStats(c, db)
-		return err
-	})
-	router.GET("/buckets/error/punches", func(c echo.Context) error {
-		err := offline.ErrorBucketPunches(c, db)
-		return err
-	})
-	router.GET("/buckets/error/punches/:punchId/delete", func(c echo.Context) error {
-		err := offline.DeletePunchFromErrorBucket(c, db)
-		return err
-	})
+	router.GET("/buckets/stats", offline.GetBucketStatsHandler(db))
+	router.GET("/buckets/error/punches", offline.GetErrorBucketPunchesHandler(db))
+	router.GET("/buckets/error/punches/:punchId/delete", offline.GetDeletePunchFromErrorBucketHandler(db))
 
 	//login and upgrade to websocket
-	router.GET("/id/:id", handlers.LogInUser)
+	router.GET("/id/:id", handlers.GetLoginUserHandler(db))
 
 	//all of the functions to call to add / update / delete / do things on the UI
 
@@ -73,10 +64,7 @@ func main() {
 	//clock out
 	//transfer
 	//add missing punch
-	router.POST("/punch/:id", func(c echo.Context) error {
-		err := handlers.Punch(c, db)
-		return err
-	})
+	router.POST("/punch/:id", handlers.GetPunchHandler(db))
 
 	//will send in a ClientPunchRequest in the body
 	router.PUT("/punch/:id/:seq", handlers.FixPunch) //will send in a ClientPunchRequest in the body

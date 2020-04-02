@@ -9,10 +9,11 @@ import (
 	"time"
 
 	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/pi-time/helpers"
+	"github.com/byuoitav/pi-time/employee"
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
+	bolt "go.etcd.io/bbolt"
 )
 
 // SendPunchRequest sends a punch request to the YTime API and returns the response.
@@ -145,7 +146,7 @@ func SendDeleteWorkOrderEntryRequest(byuID string, jobID string, punchDate strin
 }
 
 // GetTimesheet returns a timesheet, a bool if the timesheet was returned in offline mode (from cache), and possible error
-func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
+func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 
 	var timesheet structs.Timesheet
 
@@ -160,7 +161,7 @@ func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 		if httpResponse.StatusCode/100 == 5 {
 			//500 code, then we look in cache
 			//look in the cache
-			employeeRecord, innerErr := helpers.GetEmployeeFromCache(byuid)
+			employeeRecord, innerErr := employee.GetEmployeeFromCache(byuid, db)
 
 			if innerErr != nil {
 				//not found
