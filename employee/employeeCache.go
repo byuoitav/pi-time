@@ -108,7 +108,7 @@ func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, er
 
 	var empRecord structs.EmployeeRecord
 
-	err = db.View(func(tx *bolt.Tx) error {
+	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("employee"))
 		item := b.Get([]byte(byuID))
 		if item == nil {
@@ -116,7 +116,7 @@ func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, er
 			return fmt.Errorf("unable to find the employee in the cache")
 		}
 
-		err = json.Unmarshal(item, &empRecord)
+		err := json.Unmarshal(item, &empRecord)
 		if err != nil {
 			return err
 		}

@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/byuoitav/common/events"
 	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
@@ -196,12 +196,11 @@ func SendEvent(c echo.Context) error {
 	}
 
 	eventProcessorHostList := strings.Split(eventProcessorHost, ",")
-	// TODO i see why you weren't returning, i'll just put smee prd first for now
 	for _, hostName := range eventProcessorHostList {
 		// create the request
 		log.P.Debug(fmt.Sprintf("Sending event to address %s", hostName))
 
-		req, err := http.NewRequest("POST", hostName, bytes.NewReader(event))
+		req, err := http.NewRequest("POST", hostName, bytes.NewReader([]byte(fmt.Sprintf("%v", event))))
 		if err != nil {
 			return nerr.Translate(err)
 		}

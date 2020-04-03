@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
 	figure "github.com/common-nighthawk/go-figure"
 	"github.com/labstack/echo/v4"
 
 	"github.com/byuoitav/pi-time/employee"
 	"github.com/byuoitav/pi-time/handlers"
-	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/offline"
 	"github.com/labstack/echo/v4/middleware"
 	bolt "go.etcd.io/bbolt"
