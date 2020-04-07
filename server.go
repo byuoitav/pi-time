@@ -27,9 +27,6 @@ func main() {
 	//start a go routine to go and get the latitude and longitude from the building struct
 	go cache.GetYtimeLocation()
 
-	//start a go routine that will pull the cache information for offline mode
-	go employee.WatchForCachedEmployees(updateCacheNowChannel)
-
 	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
 
 	//start up a server to serve the angular site and set up the handlers for the UI to use
@@ -48,6 +45,36 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("could not open db: %s", err))
 	}
+
+	//create buckets if they do not exist
+	err = db.Update(func(tx *bolt.Tx) error {
+		//create punch bucket if it does not exist
+		log.L.Debug("Checking if Pending Bucket Exists")
+		_, err := tx.CreateBucketIfNotExists([]byte(offline.PENDING_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the pending bucket: %s", err)
+		}
+
+		log.L.Debug("Checking if Error Bucket Exists")
+		_, err = tx.CreateBucketIfNotExists([]byte(offline.ERROR_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the error bucket: %s", err)
+		}
+
+		log.L.Debug("Checking if Employee Bucket Exists")
+		_, err = tx.CreateBucketIfNotExists([]byte(employee.EMPLOYEE_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the employee bucket: %s", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		panic(fmt.Sprintf("could not create db buckets: %s", err))
+	}
+
+	//start a go routine that will pull the cache information for offline mode
+	go employee.WatchForCachedEmployees(updateCacheNowChannel, db)
 
 	go offline.ResendPunches(db)
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/byuoitav/common/nerr"
@@ -156,11 +157,13 @@ func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 	})
 
 	if err != nil {
+		fmt.Printf("ERRORRRRRRR: %s\n\n", err)
 		log.P.Debug(fmt.Sprintf("Error when making WSO2 request to get timesheet %v", err))
 
-		if httpResponse.StatusCode/100 == 5 {
+		if strings.Contains(err.Error(), "network is unreachable") || httpResponse.StatusCode/100 == 5 {
 			//500 code, then we look in cache
 			//look in the cache
+			fmt.Printf("\n\nGetting emplyee from the cache\n\n")
 			employeeRecord, innerErr := employee.GetEmployeeFromCache(byuid, db)
 
 			if innerErr != nil {

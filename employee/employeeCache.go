@@ -15,6 +15,10 @@ import (
 //LogChannel channel to send log messages
 var LogChannel chan string
 
+const (
+	EMPLOYEE_BUCKET = "EMPLOYEE"
+)
+
 func init() {
 	LogChannel = make(chan string)
 
@@ -26,10 +30,10 @@ func init() {
 }
 
 //WatchForCachedEmployees will start a timer and download the cache every 4 hours
-func WatchForCachedEmployees(updateNowChan chan struct{}) {
+func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	for {
 
-		DownloadCachedEmployees()
+		DownloadCachedEmployees(db)
 
 		//wait for 4 hours and then do it again
 		select {
@@ -42,7 +46,7 @@ func WatchForCachedEmployees(updateNowChan chan struct{}) {
 }
 
 //DownloadCachedEmployees makes a call to WSO2 to get the employee cache
-func DownloadCachedEmployees() error {
+func DownloadCachedEmployees(db *bolt.DB) error {
 	var cacheList structs.EmployeeCache
 
 	//make a WSO2 request to get the cache
@@ -58,17 +62,10 @@ func DownloadCachedEmployees() error {
 	//initialize the bolt db
 	log.P.Debug(fmt.Sprintf("Adding %v employees to the cache", len(cacheList.Employees)))
 
-	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
-	db, err := bolt.Open(dbLoc, 0600, nil)
-	if err != nil {
-		log.P.Warn(fmt.Sprintf("error opening the db: %s", err))
-		return fmt.Errorf("error opening the db: %s", err)
-	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
+	err := db.Update(func(tx *bolt.Tx) error {
 		//create punch bucket if it does not exist
 		log.P.Debug("Checking if employee Bucket Exists")
-		_, err := tx.CreateBucketIfNotExists([]byte("employee"))
+		_, err := tx.CreateBucketIfNotExists([]byte(EMPLOYEE_BUCKET))
 		if err != nil {
 			log.P.Warn("failed to create employeeBucket")
 			return fmt.Errorf("error creating the employee bucket: %s", err)
@@ -78,7 +75,7 @@ func DownloadCachedEmployees() error {
 			err := db.Batch(func(tx *bolt.Tx) error {
 				employeeJSON, _ := json.Marshal(employee)
 
-				bucket := tx.Bucket([]byte("employee"))
+				bucket := tx.Bucket([]byte(EMPLOYEE_BUCKET))
 				if bucket != nil {
 				}
 
@@ -109,15 +106,17 @@ func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, er
 	var empRecord structs.EmployeeRecord
 
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("employee"))
+		b := tx.Bucket([]byte(EMPLOYEE_BUCKET))
 		item := b.Get([]byte(byuID))
 		if item == nil {
 			//not found, return it
+			fmt.Print("not found")
 			return fmt.Errorf("unable to find the employee in the cache")
 		}
 
 		err := json.Unmarshal(item, &empRecord)
 		if err != nil {
+			fmt.Print("unable to unmarshal employee")
 			return err
 		}
 
@@ -127,6 +126,7 @@ func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, er
 
 	if err != nil {
 		//unable to retrieve from cache for whatever reason
+		fmt.Printf("unable to retrieve from cache for reason: %s", err)
 		return empRecord, err
 	}
 

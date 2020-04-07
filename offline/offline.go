@@ -42,12 +42,12 @@ func ResendPunches(db *bolt.DB) {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 
-	//TODO add a sleep for 30 seconds and thenremove the ticker stuff
+	//TODO add a sleep for 30 seconds and then remove the ticker stuff
 	for {
 		select {
 		case <-ticker.C:
 			err := db.View(func(tx *bolt.Tx) error {
-				bucket := tx.Bucket([]byte([]byte(PENDING_BUCKET)))
+				bucket := tx.Bucket([]byte(PENDING_BUCKET))
 				if bucket == nil {
 					return fmt.Errorf("unable to access bucket")
 				}
@@ -188,7 +188,7 @@ func GetBucketStatsHandler(db *bolt.DB) echo.HandlerFunc {
 		var pendingBucket bolt.BucketStats
 		var errorBucket bolt.BucketStats
 		err := db.View(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte([]byte(PENDING_BUCKET)))
+			bucket := tx.Bucket([]byte(PENDING_BUCKET))
 			if bucket == nil {
 				return fmt.Errorf("unable to access bucket")
 			}
@@ -227,7 +227,7 @@ func GetErrorBucketPunchesHandler(db *bolt.DB) echo.HandlerFunc {
 		bucketPunches.BucketName = "error"
 		var m map[string][]byte
 		err := db.View(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte([]byte(ERROR_BUCKET)))
+			bucket := tx.Bucket([]byte(ERROR_BUCKET))
 			if bucket == nil {
 				return fmt.Errorf("unable to access bucket")
 			}
@@ -275,7 +275,7 @@ func GetDeletePunchFromErrorBucketHandler(db *bolt.DB) echo.HandlerFunc {
 		punchId := c.Param("punchId")
 
 		err := db.View(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte([]byte(ERROR_BUCKET)))
+			bucket := tx.Bucket([]byte(ERROR_BUCKET))
 			if bucket == nil {
 				return fmt.Errorf("unable to access bucket")
 			}
