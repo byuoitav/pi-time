@@ -1,9 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import Keyboard from "simple-keyboard";
 
 import { EmployeeRef, APIService } from "../../services/api.service";
 import { Employee, Job, Day, JobType } from "../../objects";
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: "day-overview",
@@ -13,7 +14,7 @@ import { Employee, Job, Day, JobType } from "../../objects";
     "../../../../node_modules/simple-keyboard/build/css/index.css"
   ]
 })
-export class DayOverviewComponent implements OnInit {
+export class DayOverviewComponent implements OnInit, OnDestroy {
   public jobType = JobType;
 
   private _empRef: EmployeeRef;
@@ -89,27 +90,40 @@ export class DayOverviewComponent implements OnInit {
     });
   }
 
+  private _subsToDestroy: Subscription[] = [];
+
   constructor(public api: APIService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this._subsToDestroy.push(this.route.paramMap.subscribe(params => {
       if (params) {
         this._jobID = +params.get("jobid");
         this._date = params.get("date");
       }
-    });
+    }));
 
-    this.route.data.subscribe(data => {
+    this._subsToDestroy.push(this.route.data.subscribe(data => {
       if (data) {
         this._empRef = data.empRef;
       }
-    });
+    }));
 
-    this.route.fragment.subscribe(frag => {
+    this._subsToDestroy.push(this.route.fragment.subscribe(frag => {
       if (frag) {
         this.selectedTab = frag;
       }
-    });
+    }));
+  }
+
+  ngOnDestroy() {
+    for (const s of this._subsToDestroy) {
+      s.unsubscribe();
+    }
+
+    this._empRef = undefined;
+    this._jobID = undefined;
+    this._date = undefined;
+    this._selectedTab = undefined;
   }
 
   goBack() {

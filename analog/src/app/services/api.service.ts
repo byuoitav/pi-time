@@ -188,7 +188,6 @@ export class APIService {
     this.router);
 
     ws.onmessage = event => {
-      console.log("web socket data", event.data)
       const data: Message = JSON.parse(event.data);
 
       console.debug("key: '" + data.key + "', value:", data.value);

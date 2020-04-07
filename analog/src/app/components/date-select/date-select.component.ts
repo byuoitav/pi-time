@@ -1,6 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Observable, BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject, Subscription } from "rxjs";
 
 import { EmployeeRef, APIService } from "../../services/api.service";
 import { ToastService } from "../../services/toast.service";
@@ -11,7 +11,7 @@ import { Employee, Job, Day, JobType } from "../../objects";
   templateUrl: "./date-select.component.html",
   styleUrls: ["./date-select.component.scss"]
 })
-export class DateSelectComponent implements OnInit {
+export class DateSelectComponent implements OnInit, OnDestroy {
   today: Date;
   viewMonth: number;
   viewYear: number;
@@ -63,6 +63,8 @@ export class DateSelectComponent implements OnInit {
     return undefined;
   }
 
+  private _subsToDestroy: Subscription[] = [];
+
   constructor(
     public api: APIService,
     private route: ActivatedRoute,
@@ -71,20 +73,31 @@ export class DateSelectComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this._subsToDestroy.push(this.route.paramMap.subscribe(params => {
       this._jobID = +params.get("jobid");
       this.getViewDays();
-    });
+    }));
 
-    this.route.data.subscribe(data => {
+    this._subsToDestroy.push(this.route.data.subscribe(data => {
       this._empRef = data.empRef;
-      this._empRef.subject().subscribe(emp => {
-        this.minDay = Day.minDay(this.job.days);
-        this.maxDay = Day.maxDay(this.job.days);
+
+      this._subsToDestroy.push(this._empRef.subject().subscribe(emp => {
+        if (this.job) {
+          this.minDay = Day.minDay(this.job.days);
+          this.maxDay = Day.maxDay(this.job.days);
+        }
 
         this.getViewDays();
-      });
-    });
+      }));
+    }));
+  }
+
+  ngOnDestroy() {
+    for (const s of this._subsToDestroy) {
+      s.unsubscribe();
+    }
+
+    this._empRef = undefined;
   }
 
   goBack() {
@@ -133,10 +146,15 @@ export class DateSelectComponent implements OnInit {
 
   //TODO: ADD EVENT
   selectDay = (date: Date) => {
+    if (!this.job) {
+      console.warn("job", this._jobID, "is undefined for this employee");
+      // TODO redirect to job select/error?
+      return;
+    }
+
     console.log("Selecting Day:" + date)
     
-    const str =
-      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    const str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
     const day = this.job.days.find(
       d =>
@@ -199,27 +217,31 @@ export class DateSelectComponent implements OnInit {
   }
 
   dayHasException(day: Date): boolean {
-    const empDay = this.job.days.find(
-      d => d.time.toDateString() === day.toDateString()
-    );
+    if (this.job) {
+      const empDay = this.job.days.find(
+        d => d.time.toDateString() === day.toDateString()
+      );
 
-    if (empDay != null) {
-      return empDay.hasPunchException || empDay.hasWorkOrderException;
-    } else {
-      return false;
+      if (empDay) {
+        return empDay.hasPunchException || empDay.hasWorkOrderException;
+      }
     }
+
+    return false;
   }
 
   dayHasPunch(day: Date): boolean {
-    const empDay = this.job.days.find(
-      d => d.time.toDateString() === day.toDateString()
-    );
+    if (this.job) {
+      const empDay = this.job.days.find(
+        d => d.time.toDateString() === day.toDateString()
+      );
 
-    if (empDay != null) {
-      return empDay.punches.length > 0;
-    } else {
-      return false;
+      if (empDay) {
+        return empDay.punches.length > 0;
+      }
     }
+
+    return false;
   }
 
   logout = () => {
