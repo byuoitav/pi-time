@@ -24,7 +24,6 @@ func SendPunchRequest(byuID string, req structs.Punch) (structs.Timesheet, *nerr
 	body := make(map[string]structs.Punch)
 	body["punch"] = req
 
-	fmt.Printf("\nurl: https://api.byu.edu:443/domains/erp/hr/punches/v1/%s\n", byuID)
 	method := "POST"
 	err, response, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
 		"Content-Type": "application/json",
@@ -158,13 +157,11 @@ func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 	})
 
 	if err != nil {
-		fmt.Printf("ERRORRRRRRR: %s\n\n", err)
 		log.P.Debug(fmt.Sprintf("Error when making WSO2 request to get timesheet %v", err))
 
 		if strings.Contains(err.Error(), "network is unreachable") || httpResponse.StatusCode/100 == 5 {
 			//500 code, then we look in cache
 			//look in the cache
-			fmt.Printf("\n\nGetting emplyee from the cache\n\n")
 			employeeRecord, innerErr := employee.GetEmployeeFromCache(byuid, db)
 
 			if innerErr != nil {

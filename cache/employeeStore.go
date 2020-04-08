@@ -471,7 +471,7 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 		if len(serverPunch.PunchTime) > 0 {
 			newPunch.Time, err = time.ParseInLocation("2006-01-02 15:04:05", serverDay.Date+" "+serverPunch.PunchTime, time.Local)
 			if err != nil {
-				log.P.Warn("WE GOT A WEIRD DATE BACK FROM WSO2", zap.String("date",serverDay.Date+" "+serverPunch.PunchTime), zap.Error(err)))
+				log.P.Warn("WE GOT A WEIRD DATE BACK FROM WSO2", zap.String("date", serverDay.Date+" "+serverPunch.PunchTime), zap.Error(err))
 			}
 		}
 

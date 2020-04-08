@@ -40,13 +40,11 @@ func GetPunchHandler(db *bolt.DB) echo.HandlerFunc {
 		//call the helper
 		err = helpers.Punch(byuID, incomingRequest)
 		if err != nil {
-			fmt.Print("\n\n\n\nAdding something ot the error bucket\n\n\n")
 			//Add the punch to the bucket if it failed for any reason
 			gerr := offline.AddPunchToBucket(byuID, incomingRequest, db)
 			if gerr != nil {
 				return fmt.Errorf("two errors occured:%s and %s", err, gerr)
 			}
-			fmt.Print("\n\n\n\nSuccess\n\n\n")
 
 			return nil
 		}
