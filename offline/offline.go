@@ -48,6 +48,7 @@ func ResendPunches(db *bolt.DB) {
 	for {
 		select {
 		case <-ticker.C:
+			var canDelete []string
 			err := db.View(func(tx *bolt.Tx) error {
 				bucket := tx.Bucket([]byte(PENDING_BUCKET))
 				if bucket == nil {
@@ -55,7 +56,7 @@ func ResendPunches(db *bolt.DB) {
 				}
 
 				errg, _ := errgroup.WithContext(context.Background())
-				var canDelete []string
+
 				err := bucket.ForEach(func(key, value []byte) error {
 
 					errg.Go(func() error {
@@ -67,21 +68,21 @@ func ResendPunches(db *bolt.DB) {
 							return fmt.Errorf("error occured in unmarshalling punchrequest from db: %s", err)
 						}
 
-						err = helpers.Punch(fmt.Sprintf("%s", key), punch)
+						err = helpers.Punch(punch.BYUID, punch)
 						if err != nil {
 							// don't delete it if its a timeout
-							if strings.Contains(err.Error(), "request timed out") {
+							if strings.Contains(err.Error(), "request timed out") || strings.Contains(err.Error(), "network is unreachable") {
 								return err
 							}
 
 							// add it to the error bucket if it is something other than a time out
-							gerr := addPunchToErrorBucket(fmt.Sprintf("%s", key), punch, db)
+							gerr := addPunchToErrorBucket(string(key), punch, db)
 							if gerr != nil {
 								return fmt.Errorf("an error occured adding the failed punch to the error bucket: %s", gerr)
 							}
 
 							// Add it to the can delete because its being added to a different bucket
-							canDelete = append(canDelete, fmt.Sprintf("%s", key))
+							canDelete = append(canDelete, string(key))
 							return err
 						}
 
@@ -92,6 +93,22 @@ func ResendPunches(db *bolt.DB) {
 					return nil
 				})
 
+				err = errg.Wait()
+				if err != nil {
+					log.P.Warn("error: ", zap.Error(err))
+				}
+
+				return nil
+			})
+			if err != nil {
+				log.P.Warn("error:", zap.Error(err))
+			}
+
+			err = db.Update(func(tx *bolt.Tx) error {
+				bucket := tx.Bucket([]byte(PENDING_BUCKET))
+				if bucket == nil {
+					return fmt.Errorf("unable to access bucket")
+				}
 				//delete all of the requests that went through
 				if len(canDelete) != 0 {
 					for _, deleteKey := range canDelete {
@@ -102,12 +119,6 @@ func ResendPunches(db *bolt.DB) {
 
 					}
 				}
-
-				err = errg.Wait()
-				if err != nil {
-					log.P.Warn(fmt.Sprintf("error: %s", err))
-				}
-
 				return nil
 			})
 
@@ -122,30 +133,38 @@ func AddPunchToBucket(byuId string, request structs.ClientPunchRequest, db *bolt
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		//create punch bucket if it does not exist
-		log.P.Debug("Checking if Punch Bucket Exists")
+		log.P.Debug("Checking if pending Bucket Exists")
 		_, err := tx.CreateBucketIfNotExists([]byte(PENDING_BUCKET))
 		if err != nil {
-			return fmt.Errorf("error creating the punch bucket: %s", err)
+			return fmt.Errorf("error creating the pending bucket: %s", err)
 		}
-
-		key := []byte(fmt.Sprintf("%s%s", byuId, time.Now()))
-
-		// create a punch
-		log.P.Debug("adding punch to bucket")
-		return db.Batch(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte(PENDING_BUCKET))
-			if bucket == nil {
-				return fmt.Errorf("unable to access bucket")
-			}
-
-			return bucket.Put(key, []byte(fmt.Sprintf("%v", request)))
-		})
-		log.P.Debug("Successfully added punch to the bucket")
 
 		return nil
 	})
 	if err != nil {
-		log.P.Warn(fmt.Sprintf("an error occured while adding the punch to the bucket: %s", err))
+		log.P.Warn("error:", zap.Error(err))
+		return err
+	}
+
+	key := []byte(fmt.Sprintf("%s%s", byuId, time.Now().Format(time.RFC3339)))
+
+	// create a punch
+	log.P.Debug("adding punch to bucket")
+	err = db.Batch(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(PENDING_BUCKET))
+		if bucket == nil {
+			return fmt.Errorf("unable to access bucket")
+		}
+
+		requestJSON, _ := json.Marshal(request)
+
+		return bucket.Put(key, requestJSON)
+	})
+	log.P.Debug("Successfully added punch to the bucket")
+
+	if err != nil {
+		log.P.Warn("an error occured while adding the punch to the bucket:", zap.Error(err))
+		return err
 	}
 
 	return nil
@@ -155,31 +174,39 @@ func addPunchToErrorBucket(byuId string, request structs.ClientPunchRequest, db 
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		//create punch bucket if it does not exist
-		log.P.Debug("Checking if Punch Bucket Exists")
+		log.P.Debug("Checking if Error Bucket Exists")
 		_, err := tx.CreateBucketIfNotExists([]byte(ERROR_BUCKET))
 		if err != nil {
-			log.P.Warn("failed to create errorBucket")
 			return fmt.Errorf("error creating the error bucket: %s", err)
 		}
-
-		key := []byte(fmt.Sprintf("%s%s", byuId, time.Now()))
-
-		// create a punch
-		log.P.Debug("adding punch to bucket")
-		return db.Batch(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte(ERROR_BUCKET))
-			if bucket == nil {
-				return fmt.Errorf("unable to access bucket")
-			}
-
-			return bucket.Put(key, []byte(fmt.Sprintf("%v", request)))
-		})
-		log.P.Debug("Successfully added failed punch to the error bucket")
 
 		return nil
 	})
 	if err != nil {
-		log.P.Warn(fmt.Sprintf("an error occured while adding the failed punch to the error bucket: %s", err))
+		log.P.Warn("error:", zap.Error(err))
+		return err
+	}
+
+	key := []byte(fmt.Sprintf("%s%s", byuId, time.Now()))
+
+	// create a punch
+	log.P.Debug("adding punch to bucket")
+	err = db.Batch(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(ERROR_BUCKET))
+
+		if bucket == nil {
+			return fmt.Errorf("unable to access bucket")
+		}
+
+		requestJSON, _ := json.Marshal(request)
+
+		return bucket.Put(key, requestJSON)
+	})
+	log.P.Debug("Successfully added punch to the bucket")
+
+	if err != nil {
+		log.P.Warn("an error occured while adding the error to the bucket: ", zap.Error(err))
+		return err
 	}
 
 	return nil
@@ -246,7 +273,8 @@ func GetEmployeeFromBucket(db *bolt.DB) echo.HandlerFunc {
 		err := db.View(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte(employee.EMPLOYEE_BUCKET))
 			if b == nil {
-				fmt.Print("cannot open employee bucket\n\n")
+				log.P.Warn("cannot open employee bucket")
+				return fmt.Errorf("cannot open employee bucket")
 			}
 
 			item := b.Get([]byte(byuID))
@@ -257,7 +285,6 @@ func GetEmployeeFromBucket(db *bolt.DB) echo.HandlerFunc {
 
 			err := json.Unmarshal(item, &empRecord)
 			if err != nil {
-				fmt.Print("unable to unmarshal employee")
 				return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
 			}
 
@@ -267,7 +294,7 @@ func GetEmployeeFromBucket(db *bolt.DB) echo.HandlerFunc {
 
 		if err != nil {
 			//unable to retrieve from cache for whatever reason
-			fmt.Printf("unable to retrieve from cache for reason: %s", err)
+			log.P.Warn("unable to retrieve from cache for reason: %s", zap.Error(err))
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
 		}
 
@@ -279,7 +306,6 @@ func GetErrorBucketPunchesHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var bucketPunches errorPunches
 		bucketPunches.BucketName = "error"
-		var m map[string][]byte
 		err := db.View(func(tx *bolt.Tx) error {
 			bucket := tx.Bucket([]byte(ERROR_BUCKET))
 			if bucket == nil {
@@ -289,7 +315,17 @@ func GetErrorBucketPunchesHandler(db *bolt.DB) echo.HandlerFunc {
 			var err error
 
 			bucket.ForEach(func(key, value []byte) error {
-				m[fmt.Sprintf("%s", key)] = value
+				var request structs.ClientPunchRequest
+				if err = json.Unmarshal(value, &request); err != nil {
+					return fmt.Errorf("unable to unmarshal punch out of db: %s", err)
+				}
+
+				p := punch{
+					Key:   string(key),
+					Punch: request,
+				}
+
+				bucketPunches.Punches = append(bucketPunches.Punches, p)
 				return nil
 			})
 			if err != nil {
@@ -300,20 +336,6 @@ func GetErrorBucketPunchesHandler(db *bolt.DB) echo.HandlerFunc {
 		})
 		if err != nil {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
-		}
-
-		for key, value := range m {
-			var request structs.ClientPunchRequest
-			if err = json.Unmarshal(value, &request); err != nil {
-				return fmt.Errorf("unable to unmarshal punch out of db: %s", err)
-			}
-
-			p := punch{
-				Key:   key,
-				Punch: request,
-			}
-
-			bucketPunches.Punches = append(bucketPunches.Punches, p)
 		}
 
 		sort.Slice(bucketPunches.Punches, func(i, j int) bool {
@@ -328,7 +350,7 @@ func GetDeletePunchFromErrorBucketHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		punchId := c.Param("punchId")
 
-		err := db.View(func(tx *bolt.Tx) error {
+		err := db.Update(func(tx *bolt.Tx) error {
 			bucket := tx.Bucket([]byte(ERROR_BUCKET))
 			if bucket == nil {
 				return fmt.Errorf("unable to access bucket")

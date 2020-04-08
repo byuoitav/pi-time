@@ -12,6 +12,7 @@ import (
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/pi-time/ytimeapi"
+	"go.uber.org/zap"
 )
 
 // Punch will record a regular punch on the employee record and report up the websocket.
@@ -19,7 +20,6 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 	// build WSO2 request
 	log.P.Debug("translating punch request")
 	punchRequest := translateToPunch(request)
-
 	// send WSO2 request to the YTime API
 	log.P.Debug(fmt.Sprintf("sending punch request %v", punchRequest))
 	timesheet, err, httpResponse := ytimeapi.SendPunchRequest(byuID, punchRequest)
@@ -66,7 +66,7 @@ func FixPunch(byuID string, req structs.ClientPunchRequest) error {
 
 	days, err := ytimeapi.SendFixPunchRequest(byuID, punch)
 	if err != nil {
-		log.P.Warn(fmt.Sprintf("Error with lunch punch: %s", err.Error()))
+		log.P.Warn("Error with lunch punch:", zap.Error(err))
 		return err
 	}
 
@@ -102,7 +102,7 @@ func LunchPunch(byuID string, req structs.LunchPunch) error {
 
 	days, err := ytimeapi.SendLunchPunch(byuID, req)
 	if err != nil {
-		log.P.Warn(fmt.Sprintf("Error with lunch punch: %s", err.Error()))
+		log.P.Warn("Error with lunch punch:", zap.Error(err))
 		return err
 	}
 

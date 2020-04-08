@@ -24,6 +24,7 @@ func SendPunchRequest(byuID string, req structs.Punch) (structs.Timesheet, *nerr
 	body := make(map[string]structs.Punch)
 	body["punch"] = req
 
+	fmt.Printf("\nurl: https://api.byu.edu:443/domains/erp/hr/punches/v1/%s\n", byuID)
 	method := "POST"
 	err, response, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID, body, &punchResponse, map[string]string{
 		"Content-Type": "application/json",

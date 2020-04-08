@@ -8,6 +8,7 @@ import (
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/pi-time/ytimeapi"
+	"go.uber.org/zap"
 )
 
 var (
@@ -226,7 +227,7 @@ func UpdateOtherHoursForJobAndDate(byuID string, jobID int, date time.Time, elap
 	serverDate, err := time.ParseInLocation("2006-01-02", elapsedTimeDay.PunchDate, time.Local)
 	if err != nil {
 		//freak out
-		log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", elapsedTimeDay.PunchDate, err.Error()))
+		log.P.Warn("WE GOT A WEIRD DATE BACK FROM WSO2", zap.String("date", elapsedTimeDay.PunchDate), zap.Error(err))
 	}
 
 	log.P.Debug(fmt.Sprintf("server date: %v, date: %v", serverDate, date))
@@ -314,7 +315,7 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
-					log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
+					log.P.Warn("WE GOT A WEIRD DATE BACK FROM WSO2", zap.String("date", serverDay.Date), zap.Error(err))
 				}
 
 				//find this day in the client array
@@ -366,7 +367,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 				serverDate, err := time.ParseInLocation("2006-01-02", serverDay.Date, time.Local)
 				if err != nil {
 					//freak out
-					log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date, err.Error()))
+					log.P.Warn("WE GOT A WEIRD DATE BACK FROM WSO2", zap.String("date", serverDay.Date), zap.Error(err))
 				}
 
 				//find this day in the client array
@@ -470,7 +471,7 @@ func updateClientDayFromServerTimeClockDay(clientDay *structs.ClientDay, serverD
 		if len(serverPunch.PunchTime) > 0 {
 			newPunch.Time, err = time.ParseInLocation("2006-01-02 15:04:05", serverDay.Date+" "+serverPunch.PunchTime, time.Local)
 			if err != nil {
-				log.P.Warn(fmt.Sprintf("WE GOT A WEIRD DATE BACK FROM WSO2 %s %v", serverDay.Date+" "+serverPunch.PunchTime, err.Error()))
+				log.P.Warn("WE GOT A WEIRD DATE BACK FROM WSO2", zap.String("date",serverDay.Date+" "+serverPunch.PunchTime), zap.Error(err)))
 			}
 		}
 
