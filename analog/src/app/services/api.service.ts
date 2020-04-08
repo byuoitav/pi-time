@@ -1,26 +1,17 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Router, ActivationEnd } from "@angular/router";
-import { MatDialog } from "@angular/material";
-import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript";
-import { BehaviorSubject, Observable, throwError } from "rxjs";
+import {Injectable} from "@angular/core";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Router, ActivationEnd, NavigationEnd} from "@angular/router";
+import {MatDialog} from "@angular/material";
+import {JsonConvert} from "json2typescript";
+import {BehaviorSubject, Observable, throwError, Subscription} from "rxjs";
 
-import { ErrorDialog } from "../dialogs/error/error.dialog";
-import { ToastService } from "./toast.service";
+import {ErrorDialog} from "../dialogs/error/error.dialog";
+import {ToastService} from "./toast.service";
 import {
   Employee,
-  Job,
-  TotalTime,
-  WorkOrder,
-  Day,
-  WorkOrderEntry,
-  PunchType,
-  TRC,
-  JobType,
   ClientPunchRequest,
   LunchPunch,
   DeletePunch,
-  OtherHour,
   OtherHourRequest,
   DeleteWorkOrder,
   WorkOrderUpsertRequest
@@ -32,12 +23,12 @@ import {
   JsonCustomConvert,
   JsonConverter
 } from "json2typescript";
-import { ByuIDPipe } from '../pipes/byu-id.pipe';
-import { stringify } from 'querystring';
+import {stringify} from 'querystring';
 
 export class EmployeeRef {
   private _employee: BehaviorSubject<Employee>;
-  private _logout;
+  private _logout: Function;
+  private _subsToDestroy: Subscription[] = [];
 
   public offline: boolean;
 
@@ -53,25 +44,23 @@ export class EmployeeRef {
     this._employee = employee;
     this._logout = logout;
 
-    router.events.subscribe(event => {
-      if (event instanceof ActivationEnd) {
-        const snapshot = event.snapshot;
-        
-        console.log("URL", snapshot.url.length, snapshot.url[0].path)
-
-        if (snapshot.url.length <= 2 || snapshot.url[0].path != "employee") {          
-          this._logout()
+    this._subsToDestroy.push(router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        if (!event.url.startsWith("/employee")) {
+          this.logout();
         }
       }
-    });
+    }));
   }
 
   logout = () => {
+    for (const s of this._subsToDestroy) {
+      s.unsubscribe();
+    }
+
     if (this._logout) {
       return this._logout();
     }
-
-    return undefined;
   };
 
   subject = (): BehaviorSubject<Employee> => {
@@ -79,13 +68,11 @@ export class EmployeeRef {
   };
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable({providedIn: "root"})
 export class APIService {
   public theme = "default";
 
   private jsonConvert: JsonConvert;
-  private urlParams: URLSearchParams;
-
   private _hiddenDarkModeCount = 0;
 
   constructor(
@@ -99,18 +86,18 @@ export class APIService {
 
     // watch for route changes to show popups, etc
     this.router.events.subscribe(event => {
-      if (event instanceof ActivationEnd) {
-        const snapshot = event.snapshot;
+      if (event instanceof NavigationEnd) {
+        const url = new URL(window.location.protocol + window.location.host + event.url);
 
-        if (snapshot && snapshot.queryParams && snapshot.queryParams.error) {
-          this.error(snapshot.queryParams.error);
+        if (url.searchParams.has("error")) {
+          this.error(url.searchParams.get("error"));
         }
 
-        if (snapshot.queryParams && snapshot.queryParams.theme) {
+        if (url.searchParams.has("theme")) {
           document.body.classList.remove(this.theme + "-theme");
-          this.theme = snapshot.queryParams.theme;
+          this.theme = url.searchParams.get("theme");
           document.body.classList.add(this.theme + "-theme");
-        } else if (snapshot.queryParams && !snapshot.queryParams.theme) {
+        } else {
           document.body.classList.remove(this.theme + "-theme");
           this.theme = "";
         }
@@ -122,7 +109,7 @@ export class APIService {
     console.log("switching theme to", name);
 
     this.router.navigate([], {
-      queryParams: { theme: name },
+      queryParams: {theme: name},
       queryParamsHandling: "merge"
     });
   }
@@ -165,7 +152,7 @@ export class APIService {
       // no more employee values
       employee.complete();
 
-      //Send logout event
+      // send logout event
       if (currEmp) {
         const event = new Event();
 
@@ -177,15 +164,13 @@ export class APIService {
 
         this.sendEvent(event);
       }
-      
 
       // reset theme
       this.switchTheme("");
 
       // route to login page
-      this.router.navigate(["/login"], { replaceUrl: true });
-    }, 
-    this.router);
+      this.router.navigate(["/login"], {replaceUrl: true});
+    }, this.router);
 
     ws.onmessage = event => {
       const data: Message = JSON.parse(event.data);
@@ -255,7 +240,7 @@ export class APIService {
 
       ref.afterClosed().subscribe(result => {
         this.router.navigate([], {
-          queryParams: { error: null },
+          queryParams: {error: null},
           queryParamsHandling: "merge",
           preserveFragment: true
         });

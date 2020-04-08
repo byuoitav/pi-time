@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import {Component, OnInit} from "@angular/core";
+import {Router} from "@angular/router";
 
 @Component({
   selector: "analog",
@@ -7,33 +7,29 @@ import { Router } from "@angular/router";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
-  ssCounter = 0;  
+  ssCounter = 0;
   ssTimer: any;
 
-  constructor(private router: Router) {    
-    
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
-      console.log(this.ssTimer)
-      this.ssTimer = setInterval(() => {
+    document.body.addEventListener("click", () => {
+      this.ssCounter = 0;
+    }, true);
+
+    this.ssTimer = setInterval(() => {
       this.ssCounter++;
-      //console.log("SSCounter", this.ssCounter, this.router.url)
-      
-      const isLogin = this.router.url == "/login"
-      const isScreensaver = this.router.url == "/screensaver"
+
+      const isLogin = this.router.url === "/login"
+      const isScreensaver = this.router.url === "/screensaver"
 
       if (this.ssCounter >= 20 && isLogin) {
-        this.ssCounter = 0;        
+        this.ssCounter = 0;
         this.router.navigate(["/screensaver"]);
       } else if (this.ssCounter >= 10 && !isLogin && !isScreensaver) {
-        this.ssCounter = 0;          
+        this.ssCounter = 0;
         this.router.navigate(["/login"]);
       }
-    }, 1000);    
-  }
-
-  restartTimer() {
-    this.ssCounter = 0;
+    }, 1000);
   }
 }

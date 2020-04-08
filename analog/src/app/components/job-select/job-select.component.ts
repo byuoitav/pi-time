@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { BehaviorSubject, Subscription } from "rxjs";
+import {Component, OnInit, OnDestroy} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
+import {BehaviorSubject, Subscription} from "rxjs";
 
-import { EmployeeRef, APIService } from "../../services/api.service";
-import { Employee } from "../../objects";
+import {EmployeeRef, APIService} from "../../services/api.service";
+import {Employee} from "../../objects";
 
 @Component({
   selector: "job-select",
@@ -45,7 +45,7 @@ export class JobSelectComponent implements OnInit, OnDestroy {
   }
 
   selectJob = (jobID: number) => {
-    this.router.navigate(["./" + jobID + "/date/"], { relativeTo: this.route });
+    this.router.navigate(["./" + jobID + "/date/"], {relativeTo: this.route});
   };
 
   logout = () => {
