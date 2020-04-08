@@ -3,7 +3,6 @@ package structs
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 )
 
 //This file is all of the structs that will come back from the WSO2 services
@@ -72,7 +71,6 @@ func (j *Job) UnmarshalJSON(data []byte) error {
 		var jerr *json.UnmarshalTypeError
 
 		if errors.As(err, &jerr) && jerr.Field == "physical_facilities" && jerr.Value == "bool" {
-			fmt.Printf("\n\n%+v\n", *jerr)
 			aux2 := &struct {
 				*Alias
 			}{
@@ -83,9 +81,6 @@ func (j *Job) UnmarshalJSON(data []byte) error {
 				return err
 			}
 			return nil
-		}
-		if jerr != nil {
-			fmt.Printf("\n\n%+v\n", *jerr)
 		}
 	}
 

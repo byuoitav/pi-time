@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/byuoitav/pi-time/employee"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
@@ -24,8 +25,9 @@ const (
 )
 
 type bucketStats struct {
-	PendingBucket int
-	ErrorBucket   int
+	PendingBucket  int
+	ErrorBucket    int
+	EmployeeBucket int
 }
 
 type errorPunches struct {
@@ -187,6 +189,7 @@ func GetBucketStatsHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var pendingBucket bolt.BucketStats
 		var errorBucket bolt.BucketStats
+		var employeeBucket bolt.BucketStats
 		err := db.View(func(tx *bolt.Tx) error {
 			bucket := tx.Bucket([]byte(PENDING_BUCKET))
 			if bucket == nil {
@@ -213,11 +216,62 @@ func GetBucketStatsHandler(db *bolt.DB) echo.HandlerFunc {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
 		}
 
+		err = db.View(func(tx *bolt.Tx) error {
+			bucket := tx.Bucket([]byte(employee.EMPLOYEE_BUCKET))
+			if bucket == nil {
+				return fmt.Errorf("unable to access bucket")
+			}
+
+			employeeBucket = bucket.Stats()
+			return nil
+		})
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
+		}
+
 		var stats bucketStats
 		stats.ErrorBucket = errorBucket.KeyN
 		stats.PendingBucket = pendingBucket.KeyN
+		stats.EmployeeBucket = employeeBucket.KeyN
 
 		return c.JSON(http.StatusOK, stats)
+	}
+}
+
+func GetEmployeeFromBucket(db *bolt.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		byuID := c.Param("id")
+		var empRecord structs.EmployeeRecord
+
+		err := db.View(func(tx *bolt.Tx) error {
+			b := tx.Bucket([]byte(employee.EMPLOYEE_BUCKET))
+			if b == nil {
+				fmt.Print("cannot open employee bucket\n\n")
+			}
+
+			item := b.Get([]byte(byuID))
+			if item == nil {
+				//not found, return it
+				return c.String(http.StatusInternalServerError, fmt.Sprintf("item not found"))
+			}
+
+			err := json.Unmarshal(item, &empRecord)
+			if err != nil {
+				fmt.Print("unable to unmarshal employee")
+				return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
+			}
+
+			//no error in db.View
+			return nil
+		})
+
+		if err != nil {
+			//unable to retrieve from cache for whatever reason
+			fmt.Printf("unable to retrieve from cache for reason: %s", err)
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
+		}
+
+		return c.JSON(http.StatusOK, empRecord)
 	}
 }
 

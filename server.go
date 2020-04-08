@@ -79,6 +79,7 @@ func main() {
 	go offline.ResendPunches(db)
 
 	router.GET("/buckets/stats", offline.GetBucketStatsHandler(db))
+	router.GET("/employeeBucket/:id", offline.GetEmployeeFromBucket(db))
 	router.GET("/buckets/error/punches", offline.GetErrorBucketPunchesHandler(db))
 	router.GET("/buckets/error/punches/:punchId/delete", offline.GetDeletePunchFromErrorBucketHandler(db))
 

@@ -32,7 +32,6 @@ func init() {
 //WatchForCachedEmployees will start a timer and download the cache every 4 hours
 func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	for {
-
 		DownloadCachedEmployees(db)
 
 		//wait for 4 hours and then do it again
@@ -48,7 +47,6 @@ func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 //DownloadCachedEmployees makes a call to WSO2 to get the employee cache
 func DownloadCachedEmployees(db *bolt.DB) error {
 	var cacheList structs.EmployeeCache
-
 	//make a WSO2 request to get the cache
 	log.P.Debug("Making call to get employee cache")
 	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://psws.byu.edu/PSIGW/BYURESTListeningConnector2/PSFT_HR/clock_employees.v1/", "", &cacheList, map[string]string{"sm_user": "timeclock"})
@@ -70,28 +68,32 @@ func DownloadCachedEmployees(db *bolt.DB) error {
 			log.P.Warn("failed to create employeeBucket")
 			return fmt.Errorf("error creating the employee bucket: %s", err)
 		}
-
-		for _, employee := range cacheList.Employees {
-			err := db.Batch(func(tx *bolt.Tx) error {
-				employeeJSON, _ := json.Marshal(employee)
-
-				bucket := tx.Bucket([]byte(EMPLOYEE_BUCKET))
-				if bucket != nil {
-				}
-
-				return bucket.Put([]byte(employee.BYUID), []byte(employeeJSON))
-			})
-
-			if err != nil {
-				log.P.Error(fmt.Sprintf("Unable to get the add to boltdb: %v", err))
-				return err
-			}
-		}
-
-		log.P.Debug("Successfully added punch to the bucket")
-
 		return nil
 	})
+
+	if err != nil {
+		return err
+	}
+
+	for _, employee := range cacheList.Employees {
+		err := db.Batch(func(tx *bolt.Tx) error {
+			employeeJSON, _ := json.Marshal(employee)
+
+			bucket := tx.Bucket([]byte(EMPLOYEE_BUCKET))
+			if bucket == nil {
+				return fmt.Errorf("unable to get employee bucket")
+			}
+
+			return bucket.Put([]byte(employee.BYUID), employeeJSON)
+		})
+
+		if err != nil {
+			log.P.Error(fmt.Sprintf("Unable to get the add to boltdb: %v", err))
+			return err
+		}
+	}
+
+	log.P.Debug("Successfully added employees to the bucket")
 
 	if err != nil {
 		log.P.Warn(fmt.Sprintf("an error occured while adding the punch to the bucket: %s", err))
@@ -107,10 +109,13 @@ func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, er
 
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(EMPLOYEE_BUCKET))
+		if b == nil {
+			fmt.Print("cannot open employee bucket\n\n")
+		}
+
 		item := b.Get([]byte(byuID))
 		if item == nil {
 			//not found, return it
-			fmt.Print("not found")
 			return fmt.Errorf("unable to find the employee in the cache")
 		}
 

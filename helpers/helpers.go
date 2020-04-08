@@ -24,11 +24,14 @@ func Punch(byuID string, request structs.ClientPunchRequest) error {
 	log.P.Debug(fmt.Sprintf("sending punch request %v", punchRequest))
 	timesheet, err, httpResponse := ytimeapi.SendPunchRequest(byuID, punchRequest)
 	if err != nil {
-		responseBody, bodyErr := ioutil.ReadAll(httpResponse.Body)
-		if bodyErr != nil {
-			return fmt.Errorf("unable to submit punch: %v. unable to read body", err.Error())
+		var responseBody []byte
+		var bodyErr error
+		if httpResponse != nil {
+			responseBody, bodyErr = ioutil.ReadAll(httpResponse.Body)
+			if bodyErr != nil {
+				return fmt.Errorf("unable to submit punch: %v. unable to read body", err.Error())
+			}
 		}
-		// TODO put it into the db to be posted later
 
 		return fmt.Errorf("unable to submit punch: %v. response body: %s", err.Error(), responseBody)
 	}
