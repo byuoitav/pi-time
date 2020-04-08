@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import {Component, OnInit, OnDestroy} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
 import Keyboard from "simple-keyboard";
 
-import { EmployeeRef, APIService } from "../../services/api.service";
-import { Employee, Job, Day, JobType } from "../../objects";
+import {EmployeeRef, APIService} from "../../services/api.service";
+import {Employee, Job, Day, JobType} from "../../objects";
 import {Subscription} from 'rxjs';
 
 @Component({

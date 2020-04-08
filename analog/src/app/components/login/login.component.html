@@ -1,130 +1,59 @@
 <mat-toolbar color="primary">
-  <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
-  <span>Y-Time</span> <span class="header-spacer"></span>
+	<object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
+	<span>Y-Time</span> <span class="header-spacer"></span>
 </mat-toolbar>
 
 <div class="login">
-  <div class="input">
-    <span *ngIf="id?.length > 0" class="id">{{ id | byuID }}</span>
-    <span *ngIf="id?.length == 0" class="id">Enter BYU ID</span>
+	<div class="input">
+		<span *ngIf="id?.length > 0" class="id">{{ id | byuID }}</span>
+		<span *ngIf="id?.length == 0" class="id">Enter BYU ID</span>
 
-    <!-- logo -->
-    <object type="image/svg+xml" data="./assets/byu_medallion.svg" class="logo">
-    </object>
-  </div>
+		<!-- logo -->
+		<object type="image/svg+xml" data="./assets/byu_medallion.svg" class="logo">
+		</object>
+	</div>
 
-  <div class="num-pad">
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('1')"
-      (press)="addToID('1')"
-    >
-      1
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('2')"
-      (press)="addToID('2')"
-    >
-      2
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('3')"
-      (press)="addToID('3')"
-    >
-      3
-    </button>
+	<div class="num-pad">
+		<button mat-raised-button color="accent" class="num" (click)="addToID('1')" (press)="addToID('1')">
+			1
+		</button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('2')" (press)="addToID('2')">
+			2
+		</button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('3')" (press)="addToID('3')">
+			3
+		</button>
 
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('4')"
-      (press)="addToID('4')"
-    >
-      4
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('5')"
-      (press)="addToID('5')"
-    >
-      5
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('6')"
-      (press)="addToID('6')"
-    >
-      6
-    </button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('4')" (press)="addToID('4')">
+			4
+		</button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('5')" (press)="addToID('5')">
+			5
+		</button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('6')" (press)="addToID('6')">
+			6
+		</button>
 
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('7')"
-      (press)="addToID('7')"
-    >
-      7
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('8')"
-      (press)="addToID('8')"
-    >
-      8
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('9')"
-      (press)="addToID('9')"
-    >
-      9
-    </button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('7')" (press)="addToID('7')">
+			7
+		</button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('8')" (press)="addToID('8')">
+			8
+		</button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('9')" (press)="addToID('9')">
+			9
+		</button>
 
-    <button
-      mat-raised-button
-      color="accent"
-      [disabled]="id?.length === 0"
-      (click)="delFromID()"
-      (press)="delFromID()"
-    >
-      Del
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      class="num"
-      (click)="addToID('0')"
-      (press)="addToID('0')"
-    >
-      0
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      [disabled]="id?.length !== 9"
-      (click)="login(id)"
-      (press)="login(id)"
-    >
-      Enter
-    </button>
-  </div>
+		<button mat-raised-button color="accent" [disabled]="id?.length === 0" (click)="delFromID()"
+			(press)="delFromID()">
+			Del
+		</button>
+		<button mat-raised-button color="accent" class="num" (click)="addToID('0')" (press)="addToID('0')">
+			0
+		</button>
+		<button mat-raised-button color="accent" [disabled]="id?.length !== 9" (click)="login()" (press)="login()">
+			Enter
+		</button>
+	</div>
 </div>
 >
