@@ -1,5 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
+import {MatDialog} from "@angular/material";
 
 @Component({
   selector: "analog",
@@ -10,7 +11,7 @@ export class AppComponent implements OnInit {
   ssCounter = 0;
   ssTimer: any;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private dialog: MatDialog) {}
 
   ngOnInit() {
     document.body.addEventListener("click", () => {
@@ -20,15 +21,19 @@ export class AppComponent implements OnInit {
     this.ssTimer = setInterval(() => {
       this.ssCounter++;
 
-      const isLogin = this.router.url === "/login"
-      const isScreensaver = this.router.url === "/screensaver"
+      const isLogin = this.router.url.startsWith("/login");
+      const isScreensaver = this.router.url.startsWith("/screensaver");
 
       if (this.ssCounter >= 20 && isLogin) {
         this.ssCounter = 0;
+
         this.router.navigate(["/screensaver"]);
+        this.dialog.closeAll();
       } else if (this.ssCounter >= 10 && !isLogin && !isScreensaver) {
         this.ssCounter = 0;
+
         this.router.navigate(["/login"]);
+        this.dialog.closeAll();
       }
     }, 1000);
   }

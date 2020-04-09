@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges } from "@angular/core";
+import {Component, OnInit, Input, OnChanges} from "@angular/core";
 import {
   Day,
   Job,
@@ -10,14 +10,14 @@ import {
   DeleteWorkOrder,
   WorkOrderUpsertRequest
 } from "../../objects";
-import { MatDialog } from "@angular/material";
-import { WoTrcDialog } from "src/app/dialogs/wo-trc/wo-trc.dialog";
-import { APIService } from "src/app/services/api.service";
-import { Observable } from "rxjs";
-import { LunchPunchDialog } from "src/app/dialogs/lunch-punch/lunch-punch.dialog";
-import { ActivatedRoute } from "@angular/router";
-import { share } from "rxjs/operators";
-import { ToastService } from "src/app/services/toast.service";
+import {MatDialog} from "@angular/material";
+import {WoTrcDialog} from "src/app/dialogs/wo-trc/wo-trc.dialog";
+import {APIService} from "src/app/services/api.service";
+import {Observable} from "rxjs";
+import {LunchPunchDialog} from "src/app/dialogs/lunch-punch/lunch-punch.dialog";
+import {ActivatedRoute} from "@angular/router";
+import {share} from "rxjs/operators";
+import {ToastService} from "src/app/services/toast.service";
 
 @Component({
   selector: "wo-sr",

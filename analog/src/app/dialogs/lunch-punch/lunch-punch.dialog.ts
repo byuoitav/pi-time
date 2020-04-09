@@ -1,13 +1,14 @@
-import { Component, OnInit, Inject, Injector } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
-import { Overlay, OverlayRef } from "@angular/cdk/overlay";
-import { Observable, of } from "rxjs";
+import {Component, OnInit, Inject, Injector, OnDestroy} from "@angular/core";
+import {MatDialogRef, MAT_DIALOG_DATA} from "@angular/material";
+import {ComponentPortal, PortalInjector} from "@angular/cdk/portal";
+import {Overlay, OverlayRef} from "@angular/cdk/overlay";
+import {Observable, of, Subscription} from "rxjs";
 
-import { ToastService } from "src/app/services/toast.service";
+import {ToastService} from "src/app/services/toast.service";
 
-import { TimeEntryComponent } from "../../components/time-entry/time-entry.component";
-import { PORTAL_DATA } from "../../objects";
+import {TimeEntryComponent} from "../../components/time-entry/time-entry.component";
+import {PORTAL_DATA} from "../../objects";
+import {Router, NavigationStart} from "@angular/router";
 
 @Component({
   selector: "lunch-punch-dialog",
@@ -18,6 +19,8 @@ export class LunchPunchDialog implements OnInit {
   selectedStartTime: Date;
   selectedDuration: string;
 
+  private _overlayRef: OverlayRef;
+
   constructor(
     public ref: MatDialogRef<LunchPunchDialog>,
     private _overlay: Overlay,
@@ -27,7 +30,16 @@ export class LunchPunchDialog implements OnInit {
       submit: (startTime: Date, duration: string) => Observable<any>;
     },
     private _toast: ToastService
-  ) {}
+  ) {
+    // TODO make sure this subscription ends after one event?
+    this.ref.afterClosed().subscribe(() => {
+      // TODO make sure this actually runs. I haven't tested it as of now.
+      this._overlayRef.detach();
+      this._overlayRef.dispose();
+
+      this._overlayRef = undefined;
+    });
+  }
 
   ngOnInit() {}
 
@@ -61,7 +73,14 @@ export class LunchPunchDialog implements OnInit {
   };
 
   editStartTime = () => {
-    const overlayRef = this._overlay.create({
+    // if one is already open, close it
+    if (this._overlayRef) {
+      this._overlayRef.detach();
+      this._overlayRef.dispose();
+      this._overlayRef = undefined;
+    }
+
+    this._overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
       disposeOnNavigation: true,
@@ -69,7 +88,7 @@ export class LunchPunchDialog implements OnInit {
       panelClass: ["overlay", "time-entry-overlay"]
     });
 
-    const injector = this.createInjector(overlayRef, {
+    const injector = this.createInjector(this._overlayRef, {
       title: "Enter start time for lunch punch.",
       duration: false,
       save: (hours: string, mins: string, ampm: string): Observable<any> => {
@@ -93,12 +112,18 @@ export class LunchPunchDialog implements OnInit {
     });
 
     const portal = new ComponentPortal(TimeEntryComponent, null, injector);
-    const containerRef = overlayRef.attach(portal);
-    return overlayRef;
+    this._overlayRef.attach(portal);
   };
 
   editDuration = () => {
-    const overlayRef = this._overlay.create({
+    // if one is already open, close it
+    if (this._overlayRef) {
+      this._overlayRef.detach();
+      this._overlayRef.dispose();
+      this._overlayRef = undefined;
+    }
+
+    this._overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
       disposeOnNavigation: true,
@@ -106,7 +131,7 @@ export class LunchPunchDialog implements OnInit {
       panelClass: ["overlay", "time-entry-overlay"]
     });
 
-    const injector = this.createInjector(overlayRef, {
+    const injector = this.createInjector(this._overlayRef, {
       title: "Enter duration of lunch punch.",
       duration: true,
       save: (hours: string, mins: string): Observable<any> => {
@@ -121,8 +146,7 @@ export class LunchPunchDialog implements OnInit {
     });
 
     const portal = new ComponentPortal(TimeEntryComponent, null, injector);
-    const containerRef = overlayRef.attach(portal);
-    return overlayRef;
+    this._overlayRef.attach(portal);
   };
 
   private createInjector = (
