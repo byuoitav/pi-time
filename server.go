@@ -78,11 +78,23 @@ func main() {
 
 	go offline.ResendPunches(db)
 
+	//Get all the bucket stats (pending, error, employee)
 	router.GET("/statz", offline.GetBucketStatsHandler(db))
+
+	//Search for employee in the employee cache
 	router.GET("/employeeBucket/:id", offline.GetEmployeeFromBucket(db))
+
+	//returns all the punches in the error bucket
 	router.GET("/buckets/error/punches", offline.GetErrorBucketPunchesHandler(db))
+
+	//deletes a specific punch in the error bucket
 	router.DELETE("/buckets/error/punches/:punchId", offline.GetDeletePunchFromErrorBucketHandler(db))
+
+	//deletes all the punches in the error bucket
 	router.DELETE("/buckets/error/punches/all", offline.DeleteAllFromPunchBucket(db))
+
+	//moves all requests in the error bucket to the pending bucket and clears the error bucket
+	router.GET("/buckets/error/reset", offline.TransferPunchesHandler(db))
 
 	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.GetLoginUserHandler(db))

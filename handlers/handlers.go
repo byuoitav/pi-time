@@ -41,7 +41,8 @@ func GetPunchHandler(db *bolt.DB) echo.HandlerFunc {
 		err = helpers.Punch(byuID, incomingRequest)
 		if err != nil {
 			//Add the punch to the bucket if it failed for any reason
-			gerr := offline.AddPunchToBucket(byuID, incomingRequest, db)
+			key := []byte(fmt.Sprintf("%s%s", byuID, time.Now().Format(time.RFC3339)))
+			gerr := offline.AddPunchToBucket(key, incomingRequest, db)
 			if gerr != nil {
 				return fmt.Errorf("two errors occured:%s and %s", err, gerr)
 			}
