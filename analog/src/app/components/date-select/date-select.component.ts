@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { Observable, BehaviorSubject, Subscription } from "rxjs";
+import {Component, OnInit, OnDestroy} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Observable, BehaviorSubject, Subscription} from "rxjs";
 
-import { EmployeeRef, APIService } from "../../services/api.service";
-import { ToastService } from "../../services/toast.service";
-import { Employee, Job, Day, JobType } from "../../objects";
+import {EmployeeRef, APIService} from "../../services/api.service";
+import {ToastService} from "../../services/toast.service";
+import {Employee, Job, Day, JobType} from "../../objects";
 
 @Component({
   selector: "date-select",
@@ -152,8 +152,6 @@ export class DateSelectComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log("Selecting Day:" + date)
-    
     const str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
     const day = this.job.days.find(
@@ -184,7 +182,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
           fragment: "wo/sr"
         });
       } else {
-        this.router.navigate(["./" + str], { relativeTo: this.route });
+        this.router.navigate(["./" + str], {relativeTo: this.route});
       }
     }
   };
