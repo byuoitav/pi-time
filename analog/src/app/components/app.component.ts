@@ -21,7 +21,6 @@ export class AppComponent implements OnInit {
     this.ssTimer = setInterval(() => {
       this.ssCounter++;
 
-      console.log("this.router.url", this.router.url);
       const isLogin = this.router.url.startsWith("/login");
       const isScreensaver = this.router.url.startsWith("/screensaver");
 
