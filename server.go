@@ -81,7 +81,8 @@ func main() {
 	router.GET("/statz", offline.GetBucketStatsHandler(db))
 	router.GET("/employeeBucket/:id", offline.GetEmployeeFromBucket(db))
 	router.GET("/buckets/error/punches", offline.GetErrorBucketPunchesHandler(db))
-	router.GET("/buckets/error/punches/:punchId/delete", offline.GetDeletePunchFromErrorBucketHandler(db))
+	router.DELETE("/buckets/error/punches/:punchId", offline.GetDeletePunchFromErrorBucketHandler(db))
+	router.DELETE("/buckets/error/punches/all", offline.DeleteAllFromPunchBucket(db))
 
 	//login and upgrade to websocket
 	router.GET("/id/:id", handlers.GetLoginUserHandler(db))
