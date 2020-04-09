@@ -14,7 +14,11 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private dialog: MatDialog) {}
 
   ngOnInit() {
-    document.body.addEventListener("click", () => {
+    window.addEventListener("click", () => {
+      this.ssCounter = 0;
+    }, true);
+
+    window.addEventListener("scroll", () => {
       this.ssCounter = 0;
     }, true);
 
