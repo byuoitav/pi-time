@@ -146,12 +146,20 @@ export class DayOverviewComponent implements OnInit, OnDestroy {
       return "";
     } else if (this.day.hasPunchException) {
       let count = 0;
+      let deletePair = 0;
 
+      // count missing time punches, delete-able pairs
       for (const p of this.day.punches) {
         if (p.time == undefined) {
           count++;
+        } else if (p.deletablePair) {
+          deletePair++;
         }
       }
+
+      // should always be even, but .floor() just in case
+      count += Math.floor(deletePair / 2)
+
       return String(count);
     }
   }

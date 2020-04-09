@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
 
         this.router.navigate(["/screensaver"]);
         this.dialog.closeAll();
-      } else if (this.ssCounter >= 10 && !isLogin && !isScreensaver) {
+      } else if (this.ssCounter >= 15 && !isLogin && !isScreensaver) {
         this.ssCounter = 0;
 
         this.router.navigate(["/login"]);
