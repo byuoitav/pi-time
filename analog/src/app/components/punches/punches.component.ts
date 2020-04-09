@@ -110,12 +110,13 @@ export class PunchesComponent implements OnInit, OnDestroy {
         const obs = this.api.fixPunch(req).pipe(share());
         obs.subscribe(
           resp => {
-            console.log("response data", resp);
+            console.log("Successfully fixed punch", resp);
             const msg = "Successfully updated punch.";
             this.toast.show(msg, "DISMISS", 2000);
           },
           err => {
-            console.warn("response ERROR", err);
+            punch.time = undefined;
+            console.warn("failed to fix punch", err);
           }
         );
 

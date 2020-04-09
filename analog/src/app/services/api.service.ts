@@ -90,7 +90,18 @@ export class APIService {
         const url = new URL(window.location.protocol + window.location.host + event.url);
 
         if (url.searchParams.has("error")) {
-          this.error(url.searchParams.get("error"));
+          const err = url.searchParams.get("error");
+
+          if (err.length > 0) {
+            this.error(err);
+          } else {
+            // remove the error param
+            this.router.navigate([], {
+              queryParams: {error: null},
+              queryParamsHandling: "merge",
+              preserveFragment: true
+            });
+          }
         }
 
         if (url.searchParams.has("theme")) {
@@ -467,9 +478,7 @@ export class APIService {
     const data = this.jsonConvert.serializeObject(event);
     console.log("sending event", data);
 
-    this.http
-      .post("/event", data)
-      .subscribe();
+    this.http.post("/event", data).subscribe();
   }
 }
 

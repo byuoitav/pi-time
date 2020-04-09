@@ -8,37 +8,36 @@ import {MatDialog} from "@angular/material";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
-  ssCounter = 0;
-  ssTimer: any;
-
   constructor(private router: Router, private dialog: MatDialog) {}
 
   ngOnInit() {
+    let count = 0;
+
     window.addEventListener("click", () => {
-      this.ssCounter = 0;
+      count = 0;
     }, true);
 
     window.addEventListener("pointerdown", () => {
-      this.ssCounter = 0;
+      count = 0;
     }, true);
 
     window.addEventListener("scroll", () => {
-      this.ssCounter = 0;
+      count = 0;
     }, true);
 
-    this.ssTimer = setInterval(() => {
-      this.ssCounter++;
+    setInterval(() => {
+      count++;
 
       const isLogin = this.router.url.startsWith("/login");
       const isScreensaver = this.router.url.startsWith("/screensaver");
 
-      if (this.ssCounter >= 20 && isLogin) {
-        this.ssCounter = 0;
+      if (count >= 20 && isLogin) {
+        count = 0;
 
         this.router.navigate(["/screensaver"]);
         this.dialog.closeAll();
-      } else if (this.ssCounter >= 15 && !isLogin && !isScreensaver) {
-        this.ssCounter = 0;
+      } else if (count >= 15 && !isLogin && !isScreensaver) {
+        count = 0;
 
         this.router.navigate(["/login"]);
         this.dialog.closeAll();
