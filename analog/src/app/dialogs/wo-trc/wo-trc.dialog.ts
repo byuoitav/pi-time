@@ -1,12 +1,12 @@
-import { Component, OnInit, Inject, Injector } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
-import { Overlay, OverlayRef } from "@angular/cdk/overlay";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import {Component, OnInit, Inject, Injector} from "@angular/core";
+import {MatDialogRef, MAT_DIALOG_DATA} from "@angular/material";
+import {ComponentPortal, PortalInjector} from "@angular/cdk/portal";
+import {Overlay, OverlayRef} from "@angular/cdk/overlay";
+import {BehaviorSubject, Observable, of, Subscription} from "rxjs";
 
-import { WoSelectComponent } from "../../components/wo-select/wo-select.component";
-import { TimeEntryComponent } from "../../components/time-entry/time-entry.component";
-import { Job, WorkOrder, TRC, PORTAL_DATA } from "../../objects";
+import {WoSelectComponent} from "../../components/wo-select/wo-select.component";
+import {TimeEntryComponent} from "../../components/time-entry/time-entry.component";
+import {Job, WorkOrder, TRC, PORTAL_DATA} from "../../objects";
 
 @Component({
   selector: "wo-trc-dialog",
@@ -50,6 +50,8 @@ export class WoTrcDialog implements OnInit {
     return this.data.showHours;
   }
 
+  private _overlayRef: OverlayRef;
+
   constructor(
     public ref: MatDialogRef<WoTrcDialog>,
     private _overlay: Overlay,
@@ -66,6 +68,15 @@ export class WoTrcDialog implements OnInit {
       delete: () => Observable<any>;
     }
   ) {
+    // TODO make sure this subscription ends after one event?
+    this.ref.afterClosed().subscribe(() => {
+      // TODO make sure this actually runs. I haven't tested it as of now.
+      this._overlayRef.detach();
+      this._overlayRef.dispose();
+
+      this._overlayRef = undefined;
+    });
+
     if (data.chosenWO) {
       this.selectedWO = data.chosenWO;
     }
@@ -124,7 +135,14 @@ export class WoTrcDialog implements OnInit {
   };
 
   selectWorkOrder = () => {
-    const overlayRef = this._overlay.create({
+    // if one is already open, close it
+    if (this._overlayRef) {
+      this._overlayRef.detach();
+      this._overlayRef.dispose();
+      this._overlayRef = undefined;
+    }
+
+    this._overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
       disposeOnNavigation: true,
@@ -132,17 +150,16 @@ export class WoTrcDialog implements OnInit {
       panelClass: ["overlay", "wo-select-overlay"]
     });
 
-    const injector = this.createInjector(overlayRef, {
+    const injector = this.createInjector(this._overlayRef, {
       workOrders: this.job.workOrders,
       selectWorkOrder: (wo: WorkOrder) => {
         this.selectedWO = wo;
-        overlayRef.dispose();
+        this._overlayRef.dispose();
       }
     });
 
     const portal = new ComponentPortal(WoSelectComponent, null, injector);
-    const containerRef = overlayRef.attach(portal);
-    return overlayRef;
+    this._overlayRef.attach(portal);
   };
 
   private createInjector(overlayRef: OverlayRef, data: any): PortalInjector {
@@ -172,7 +189,14 @@ export class WoTrcDialog implements OnInit {
   };
 
   openHourEdit = () => {
-    const overlayRef = this._overlay.create({
+    // if one is already open, close it
+    if (this._overlayRef) {
+      this._overlayRef.detach();
+      this._overlayRef.dispose();
+      this._overlayRef = undefined;
+    }
+
+    this._overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
       disposeOnNavigation: true,
@@ -180,7 +204,7 @@ export class WoTrcDialog implements OnInit {
       panelClass: ["overlay", "time-entry-overlay"]
     });
 
-    const injector = this.createInjector(overlayRef, {
+    const injector = this.createInjector(this._overlayRef, {
       title: "Enter time for work order.",
       duration: true,
       save: (hours: string, mins: string): Observable<any> => {
@@ -196,7 +220,6 @@ export class WoTrcDialog implements OnInit {
     });
 
     const portal = new ComponentPortal(TimeEntryComponent, null, injector);
-    const containerRef = overlayRef.attach(portal);
-    return overlayRef;
+    this._overlayRef.attach(portal);
   };
 }

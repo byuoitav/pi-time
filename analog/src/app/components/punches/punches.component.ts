@@ -50,10 +50,12 @@ export class PunchesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._subsToDestroy.push(this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this._overlayRef.detach();
-        this._overlayRef.dispose();
+        if (this._overlayRef) {
+          this._overlayRef.detach();
+          this._overlayRef.dispose();
 
-        this._overlayRef = undefined;
+          this._overlayRef = undefined;
+        }
       }
     }));
   }
