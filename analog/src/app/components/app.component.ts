@@ -25,8 +25,6 @@ export class AppComponent implements OnInit {
       const isLogin = this.router.url.startsWith("/login");
       const isScreensaver = this.router.url.startsWith("/screensaver");
 
-      console.log("counter", this.ssCounter, "isLogin", isLogin, "isScreensaver", isScreensaver);
-
       if (this.ssCounter >= 20 && isLogin) {
         this.ssCounter = 0;
 
