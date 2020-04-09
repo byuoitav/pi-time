@@ -18,6 +18,10 @@ export class AppComponent implements OnInit {
       this.ssCounter = 0;
     }, true);
 
+    window.addEventListener("pointerdown", () => {
+      this.ssCounter = 0;
+    }, true);
+
     window.addEventListener("scroll", () => {
       this.ssCounter = 0;
     }, true);
