@@ -76,7 +76,7 @@ func ResendPunches(db *bolt.DB) {
 							}
 
 							// add it to the error bucket if it is something other than a time out
-							gerr := addPunchToErrorBucket(string(key), punch, db)
+							gerr := addPunchToErrorBucket(key, punch, db)
 							if gerr != nil {
 								return fmt.Errorf("an error occured adding the failed punch to the error bucket: %s", gerr)
 							}
@@ -170,7 +170,7 @@ func AddPunchToBucket(byuId string, request structs.ClientPunchRequest, db *bolt
 	return nil
 }
 
-func addPunchToErrorBucket(byuId string, request structs.ClientPunchRequest, db *bolt.DB) error {
+func addPunchToErrorBucket(key []byte, request structs.ClientPunchRequest, db *bolt.DB) error {
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		//create punch bucket if it does not exist
@@ -186,8 +186,6 @@ func addPunchToErrorBucket(byuId string, request structs.ClientPunchRequest, db 
 		log.P.Warn("error:", zap.Error(err))
 		return err
 	}
-
-	key := []byte(fmt.Sprintf("%s%s", byuId, time.Now()))
 
 	// create a punch
 	log.P.Debug("adding punch to bucket")
