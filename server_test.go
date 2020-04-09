@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/cache"
 )
 
@@ -34,5 +34,5 @@ func TestAPI(t *testing.T) {
 	//employee := cache.GetEmployeeFromStore(byuID)
 	//employeeJSON, _ := json.Marshal(employee)
 
-	//log.L.Debugf("result: %s", employeeJSON)
+	//log.P.Debug("result: %s", employeeJSON)
 }

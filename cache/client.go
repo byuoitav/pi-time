@@ -1,11 +1,13 @@
 package cache
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
 )
 
 const (
@@ -34,7 +36,7 @@ var upgrader = websocket.Upgrader{
 func ServeWebsocket(w http.ResponseWriter, r *http.Request) *Client {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.L.Errorf("Error upgrading websocket: %v", err)
+		log.P.Error("Error upgrading websocket:", zap.Error(err))
 		return nil
 	}
 
@@ -66,11 +68,11 @@ func (c *Client) read() {
 		_, msg, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.L.Infof("error: %v", err)
+				log.P.Info(fmt.Sprintf("error: %v", err))
 			}
 			break
 		}
-		log.L.Infof("Recieved message from socket: %s", msg)
+		log.P.Info(fmt.Sprintf("Recieved message from socket: %s", msg))
 	}
 }
 
@@ -111,6 +113,6 @@ func (c *Client) CloseWithReason(msg string) {
 	err := c.conn.WriteMessage(websocket.CloseMessage, cmsg)
 
 	if err != nil {
-		log.L.Warnf("unable to write close message %v", err)
+		log.P.Warn("unable to write close message %v", zap.Error(err))
 	}
 }

@@ -1,5 +1,6 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import {Component, OnInit} from "@angular/core";
+import {Router} from "@angular/router";
+import {MatDialog} from "@angular/material";
 
 @Component({
   selector: "analog",
@@ -7,33 +8,40 @@ import { Router } from "@angular/router";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
-  ssCounter = 0;  
-  ssTimer: any;
-
-  constructor(private router: Router) {    
-    
-  }
+  constructor(private router: Router, private dialog: MatDialog) {}
 
   ngOnInit() {
-      console.log(this.ssTimer)
-      this.ssTimer = setInterval(() => {
-      this.ssCounter++;
-      //console.log("SSCounter", this.ssCounter, this.router.url)
-      
-      const isLogin = this.router.url == "/login"
-      const isScreensaver = this.router.url == "/screensaver"
+    let count = 0;
 
-      if (this.ssCounter >= 20 && isLogin) {
-        this.ssCounter = 0;        
+    window.addEventListener("click", () => {
+      count = 0;
+    }, true);
+
+    window.addEventListener("pointerdown", () => {
+      count = 0;
+    }, true);
+
+    window.addEventListener("scroll", () => {
+      count = 0;
+    }, true);
+
+    setInterval(() => {
+      count++;
+
+      const isLogin = this.router.url.startsWith("/login");
+      const isScreensaver = this.router.url.startsWith("/screensaver");
+
+      if (count >= 20 && isLogin) {
+        count = 0;
+
         this.router.navigate(["/screensaver"]);
-      } else if (this.ssCounter >= 10 && !isLogin && !isScreensaver) {
-        this.ssCounter = 0;          
-        this.router.navigate(["/login"]);
-      }
-    }, 1000);    
-  }
+        this.dialog.closeAll();
+      } else if (count >= 15 && !isLogin && !isScreensaver) {
+        count = 0;
 
-  restartTimer() {
-    this.ssCounter = 0;
+        this.router.navigate(["/login"]);
+        this.dialog.closeAll();
+      }
+    }, 1000);
   }
 }

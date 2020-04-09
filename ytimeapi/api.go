@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/pi-time/offline"
+	"github.com/byuoitav/pi-time/employee"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
+	bolt "go.etcd.io/bbolt"
 )
 
 // SendPunchRequest sends a punch request to the YTime API and returns the response.
@@ -81,7 +83,7 @@ func SendOtherHoursRequest(byuID string, body structs.ElapsedTimeEntry) (structs
 
 	test, _ := json.Marshal(body)
 
-	log.L.Debugf("Body to send to other hours WSO2: %s", test)
+	log.P.Debug(fmt.Sprintf("Body to send to other hours WSO2: %s", test))
 
 	err, response, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("POST", "https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID, wrapper, &otherResponse, map[string]string{
 		"Content-Type": "application/json",
@@ -145,7 +147,7 @@ func SendDeleteWorkOrderEntryRequest(byuID string, jobID string, punchDate strin
 }
 
 // GetTimesheet returns a timesheet, a bool if the timesheet was returned in offline mode (from cache), and possible error
-func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
+func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 
 	var timesheet structs.Timesheet
 
@@ -155,20 +157,20 @@ func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 	})
 
 	if err != nil {
-		log.L.Debugf("Error when making WSO2 request to get timesheet %v", err)
+		log.P.Debug(fmt.Sprintf("Error when making WSO2 request to get timesheet %v", err))
 
-		if httpResponse.StatusCode/100 == 5 {
+		if strings.Contains(err.Error(), "network is unreachable") || httpResponse.StatusCode/100 == 5 {
 			//500 code, then we look in cache
 			//look in the cache
-			employeeRecord, innerErr := offline.GetEmployeeFromCache(byuid)
+			employeeRecord, innerErr := employee.GetEmployeeFromCache(byuid, db)
 
 			if innerErr != nil {
 				//not found
-				log.L.Debugf("No cached timesheet found")
+				log.P.Debug("No cached timesheet found")
 				return timesheet, false, errors.New("System offline - employee not found")
 			}
 
-			log.L.Debugf("Cached timesheet found")
+			log.P.Debug("Cached timesheet found")
 
 			timesheet := structs.Timesheet{
 				PersonName:           employeeRecord.Name,
@@ -200,7 +202,7 @@ func GetTimesheet(byuid string) (structs.Timesheet, bool, error) {
 func GetPunchesForJob(byuID string, jobID int) []structs.TimeClockDay {
 	var WSO2Response []structs.TimeClockDay
 
-	log.L.Debugf("Sending WSO2 GET request to %v", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+strconv.Itoa(jobID))
+	log.P.Debug(fmt.Sprintf("Sending WSO2 GET request to %v", "https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+strconv.Itoa(jobID)))
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
 		"https://api.byu.edu:443/domains/erp/hr/punches/v1/"+byuID+","+strconv.Itoa(jobID), "", &WSO2Response, map[string]string{
@@ -209,7 +211,7 @@ func GetPunchesForJob(byuID string, jobID int) []structs.TimeClockDay {
 		})
 
 	if err != nil {
-		log.L.Errorf("Error when retrieving punches for employee and job %s %v %s", byuID, jobID, err.Error())
+		log.P.Error(fmt.Sprintf("Error when retrieving punches for employee and job %s %v %s", byuID, jobID, err.Error()))
 	}
 
 	return WSO2Response
@@ -219,7 +221,7 @@ func GetPunchesForJob(byuID string, jobID int) []structs.TimeClockDay {
 func GetWorkOrders(operatingUnit string) []structs.WorkOrder {
 	var WSO2Response []structs.WorkOrder
 
-	log.L.Debugf("Getting work orders for operating unit %v", operatingUnit)
+	log.P.Debug(fmt.Sprintf("Getting work orders for operating unit %v", operatingUnit))
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
 		"https://api.byu.edu:443/domains/erp/hr/work_orders_by_operating_unit/v1/"+operatingUnit, "", &WSO2Response, map[string]string{
@@ -228,7 +230,7 @@ func GetWorkOrders(operatingUnit string) []structs.WorkOrder {
 		})
 
 	if err != nil {
-		log.L.Errorf("Error when retrieving possible work orders for operating unit %v", err.Error())
+		log.P.Error(fmt.Sprintf("Error when retrieving possible work orders for operating unit %v", err.Error()))
 	}
 
 	return WSO2Response
@@ -238,7 +240,7 @@ func GetWorkOrders(operatingUnit string) []structs.WorkOrder {
 func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDaySummary {
 	var WSO2Response []structs.WorkOrderDaySummary
 
-	log.L.Debugf("Getting work orders for employee and job %v %v", byuID, employeeJobID)
+	log.P.Debug(fmt.Sprintf("Getting work orders for employee and job %v %v", byuID, employeeJobID))
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
 		"https://api.byu.edu:443/domains/erp/hr/work_order_entry/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response, map[string]string{
@@ -247,7 +249,7 @@ func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDay
 		})
 
 	if err != nil {
-		log.L.Errorf("Error when retrieving possible work orders for operating unit %v", err.Error())
+		log.P.Error(fmt.Sprintf("Error when retrieving possible work orders for operating unit %v", err.Error()))
 	}
 
 	return WSO2Response
@@ -257,7 +259,7 @@ func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDay
 // func GetOtherHours(byuID string, employeeJobID int) structs.ElapsedTimeSummary {
 // 	var WSO2Response structs.ElapsedTimeSummary
 
-// 	log.L.Debugf("Getting other hours for employee and job %v %v", byuID, employeeJobID)
+// 	log.P.Debug("Getting other hours for employee and job %v %v", byuID, employeeJobID)
 
 // 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
 // 		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID), "", &WSO2Response, map[string]string{
@@ -266,7 +268,7 @@ func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDay
 // 		})
 
 // 	if err != nil {
-// 		log.L.Errorf("Error when retrieving other hours %v", err.Error())
+// 		log.P.Error("Error when retrieving other hours %v", err.Error())
 // 	}
 
 // 	return WSO2Response
@@ -276,7 +278,7 @@ func GetWorkOrderEntries(byuID string, employeeJobID int) []structs.WorkOrderDay
 func GetOtherHoursForDate(byuID string, employeeJobID int, date time.Time) structs.ElapsedTimeSummary {
 	var WSO2Response structs.ElapsedTimeSummary
 
-	log.L.Debugf("Getting other hours for employee and and date job %v %v", byuID, employeeJobID, date)
+	log.P.Debug(fmt.Sprintf("Getting other hours for employee and and date job %v %v", fmt.Sprintf("%v %v", byuID, employeeJobID), date))
 
 	err := wso2requests.MakeWSO2RequestWithHeaders("GET",
 		"https://api.byu.edu:443/domains/erp/hr/elapsed_time_punch/v1/"+byuID+","+strconv.Itoa(employeeJobID)+","+date.Format("2006-01-02"), "", &WSO2Response, map[string]string{
@@ -285,7 +287,7 @@ func GetOtherHoursForDate(byuID string, employeeJobID int, date time.Time) struc
 		})
 
 	if err != nil {
-		log.L.Errorf("Error when retrieving other hours for date %v %v", date, err.Error())
+		log.P.Error(fmt.Sprintf("Error when retrieving other hours for date %v %v", date, err.Error()))
 	}
 
 	return WSO2Response

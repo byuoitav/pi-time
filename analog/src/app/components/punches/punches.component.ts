@@ -1,14 +1,14 @@
-import { Component, OnInit, Input, Inject, Injector } from "@angular/core";
-import { Router } from "@angular/router";
-import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
-import { MatDialog } from "@angular/material";
-import { Overlay, OverlayRef } from "@angular/cdk/overlay";
-import { Observable } from "rxjs";
-import { share } from "rxjs/operators";
+import {Component, OnInit, Input, Inject, Injector, OnDestroy} from "@angular/core";
+import {Router, NavigationStart} from "@angular/router";
+import {ComponentPortal, PortalInjector} from "@angular/cdk/portal";
+import {MatDialog} from "@angular/material";
+import {Overlay, OverlayRef} from "@angular/cdk/overlay";
+import {Observable, Subscription} from "rxjs";
+import {share} from "rxjs/operators";
 
-import { APIService } from "../../services/api.service";
-import { TimeEntryComponent } from "../time-entry/time-entry.component";
-import { LunchPunchDialog } from "src/app/dialogs/lunch-punch/lunch-punch.dialog";
+import {APIService} from "../../services/api.service";
+import {TimeEntryComponent} from "../time-entry/time-entry.component";
+import {LunchPunchDialog} from "src/app/dialogs/lunch-punch/lunch-punch.dialog";
 import {
   Day,
   PunchType,
@@ -19,21 +19,24 @@ import {
   DeletePunch,
   Job
 } from "../../objects";
-import { ToastService } from "src/app/services/toast.service";
-import { DeletePunchDialog } from "src/app/dialogs/delete-punch/delete-punch.dialog";
+import {ToastService} from "src/app/services/toast.service";
+import {DeletePunchDialog} from "src/app/dialogs/delete-punch/delete-punch.dialog";
 
 @Component({
   selector: "punches",
   templateUrl: "./punches.component.html",
   styleUrls: ["./punches.component.scss"]
 })
-export class PunchesComponent implements OnInit {
+export class PunchesComponent implements OnInit, OnDestroy {
   public punchType = PunchType;
 
   @Input() byuID: string;
   @Input() jobID: number;
   @Input() day: Day;
   @Input() job: Job;
+
+  private _overlayRef: OverlayRef;
+  private _subsToDestroy: Subscription[] = [];
 
   constructor(
     private api: APIService,
@@ -44,14 +47,31 @@ export class PunchesComponent implements OnInit {
     private toast: ToastService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this._subsToDestroy.push(this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        if (this._overlayRef) {
+          this._overlayRef.detach();
+          this._overlayRef.dispose();
+
+          this._overlayRef = undefined;
+        }
+      }
+    }));
+  }
+
+  ngOnDestroy() {
+    for (const s of this._subsToDestroy) {
+      s.unsubscribe();
+    }
+  }
 
   openKeyboard = (punch: Punch) => {
     if (punch.time !== undefined) {
       return;
     }
 
-    const overlayRef = this._overlay.create({
+    this._overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
       disposeOnNavigation: true,
@@ -62,7 +82,7 @@ export class PunchesComponent implements OnInit {
     // set the time on the punch to the correct date
     punch.time = new Date(this.day.time);
 
-    const injector = this.createInjector(overlayRef, {
+    const injector = this.createInjector(this._overlayRef, {
       title: "Enter time for " + PunchType.toString(punch.type) + " punch.",
       duration: false,
       save: (hours: string, mins: string, ampm: string): Observable<any> => {
@@ -90,12 +110,13 @@ export class PunchesComponent implements OnInit {
         const obs = this.api.fixPunch(req).pipe(share());
         obs.subscribe(
           resp => {
-            console.log("response data", resp);
+            console.log("Successfully fixed punch", resp);
             const msg = "Successfully updated punch.";
             this.toast.show(msg, "DISMISS", 2000);
           },
           err => {
-            console.warn("response ERROR", err);
+            punch.time = undefined;
+            console.warn("failed to fix punch", err);
           }
         );
 
@@ -115,8 +136,7 @@ export class PunchesComponent implements OnInit {
     });
 
     const portal = new ComponentPortal(TimeEntryComponent, null, injector);
-    const containerRef = overlayRef.attach(portal);
-    return overlayRef;
+    this._overlayRef.attach(portal);
   };
 
   private createInjector = (

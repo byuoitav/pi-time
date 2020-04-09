@@ -3,15 +3,18 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
 	figure "github.com/common-nighthawk/go-figure"
 	"github.com/labstack/echo/v4"
 
-	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/pi-time/employee"
 	"github.com/byuoitav/pi-time/handlers"
-	"github.com/byuoitav/pi-time/helpers"
+	"github.com/byuoitav/pi-time/offline"
 	"github.com/labstack/echo/v4/middleware"
+	bolt "go.etcd.io/bbolt"
 )
 
 var updateCacheNowChannel = make(chan struct{})
@@ -24,11 +27,7 @@ func main() {
 	//start a go routine to go and get the latitude and longitude from the building struct
 	go cache.GetYtimeLocation()
 
-	//start a go routine that will pull the cache information for offline mode
-	go helpers.WatchForCachedEmployees(updateCacheNowChannel)
-
 	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
-	//TODO
 
 	//start up a server to serve the angular site and set up the handlers for the UI to use
 	port := ":8463"
@@ -40,8 +39,65 @@ func main() {
 		return c.String(http.StatusOK, "healthy")
 	})
 
+	//TODO Smitty - open db and pass it in to the functions
+	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
+	db, err := bolt.Open(dbLoc, 0600, nil)
+	if err != nil {
+		panic(fmt.Sprintf("could not open db: %s", err))
+	}
+
+	//create buckets if they do not exist
+	err = db.Update(func(tx *bolt.Tx) error {
+		//create punch bucket if it does not exist
+		log.L.Debug("Checking if Pending Bucket Exists")
+		_, err := tx.CreateBucketIfNotExists([]byte(offline.PENDING_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the pending bucket: %s", err)
+		}
+
+		log.L.Debug("Checking if Error Bucket Exists")
+		_, err = tx.CreateBucketIfNotExists([]byte(offline.ERROR_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the error bucket: %s", err)
+		}
+
+		log.L.Debug("Checking if Employee Bucket Exists")
+		_, err = tx.CreateBucketIfNotExists([]byte(employee.EMPLOYEE_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the employee bucket: %s", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		panic(fmt.Sprintf("could not create db buckets: %s", err))
+	}
+
+	//start a go routine that will pull the cache information for offline mode
+	go employee.WatchForCachedEmployees(updateCacheNowChannel, db)
+
+	go offline.ResendPunches(db)
+
+	//Get all the bucket stats (pending, error, employee)
+	router.GET("/statz", offline.GetBucketStatsHandler(db))
+
+	//Search for employee in the employee cache
+	router.GET("/employeeBucket/:id", offline.GetEmployeeFromBucket(db))
+
+	//returns all the punches in the error bucket
+	router.GET("/buckets/error/punches", offline.GetErrorBucketPunchesHandler(db))
+
+	//deletes a specific punch in the error bucket
+	router.DELETE("/buckets/error/punches/:punchId", offline.GetDeletePunchFromErrorBucketHandler(db))
+
+	//deletes all the punches in the error bucket
+	router.DELETE("/buckets/error/punches/all", offline.DeleteAllFromPunchBucket(db))
+
+	//moves all requests in the error bucket to the pending bucket and clears the error bucket
+	router.GET("/buckets/error/reset", offline.TransferPunchesHandler(db))
+
 	//login and upgrade to websocket
-	router.GET("/id/:id", handlers.LogInUser)
+	router.GET("/id/:id", handlers.GetLoginUserHandler(db))
 
 	//all of the functions to call to add / update / delete / do things on the UI
 
@@ -49,7 +105,9 @@ func main() {
 	//clock out
 	//transfer
 	//add missing punch
-	router.POST("/punch/:id", handlers.Punch)        //will send in a ClientPunchRequest in the body
+	router.POST("/punch/:id", handlers.GetPunchHandler(db))
+
+	//will send in a ClientPunchRequest in the body
 	router.PUT("/punch/:id/:seq", handlers.FixPunch) //will send in a ClientPunchRequest in the body
 
 	//lunchpunch

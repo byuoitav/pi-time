@@ -1,7 +1,7 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import {Component, OnInit} from "@angular/core";
+import {Router} from "@angular/router";
 
-import { APIService } from "../../services/api.service";
+import {APIService} from "../../services/api.service";
 
 
 @Component({
@@ -11,8 +11,8 @@ import { APIService } from "../../services/api.service";
 })
 export class LoginComponent implements OnInit {
   id = "";
-  
-  constructor(public api: APIService, private router: Router) {    
+
+  constructor(public api: APIService, private router: Router) {
   }
 
   ngOnInit() {}
@@ -29,9 +29,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  login = async (id: string) => {
-    console.log("navigating to jobs with id", this.id);    
-    const success = await this.router.navigate(["/employee/" + this.id]);    
+  login = async () => {
+    console.log("navigating to jobs with id", this.id);
+    const success = await this.router.navigate(["/employee/" + this.id]);
+
     this.id = ""; // reset the id
   };
 }

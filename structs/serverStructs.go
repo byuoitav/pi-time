@@ -1,5 +1,10 @@
 package structs
 
+import (
+	"encoding/json"
+	"errors"
+)
+
 //This file is all of the structs that will come back from the WSO2 services
 
 //Timesheet gives all data about the current clock state for an employee and his/her jobs
@@ -16,7 +21,7 @@ type Timesheet struct {
 	//PeriodTotal is the total hours worked so far in the pay period in format h:mm (string)
 	PeriodTotal string `json:"period_total"`
 
-	//Jobs is the array containing current clcok intformation about each job
+	//Jobs is the array containing current clock intformation about each job
 	Jobs []Job `json:"jobs"`
 
 	//InternationalMessage is used to indicate that a warning should be shown to the user due to hour working limits
@@ -51,6 +56,51 @@ type Job struct {
 	FullPartTime          string    `json:"full_part_time"`
 	HasPunchException     *bool     `json:"has_punch_exception,omitempty"`
 	HasWorkOrderException *bool     `json:"has_work_order_exception,omitempty"`
+}
+
+func (j *Job) UnmarshalJSON(data []byte) error {
+	type Alias Job
+	aux := &struct {
+		PhysicalFacilities string `json:"physical_facilities,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(j),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		var jerr *json.UnmarshalTypeError
+
+		if errors.As(err, &jerr) && jerr.Field == "physical_facilities" && jerr.Value == "bool" {
+			aux2 := &struct {
+				*Alias
+			}{
+				Alias: (*Alias)(j),
+			}
+
+			if err := json.Unmarshal(data, aux2); err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+
+	if aux.PhysicalFacilities == "N" {
+		j.PhysicalFacilities = newFalse()
+	} else {
+		j.PhysicalFacilities = newTrue()
+	}
+	return nil
+
+}
+
+func newTrue() *bool {
+	b := true
+	return &b
+}
+
+func newFalse() *bool {
+	b := false
+	return &b
 }
 
 //TRC is a code for the type of hours that an employee can punch in under

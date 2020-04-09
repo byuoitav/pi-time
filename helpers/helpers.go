@@ -8,37 +8,40 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
+	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/pi-time/ytimeapi"
+	"go.uber.org/zap"
 )
 
 // Punch will record a regular punch on the employee record and report up the websocket.
 func Punch(byuID string, request structs.ClientPunchRequest) error {
 	// build WSO2 request
-	log.L.Debugf("translating punch request")
+	log.P.Debug("translating punch request")
 	punchRequest := translateToPunch(request)
-
 	// send WSO2 request to the YTime API
-	log.L.Debugf("sending punch request %v", punchRequest)
+	log.P.Debug(fmt.Sprintf("sending punch request %v", punchRequest))
 	timesheet, err, httpResponse := ytimeapi.SendPunchRequest(byuID, punchRequest)
 	if err != nil {
-		responseBody, bodyErr := ioutil.ReadAll(httpResponse.Body)
-		if bodyErr != nil {
-			return fmt.Errorf("unable to submit punch: %v. unable to read body", err.Error())
+		var responseBody []byte
+		var bodyErr error
+		if httpResponse != nil {
+			responseBody, bodyErr = ioutil.ReadAll(httpResponse.Body)
+			if bodyErr != nil {
+				return fmt.Errorf("unable to submit punch: %v. unable to read body", err.Error())
+			}
 		}
-		// TODO put it into the db to be posted later
 
 		return fmt.Errorf("unable to submit punch: %v. response body: %s", err.Error(), responseBody)
 	}
 
 	// update the employee timesheet, which also sends it up the websocket
-	log.L.Debugf("updating employee timesheet")
+	log.P.Debug("updating employee timesheet")
 	cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
 
 	//update the punches and work order entries
-	log.L.Debugf("updating employee punches and work orders because a new punch happened")
+	log.P.Debug("updating employee punches and work orders because a new punch happened")
 	go cache.GetPossibleWorkOrders(byuID)
 	go cache.GetPunchesForAllJobs(byuID)
 	go cache.GetWorkOrderEntries(byuID)
@@ -58,12 +61,12 @@ func FixPunch(byuID string, req structs.ClientPunchRequest) error {
 	}
 
 	// build WSO2 request
-	log.L.Debugf("translating punch request")
+	log.P.Debug("translating punch request")
 	punch := translateToPunch(req)
 
 	days, err := ytimeapi.SendFixPunchRequest(byuID, punch)
 	if err != nil {
-		log.L.Warnf("Error with lunch punch: %s", err.Error())
+		log.P.Warn("Error with lunch punch:", zap.Error(err))
 		return err
 	}
 
@@ -74,7 +77,7 @@ func FixPunch(byuID string, req structs.ClientPunchRequest) error {
 	cache.UpdateTimeClockDay(byuID, *req.EmployeeJobID, days[0])
 
 	//update the punches and work order entries
-	log.L.Debugf("updating employee punches and work orders because a new punch happened")
+	log.P.Debug("updating employee punches and work orders because a new punch happened")
 	go cache.GetPossibleWorkOrders(byuID)
 	go cache.GetPunchesForAllJobs(byuID)
 	go cache.GetWorkOrderEntries(byuID)
@@ -99,7 +102,7 @@ func LunchPunch(byuID string, req structs.LunchPunch) error {
 
 	days, err := ytimeapi.SendLunchPunch(byuID, req)
 	if err != nil {
-		log.L.Warnf("Error with lunch punch: %s", err.Error())
+		log.P.Warn("Error with lunch punch:", zap.Error(err))
 		return err
 	}
 
@@ -110,7 +113,7 @@ func LunchPunch(byuID string, req structs.LunchPunch) error {
 	cache.UpdateTimeClockDay(byuID, *req.EmployeeJobID, days[0])
 
 	//update the punches and work order entries
-	log.L.Debug("updating employee punches and work orders because a new lunch punch happened")
+	log.P.Debug("updating employee punches and work orders because a new lunch punch happened")
 	go cache.GetPossibleWorkOrders(byuID)
 	go cache.GetPunchesForAllJobs(byuID)
 	go cache.GetWorkOrderEntries(byuID)
@@ -200,7 +203,7 @@ func DeleteWorkOrderEntry(byuID string, request structs.ClientDeleteWorkOrderEnt
 
 	response, err := ytimeapi.SendDeleteWorkOrderEntryRequest(byuID, id, request.Date, seqNum)
 	if err != nil {
-		log.L.Error(err)
+		log.P.Error(fmt.Sprintf("%v", err))
 		return fmt.Errorf(err.Error())
 	}
 	var array []structs.WorkOrderDaySummary

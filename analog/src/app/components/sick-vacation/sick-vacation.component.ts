@@ -1,25 +1,28 @@
-import { Component, OnInit, Input, Inject, Injector } from "@angular/core";
-import { Router } from "@angular/router";
-import { HttpErrorResponse } from "@angular/common/http";
-import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
-import { Overlay, OverlayRef } from "@angular/cdk/overlay";
-import { Observable } from "rxjs";
-import { share } from "rxjs/operators";
+import {Component, OnInit, Input, Inject, Injector, OnDestroy} from "@angular/core";
+import {Router, NavigationStart} from "@angular/router";
+import {HttpErrorResponse} from "@angular/common/http";
+import {ComponentPortal, PortalInjector} from "@angular/cdk/portal";
+import {Overlay, OverlayRef} from "@angular/cdk/overlay";
+import {Observable, Subscription} from "rxjs";
+import {share} from "rxjs/operators";
 
-import { APIService } from "../../services/api.service";
-import { ToastService } from "src/app/services/toast.service";
-import { TimeEntryComponent } from "../time-entry/time-entry.component";
-import { Day, OtherHour, OtherHourRequest, PORTAL_DATA } from "../../objects";
+import {APIService} from "../../services/api.service";
+import {ToastService} from "src/app/services/toast.service";
+import {TimeEntryComponent} from "../time-entry/time-entry.component";
+import {Day, OtherHour, OtherHourRequest, PORTAL_DATA} from "../../objects";
 
 @Component({
   selector: "sick-vacation",
   templateUrl: "./sick-vacation.component.html",
   styleUrls: ["./sick-vacation.component.scss"]
 })
-export class SickVacationComponent implements OnInit {
+export class SickVacationComponent implements OnInit, OnDestroy {
   @Input() byuID: string;
   @Input() jobID: number;
   @Input() day: Day;
+
+  private _overlayRef: OverlayRef;
+  private _subsToDestroy: Subscription[] = [];
 
   constructor(
     private api: APIService,
@@ -29,14 +32,31 @@ export class SickVacationComponent implements OnInit {
     private toast: ToastService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this._subsToDestroy.push(this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        if (this._overlayRef) {
+          this._overlayRef.detach();
+          this._overlayRef.dispose();
+
+          this._overlayRef = undefined;
+        }
+      }
+    }));
+  }
+
+  ngOnDestroy() {
+    for (const s of this._subsToDestroy) {
+      s.unsubscribe();
+    }
+  }
 
   openTimeEdit = (other: OtherHour) => {
     if (!other.editable) {
       return;
     }
 
-    const overlayRef = this._overlay.create({
+    this._overlayRef = this._overlay.create({
       height: "100vh",
       width: "100vw",
       disposeOnNavigation: true,
@@ -44,7 +64,7 @@ export class SickVacationComponent implements OnInit {
       panelClass: ["overlay", "time-entry-overlay"]
     });
 
-    const injector = this.createInjector(overlayRef, {
+    const injector = this.createInjector(this._overlayRef, {
       title: "Enter time for " + other.trc.description + " hours.",
       duration: true,
       allowZero: true,
@@ -90,8 +110,7 @@ export class SickVacationComponent implements OnInit {
     });
 
     const portal = new ComponentPortal(TimeEntryComponent, null, injector);
-    const containerRef = overlayRef.attach(portal);
-    return overlayRef;
+    this._overlayRef.attach(portal);
   };
 
   private createInjector = (
