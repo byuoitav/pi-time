@@ -1,0 +1,37 @@
+<div *ngIf="enabled">
+    <button
+      #topleft
+      name="defcon"
+      mat-button
+      color="accent"
+      class="top left button"
+      (click)="update(3)"
+    ></button>
+    <div *ngIf="defcon < 3">
+      <button
+        #topright
+        name="defcon"
+        mat-button
+        color="accent"
+        class="top right button"
+        (click)="update(2)"
+      ></button>
+      <button
+        #bottomleft
+        name="defcon"
+        mat-button
+        color="accent"
+        class="bottom left button"
+        (click)="update(1)"
+      ></button>
+      <button
+        *ngIf="defcon < 1"
+        #bottomright
+        name="defcon"
+        mat-button
+        color="accent"
+        class="bottom right button"
+        (click)="update(0)"
+      ></button>
+    </div>
+  </div>

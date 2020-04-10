@@ -2,7 +2,9 @@
 	<object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
 	<span>Y-Time</span> <span class="header-spacer"></span>
 </mat-toolbar>
-
+<div class="management">
+	<management enabled="true"></management>
+</div>
 <div class="login">
 	<div class="input">
 		<span *ngIf="id?.length > 0" class="id">{{ id | byuID }}</span>
@@ -56,4 +58,4 @@
 		</button>
 	</div>
 </div>
->
+

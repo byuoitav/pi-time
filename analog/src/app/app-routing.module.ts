@@ -11,6 +11,7 @@ import { JobSelectComponent } from "./components/job-select/job-select.component
 import { DateSelectComponent } from "./components/date-select/date-select.component";
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
 import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.component";
+import { ManagementComponent } from './components/management/management.component';
 
 const routes: Routes = [
   {
