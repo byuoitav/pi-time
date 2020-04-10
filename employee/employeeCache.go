@@ -63,7 +63,16 @@ func DownloadCachedEmployees(db *bolt.DB) error {
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		//create punch bucket if it does not exist
+		bucket := tx.Bucket([]byte(EMPLOYEE_BUCKET))
+		if bucket != nil {
+			err := tx.DeleteBucket([]byte(EMPLOYEE_BUCKET))
+			if err != nil {
+				log.P.Warn("failed to delete employeeBucket")
+				return fmt.Errorf("error deleting the employee bucket: %s", err)
+			}
+		}
 		log.P.Debug("Checking if employee Bucket Exists")
+
 		_, err := tx.CreateBucketIfNotExists([]byte(EMPLOYEE_BUCKET))
 		if err != nil {
 			log.P.Warn("failed to create employeeBucket")
