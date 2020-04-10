@@ -52,7 +52,7 @@ import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
 import { ToastService } from "./services/toast.service";
 import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
 import { DeletePunchDialog } from './dialogs/delete-punch/delete-punch.dialog';
-
+import { ManagementComponent } from './components/management/management.component'
 @NgModule({
   declarations: [
     AppComponent,
@@ -75,6 +75,7 @@ import { DeletePunchDialog } from './dialogs/delete-punch/delete-punch.dialog';
     LunchPunchDialog,
     ConfirmDialog,
     DeletePunchDialog,
+    ManagementComponent,
   ],
   imports: [
     BrowserModule,

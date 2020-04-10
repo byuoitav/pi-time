@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/byuoitav/pi-time/log"
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
 )
 
