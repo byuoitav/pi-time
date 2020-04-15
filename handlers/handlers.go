@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -18,6 +19,7 @@ import (
 	"github.com/byuoitav/pi-time/offline"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 
 	bolt "go.etcd.io/bbolt"
 )
@@ -191,9 +193,11 @@ func DeleteWorkOrderEntry(c echo.Context) error {
 
 //SendEvent passes an event to the messenger
 func SendEvent(c echo.Context) error {
+	log.P.Debug("Event Recieved")
 	var event events.Event
 	err := c.Bind(&event)
 	if err != nil {
+		log.P.Warn("an error occured while binding the error", zap.Error(err))
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
 	}
 
@@ -202,7 +206,9 @@ func SendEvent(c echo.Context) error {
 		// create the request
 		log.P.Debug(fmt.Sprintf("Sending event to address %s", hostName))
 
-		req, err := http.NewRequest("POST", hostName, bytes.NewReader([]byte(fmt.Sprintf("%v", event))))
+		eventJSON, _ := json.Marshal(event)
+
+		req, err := http.NewRequest("POST", hostName, bytes.NewReader(eventJSON))
 		if err != nil {
 			return nerr.Translate(err)
 		}
@@ -224,6 +230,7 @@ func SendEvent(c echo.Context) error {
 		if resp.StatusCode/100 != 2 {
 			respBody, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
+
 				return nerr.Translate(err).Addf("non-200 response: %v. unable to read response body", resp.StatusCode)
 			}
 
