@@ -201,6 +201,9 @@ func SendEvent(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
 	}
 
+	//add generating system
+	event.GeneratingSystem = os.Getenv("SYSTEM_ID")
+
 	eventProcessorHostList := strings.Split(eventProcessorHost, ",")
 	for _, hostName := range eventProcessorHostList {
 		// create the request
