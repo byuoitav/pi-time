@@ -1,9 +1,12 @@
 <mat-toolbar color="primary">
   <button mat-button (click)="goBack()">
-    <mat-icon style="transform: scale(2)">keyboard_arrow_left</mat-icon>
+    <mat-icon style="transform: scale(2)">keyboard_arrow_left </mat-icon>
   </button>
-  <span>{{ job?.description }}</span> <span class="header-spacer"></span>
-  <span (click)="api?.hiddenDarkMode()">{{ emp?.name }}</span>
+  <span (click)="goBack()">
+    {{job.description}}
+  </span>  
+  <span class="header-spacer"></span>  
+  <span (click)="logout()">{{ emp?.name }} </span>
   <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>
