@@ -27,7 +27,7 @@ mat-card {
 
 .punches {
     width: 40vw;
-    max-height: 40vh;
+    max-height: 60vh;
     overflow-y: auto;
     overflow-x: hidden;
     pointer-events: all;
@@ -54,6 +54,7 @@ mat-card {
     align-items: center;
     font-size: 1.15em;
     .time {
+        padding-top: 2em;
         width: 12vw;
         height: 6vh;
         &.edit {

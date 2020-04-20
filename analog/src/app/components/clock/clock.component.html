@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">
   <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
   <span>Y-Time</span> <span class="header-spacer"></span>
-  <span (click)="api?.hiddenDarkMode()">{{ emp?.name }}</span>
+  <span (click)="logout()">{{ emp?.name }} </span>
   <button (click)="logout()" mat-icon-button>
     <mat-icon>exit_to_app</mat-icon>
   </button>
