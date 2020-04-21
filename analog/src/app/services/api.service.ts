@@ -176,6 +176,10 @@ export class APIService {
         this.sendEvent(event);
       }
 
+      //reset date stored
+      let key = 'date';
+      localStorage.removeItem(key);
+
       // reset theme
       this.switchTheme("");
 
@@ -262,14 +266,18 @@ export class APIService {
   punch = (data: ClientPunchRequest): Observable<any> => {
     try {
       const json = this.jsonConvert.serialize(data);
-
       //Send logout event
       if (data) {
         const event = new Event();
 
         event.User = data.byuID;
         event.EventTags = ["pitime-ui"];
-        event.Key = "time-punch";
+        if (data.type === "I") {
+          event.Key = "time-punch-in";
+        } else if (data.type === "O"){
+          event.Key = "time-punch-out";
+        }
+        
         event.Value = data.byuID;
         event.Timestamp = new Date();
 

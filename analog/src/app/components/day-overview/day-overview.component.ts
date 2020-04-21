@@ -95,6 +95,7 @@ export class DayOverviewComponent implements OnInit, OnDestroy {
   constructor(public api: APIService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
+
     this._subsToDestroy.push(this.route.paramMap.subscribe(params => {
       if (params) {
         this._jobID = +params.get("jobid");
