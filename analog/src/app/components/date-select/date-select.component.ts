@@ -173,8 +173,6 @@ export class DateSelectComponent implements OnInit, OnDestroy {
     localStorage.setItem(key, str);
 
     if (!day) {
-      
-
       this.router.navigate(["./" + str], {
         relativeTo: this.route,
         fragment: "other-hours"
@@ -194,8 +192,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   getViewDays() {
     this.today = new Date();
 
-    let key = 'date';
-    let storedDate = localStorage.getItem(key);
+    let storedDate = localStorage.getItem('date');
     let splitStoredDate = storedDate.split("-")
     
     if (splitStoredDate.length > 0) {

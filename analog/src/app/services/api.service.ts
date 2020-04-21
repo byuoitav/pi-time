@@ -177,8 +177,7 @@ export class APIService {
       }
 
       //reset date stored
-      let key = 'date';
-      localStorage.removeItem(key);
+      localStorage.removeItem("date");
 
       // reset theme
       this.switchTheme("");
