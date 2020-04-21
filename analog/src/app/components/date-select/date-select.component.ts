@@ -80,7 +80,6 @@ export class DateSelectComponent implements OnInit, OnDestroy {
 
     this._subsToDestroy.push(this.route.data.subscribe(data => {
       this._empRef = data.empRef;
-
       this._subsToDestroy.push(this._empRef.subject().subscribe(emp => {
         if (this.job) {
           this.minDay = Day.minDay(this.job.days);
@@ -169,8 +168,13 @@ export class DateSelectComponent implements OnInit, OnDestroy {
       );
       return;
     }
+    //add cookie to know what current month they are looking at
+    let key = 'date';
+    localStorage.setItem(key, str);
 
     if (!day) {
+      
+
       this.router.navigate(["./" + str], {
         relativeTo: this.route,
         fragment: "other-hours"
@@ -189,6 +193,15 @@ export class DateSelectComponent implements OnInit, OnDestroy {
 
   getViewDays() {
     this.today = new Date();
+
+    let key = 'date';
+    let storedDate = localStorage.getItem(key);
+    let splitStoredDate = storedDate.split("-")
+    
+    if (splitStoredDate.length > 0) {
+      this.viewMonth = Number(splitStoredDate[1])
+      this.viewYear = Number(splitStoredDate[0])
+    }
 
     if (this.viewMonth == null) {
       this.viewMonth = this.today.getMonth();
