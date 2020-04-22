@@ -5,7 +5,6 @@ import {Observable, BehaviorSubject, Subscription} from "rxjs";
 import {EmployeeRef, APIService} from "../../services/api.service";
 import {ToastService} from "../../services/toast.service";
 import {Employee, Job, Day, JobType} from "../../objects";
-import { store } from '@angular/core/src/render3';
 
 @Component({
   selector: "date-select",
