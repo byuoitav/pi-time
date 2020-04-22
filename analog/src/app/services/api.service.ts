@@ -150,6 +150,17 @@ export class APIService {
 
     const endpoint = protocol + "//" + window.location.host + "/id/" + id;
     const ws = new WebSocket(endpoint);
+    
+    //send login event
+    if (id) {
+      const event = new Event();
+      event.User = String(id);
+      event.EventTags = ["pitime-ui"];
+      event.Key = "login";
+      event.Value = String(id);
+      event.Timestamp = new Date();
+      this.sendEvent(event);
+    }
 
     const empRef = new EmployeeRef(employee, () => {
       console.log("logging out employee", employee.value.id);

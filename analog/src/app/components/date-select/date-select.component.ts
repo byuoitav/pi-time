@@ -5,6 +5,7 @@ import {Observable, BehaviorSubject, Subscription} from "rxjs";
 import {EmployeeRef, APIService} from "../../services/api.service";
 import {ToastService} from "../../services/toast.service";
 import {Employee, Job, Day, JobType} from "../../objects";
+import { store } from '@angular/core/src/render3';
 
 @Component({
   selector: "date-select",
@@ -151,7 +152,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    const str = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + date.getDate();
 
     const day = this.job.days.find(
       d =>
@@ -169,8 +170,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
       return;
     }
     //add cookie to know what current month they are looking at
-    let key = 'date';
-    localStorage.setItem(key, str);
+    localStorage.setItem('date', str);
 
     if (!day) {
       this.router.navigate(["./" + str], {
@@ -192,12 +192,17 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   getViewDays() {
     this.today = new Date();
 
-    let storedDate = localStorage.getItem('date');
-    let splitStoredDate = storedDate.split("-")
     
-    if (splitStoredDate.length > 0) {
-      this.viewMonth = Number(splitStoredDate[1])
-      this.viewYear = Number(splitStoredDate[0])
+    if (!this.viewMonth && !this.viewYear) {
+      let storedDate = localStorage.getItem('date');
+      if (storedDate) {
+        let splitStoredDate = storedDate.split("-")
+      
+        if (splitStoredDate.length > 0) {
+          this.viewMonth = Number(splitStoredDate[1]) -1
+          this.viewYear = Number(splitStoredDate[0])
+        }
+      }
     }
 
     if (this.viewMonth == null) {
