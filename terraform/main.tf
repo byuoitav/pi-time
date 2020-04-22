@@ -38,13 +38,17 @@ data "aws_ssm_parameter" "wso2_token_refresh_url" {
   name = "/env/wso2-token-refresh-url"
 }
 
+data "aws_ssm_parameter" "event_proc_host" {
+  name = "/env/ytime/event-processor-host"
+}
+
 module "dev" {
   source = "github.com/byuoitav/terraform//modules/kubernetes-statefulset"
 
   // required
   name                 = "pi-time-dev"
   image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
-  image_version        = "4c93a8d"
+  image_version        = "08a9206"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
@@ -59,6 +63,7 @@ module "dev" {
     "CLIENT_SECRET"           = data.aws_ssm_parameter.dev_client_secret.value
     "HUB_ADDRESS"             = data.aws_ssm_parameter.dev_hub_address.value
     "TOKEN_REFRESH_URL"       = data.aws_ssm_parameter.wso2_token_refresh_url.value
+    "EVENT_PROCESSOR_HOST"    = data.aws_ssm_parameter.event_proc_host.value
     "SYSTEM_ID"               = "ITB-K8S-TC1"
   }
   container_args = [
@@ -85,7 +90,7 @@ module "prd" {
   // required
   name                 = "pi-time"
   image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
-  image_version        = "4c93a8d"
+  image_version        = "08a9206"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
@@ -99,7 +104,7 @@ module "prd" {
     "CLIENT_KEY"              = data.aws_ssm_parameter.client_key.value
     "CLIENT_SECRET"           = data.aws_ssm_parameter.client_secret.value
     "HUB_ADDRESS"             = data.aws_ssm_parameter.hub_address.value
-    "TOKEN_REFRESH_URL"       = data.aws_ssm_parameter.wso2_token_refresh_url.value
+    "EVENT_PROCESSOR_HOST"    = data.aws_ssm_parameter.event_proc_host.value
     "SYSTEM_ID"               = "ITB-K8S-TC2"
   }
   container_args = [
