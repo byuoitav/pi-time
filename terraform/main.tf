@@ -48,7 +48,7 @@ module "dev" {
   // required
   name                 = "pi-time-dev"
   image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
-  image_version        = "08a9206"
+  image_version        = "63eefe8"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
@@ -58,6 +58,7 @@ module "dev" {
   image_pull_secret = "github-docker-registry"
   public_urls       = ["ytime-dev.av.byu.edu"]
   container_env = {
+    "TZ"                      = "America/Denver"
     "CACHE_DATABASE_LOCATION" = "/opt/pi-time/cache.db"
     "CLIENT_KEY"              = data.aws_ssm_parameter.dev_client_key.value
     "CLIENT_SECRET"           = data.aws_ssm_parameter.dev_client_secret.value
@@ -90,7 +91,7 @@ module "prd" {
   // required
   name                 = "pi-time"
   image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
-  image_version        = "08a9206"
+  image_version        = "63eefe8"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
@@ -100,10 +101,12 @@ module "prd" {
   image_pull_secret = "github-docker-registry"
   public_urls       = ["ytime.av.byu.edu"]
   container_env = {
+    "TZ"                      = "America/Denver"
     "CACHE_DATABASE_LOCATION" = "/opt/pi-time/cache.db"
     "CLIENT_KEY"              = data.aws_ssm_parameter.client_key.value
     "CLIENT_SECRET"           = data.aws_ssm_parameter.client_secret.value
     "HUB_ADDRESS"             = data.aws_ssm_parameter.hub_address.value
+    "TOKEN_REFRESH_URL"       = data.aws_ssm_parameter.wso2_token_refresh_url.value
     "EVENT_PROCESSOR_HOST"    = data.aws_ssm_parameter.event_proc_host.value
     "SYSTEM_ID"               = "ITB-K8S-TC2"
   }
@@ -111,4 +114,7 @@ module "prd" {
     //    "--port", "8080",
     //    "--log-level", "1", // set log level to info
   ]
+  ingress_annotations = {
+    "nginx.ingress.kubernetes.io/whitelist-source-range" = "192.74.130.7, 104.243.53.185, 136.36.4.67, 136.36.166.250"
+  }
 }
