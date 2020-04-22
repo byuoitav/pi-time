@@ -80,6 +80,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
 
     this._subsToDestroy.push(this.route.data.subscribe(data => {
       this._empRef = data.empRef;
+
       this._subsToDestroy.push(this._empRef.subject().subscribe(emp => {
         if (this.job) {
           this.minDay = Day.minDay(this.job.days);
@@ -143,7 +144,6 @@ export class DateSelectComponent implements OnInit, OnDestroy {
     this.getViewDays();
   }
 
-  //TODO: ADD EVENT
   selectDay = (date: Date) => {
     if (!this.job) {
       console.warn("job", this._jobID, "is undefined for this employee");
@@ -151,7 +151,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const str = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + date.getDate();
+    const str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
     const day = this.job.days.find(
       d =>
@@ -168,8 +168,11 @@ export class DateSelectComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    //add cookie to know what current month they are looking at
-    localStorage.setItem('date', str);
+
+    //add cookie to know what current date they are looking at
+    if (this._empRef) {
+      this._empRef.selectedDate = date;
+    }
 
     if (!day) {
       this.router.navigate(["./" + str], {
@@ -191,24 +194,24 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   getViewDays() {
     this.today = new Date();
 
-    
-    if (!this.viewMonth && !this.viewYear) {
-      let storedDate = localStorage.getItem('date');
-      if (storedDate) {
-        let splitStoredDate = storedDate.split("-")
-      
-        if (splitStoredDate.length > 0) {
-          this.viewMonth = Number(splitStoredDate[1]) -1
-          this.viewYear = Number(splitStoredDate[0])
-        }
+    if (!this._empRef) {
+      return;
+    }
+
+    if (!this.viewMonth) {
+      if (this._empRef.selectedDate) {
+        this.viewMonth = this._empRef.selectedDate.getMonth();
+      } else {
+        this.viewMonth = this.today.getMonth();
       }
     }
 
-    if (this.viewMonth == null) {
-      this.viewMonth = this.today.getMonth();
-    }
-    if (this.viewYear == null) {
-      this.viewYear = this.today.getFullYear();
+    if (!this.viewYear) {
+      if (this._empRef.selectedDate) {
+        this.viewYear = this._empRef.selectedDate.getFullYear();
+      } else {
+        this.viewYear = this.today.getFullYear();
+      }
     }
 
     this.viewDays = [];

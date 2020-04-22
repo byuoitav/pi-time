@@ -1,77 +1,48 @@
 <mat-toolbar class="do-header" color="primary">
-  <button mat-button (click)="goBack()">
-    <mat-icon style="transform: scale(2)">keyboard_arrow_left </mat-icon>
-  </button>
-  <span (click)="goBack()">
-    {{
+	<button mat-button (click)="goBack()">
+		<mat-icon style="transform: scale(2)">keyboard_arrow_left </mat-icon>
+	</button>
+	<span (click)="goBack()">
+		{{
       job?.description.length > 10
         ? job?.description.substring(0, 10) + "..."
         : job?.description
     }}
-  </span>    
+	</span>
 
-  <span class="do-header-spacer"></span>
-  <span (click)="api?.hiddenDarkMode()">{{ day?.time | date: "EEE. MMM d, y" }}</span>
-  <span class="do-header-spacer"></span>
-  
-  <span (click)="logout()">{{ emp?.name }} </span>
-  <button (click)="logout()" mat-icon-button>
-    <mat-icon>exit_to_app</mat-icon>
-  </button>
+	<span class="do-header-spacer"></span>
+	<span (click)="api?.hiddenDarkMode()">{{ day?.time | date: "EEE. MMM d, y" }}</span>
+	<span class="do-header-spacer"></span>
+
+	<span (click)="logout()">{{ emp?.name }} </span>
+	<button (click)="logout()" mat-icon-button>
+		<mat-icon>exit_to_app</mat-icon>
+	</button>
 </mat-toolbar>
 
-<mat-tab-group
-  mat-stretch-tabs
-  backgroundColor="accent"
-  color="none"
-  [(selectedIndex)]="selectedTab"
-  [disableRipple]="true"
-  [@.disabled]="true"
->
-  <mat-tab>
-    <ng-template mat-tab-label>
-      <span *ngIf="!day?.hasPunchException">Punches</span>
-      <span
-        *ngIf="day?.hasPunchException"
-        matBadge="{{ getPunchExceptionCount() }}"
-        matBadgeColor="warn"
-        matBadgeOverlap="false"
-        matBadgeSize="medium"
-        >Punches</span
-      >
-    </ng-template>
-    <punches
-      class="tab-content"
-      [byuID]="emp?.id"
-      [jobID]="job?.employeeJobID"
-      [day]="day"
-      [job]="job"
-    ></punches>
-  </mat-tab>
+<mat-tab-group mat-stretch-tabs backgroundColor="accent" color="none" [(selectedIndex)]="selectedTab"
+	[disableRipple]="true" [@.disabled]="true">
+	<mat-tab>
+		<ng-template mat-tab-label>
+			<span *ngIf="!day?.hasPunchException">Punches</span>
+			<span *ngIf="day?.hasPunchException" matBadge="{{ getPunchExceptionCount() }}" matBadgeColor="warn"
+				matBadgeOverlap="false" matBadgeSize="medium">Punches</span>
+		</ng-template>
+		<punches class="tab-content" [byuID]="emp?.id" [jobID]="job?.employeeJobID" [day]="day" [job]="job"></punches>
+	</mat-tab>
 
-  <mat-tab *ngIf="job?.isPhysicalFacilities">
-    <ng-template mat-tab-label>
-      <span *ngIf="!day?.hasWorkOrderException">WO/SR</span>
-      <span
-        *ngIf="day?.hasWorkOrderException"
-        matBadge="{{ getWOExceptionCount() }}"
-        matBadgeColor="warn"
-        matBadgeOverlap="false"
-        matBadgeSize="medium"
-        >WO/SR</span
-      >
-    </ng-template>
-    <wo-sr class="tab-content" [day]="day" [job]="job" [emp]="emp"></wo-sr>
-  </mat-tab>
+	<mat-tab *ngIf="job?.isPhysicalFacilities">
+		<ng-template mat-tab-label>
+			<span *ngIf="!day?.hasWorkOrderException">WO/SR</span>
+			<span *ngIf="day?.hasWorkOrderException" matBadge="{{ getWOExceptionCount() }}" matBadgeColor="warn"
+				matBadgeOverlap="false" matBadgeSize="medium">WO/SR</span>
+		</ng-template>
+		<wo-sr class="tab-content" [day]="day" [job]="job" [emp]="emp"></wo-sr>
+	</mat-tab>
 
-  <!-- This tab is always hidden for now!!! When we roll out PF, remove the `fase &&` bit -->
-  <mat-tab *ngIf="false && job?.jobType === jobType.FullTime">
-    <ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
-    <sick-vacation
-      class="tab-content"
-      [byuID]="emp?.id"
-      [jobID]="job?.employeeJobID"
-      [day]="day"
-    ></sick-vacation>
-  </mat-tab>
+	<!-- This tab is always hidden for now!!! When we roll out PF, remove the `false &&` bit -->
+	<mat-tab *ngIf="false && job?.jobType === jobType.FullTime">
+		<ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
+		<sick-vacation class="tab-content" [byuID]="emp?.id" [jobID]="job?.employeeJobID" [day]="day"></sick-vacation>
+	</mat-tab>
 </mat-tab-group>

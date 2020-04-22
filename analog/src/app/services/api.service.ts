@@ -31,6 +31,7 @@ export class EmployeeRef {
   private _subsToDestroy: Subscription[] = [];
 
   public offline: boolean;
+  public selectedDate: Date;
 
   get employee() {
     if (this._employee) {
@@ -150,7 +151,7 @@ export class APIService {
 
     const endpoint = protocol + "//" + window.location.host + "/id/" + id;
     const ws = new WebSocket(endpoint);
-    
+
     //send login event
     if (id) {
       const event = new Event();
@@ -186,9 +187,6 @@ export class APIService {
 
         this.sendEvent(event);
       }
-
-      //reset date stored
-      localStorage.removeItem("date");
 
       // reset theme
       this.switchTheme("");
@@ -284,10 +282,10 @@ export class APIService {
         event.EventTags = ["pitime-ui"];
         if (data.type === "I") {
           event.Key = "time-punch-in";
-        } else if (data.type === "O"){
+        } else if (data.type === "O") {
           event.Key = "time-punch-out";
         }
-        
+
         event.Value = data.byuID;
         event.Timestamp = new Date();
 
