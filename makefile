@@ -57,7 +57,7 @@ build: deps
 docker: clean build
 	@echo Branch: ${BRANCH}, Version: ${VERSION}, Commit Hash: ${COMMIT_HASH}
 
-ifeq(${BRANCH},"master")
+ifeq (${BRANCH},"master")
 ifneq (${COMMIT_HASH},${VERSION})
 	@echo Building prod container
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
@@ -87,7 +87,7 @@ deploy: docker
 	@echo Logging into Github Package Registry
 	@docker login ${DOCKER_URL} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
 
-ifeq(${BRANCH},"master")
+ifeq (${BRANCH},"master")
 ifneq (${COMMIT_HASH},${VERSION})
 	@echo Pushing prod container
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
