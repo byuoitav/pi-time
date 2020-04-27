@@ -2,20 +2,17 @@ package main
 
 import (
 	"testing"
-
-	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/pi-time/cache"
 )
 
 func TestAPI(t *testing.T) {
 	//gobyuID := "666567890"
 
-	log.SetLevel("debug")
+	// log.SetLevel("debug")
 
 	//test the cache
 	//helpers.DownloadCachedEmployees()
 
-	cache.GetYtimeLocation()
+	// cache.GetYtimeLocation()
 
 	//get timesheet
 	//timesheet, _, _ := helpers.GetTimesheet(byuID)
