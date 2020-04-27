@@ -40,8 +40,7 @@
 		<wo-sr class="tab-content" [day]="day" [job]="job" [emp]="emp"></wo-sr>
 	</mat-tab>
 
-	<!-- This tab is always hidden for now!!! When we roll out PF, remove the `false &&` bit -->
-	<mat-tab *ngIf="false && job?.jobType === jobType.FullTime">
+	<mat-tab *ngIf="job?.jobType === jobType.FullTime">
 		<ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
 		<sick-vacation class="tab-content" [byuID]="emp?.id" [jobID]="job?.employeeJobID" [day]="day"></sick-vacation>
 	</mat-tab>
