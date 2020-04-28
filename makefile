@@ -6,6 +6,7 @@ DOCKER_URL := docker.pkg.github.com
 # version:
 # use the git tag, if this commit
 # doesn't have a tag, use the git hash
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
 VERSION := $(shell git rev-parse --short HEAD)
 ifneq ($(shell git describe --exact-match --tags HEAD 2> /dev/null),)
@@ -54,38 +55,62 @@ build: deps
 	@echo Build output is located in ./dist/.
 
 docker: clean build
-# if the commit hash and release are different, this is a tagged build and we should build the tagged version
+	@echo Branch: ${BRANCH}, Version: ${VERSION}, Commit Hash: ${COMMIT_HASH}
+
+ifeq (${BRANCH},"master")
 ifneq (${COMMIT_HASH},${VERSION})
+	@echo Building prod container
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION} dist
 
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION} dist
 else
-	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
-	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH} dist
+	@echo Building dev non-versioned container
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION} dist
 
-	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
-	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH} dist
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION} dist
+endif
+ifneq (${COMMIT_HASH},${VERSION})
+	@echo Building dev versioned container
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION} dist
+
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION} dist
+endif
 endif
 
 deploy: docker
 	@echo Logging into Github Package Registry
 	@docker login ${DOCKER_URL} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
 
-# if the commit hash and release are different, this is a tagged build and we should deploy the tagged version
+ifeq (${BRANCH},"master")
 ifneq (${COMMIT_HASH},${VERSION})
+	@echo Pushing prod container
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 else
-	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
-	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
+	@echo Pushing dev non-versioned container
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
 
-	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
-	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
+endif
+ifneq (${COMMIT_HASH},${VERSION})
+	@echo Pushing dev versioned container
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
+
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
+endif
 endif
 
 clean:

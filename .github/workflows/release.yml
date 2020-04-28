@@ -1,50 +1,29 @@
 name: Deploy
 on:
-  push:
-    branches:
-      - master
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+    push:
+        branches:
+            - "master"
+        tags:
+            - "v[0-9]+.[0-9]+.[0-9]+.*"
 
 jobs:
-  codecov:
-    name: Code Coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up go (TODO - test frontend)
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.14.x
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up go
+              uses: actions/setup-go@v1
+              with:
+                  go-version: 1.14.x
 
-      - name: Check out code
-        uses: actions/checkout@v1
+            - name: Set up node
+              uses: actions/setup-node@v1
 
-      - name: Run tests
-        run: make test-cov
+            - name: Check out code
+              uses: actions/checkout@v1
 
-      - name: Upload coverage report to CodeCov
-        uses: codecov/codecov-action@v1.0.0
-        with:
-          token: ${{secrets.CODECOV_TOKEN}}
-          file: ./coverage.txt
-
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up go
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.14.x
-
-      - name: Set up node
-        uses: actions/setup-node@v1
-
-      - name: Check out code
-        uses: actions/checkout@v1
-
-      - name: Build
-        run: |
-          export DOCKER_USERNAME=$GITHUB_ACTOR
-          export DOCKER_PASSWORD=${{secrets.GITHUB_TOKEN}}
-          make deploy
+            - name: Build
+              run: |
+                  export DOCKER_USERNAME=$GITHUB_ACTOR
+                  export DOCKER_PASSWORD=${{secrets.GITHUB_TOKEN}}
+                  make deploy

@@ -47,7 +47,7 @@ module "dev" {
 
   // required
   name                 = "pi-time-dev"
-  image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
+  image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time"
   image_version        = "63eefe8"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
