@@ -57,8 +57,9 @@ build: deps
 docker: clean build
 	@echo Branch: ${BRANCH}, Version: ${VERSION}, Commit Hash: ${COMMIT_HASH}
 
-ifeq (${BRANCH},"master")
-ifneq (${COMMIT_HASH},${VERSION})
+ifneq (${COMMIT_HASH}, ${VERSION})
+
+ifeq (${BRANCH}, master)
 	@echo Building prod container
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION} dist
@@ -66,14 +67,6 @@ ifneq (${COMMIT_HASH},${VERSION})
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION} dist
 else
-	@echo Building dev non-versioned container
-	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
-	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION} dist
-
-	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
-	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION} dist
-endif
-ifneq (${COMMIT_HASH},${VERSION})
 	@echo Building dev versioned container
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION} dist
@@ -81,14 +74,24 @@ ifneq (${COMMIT_HASH},${VERSION})
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION} dist
 endif
+
+else
+	@echo Building dev non-versioned container
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH} dist
+
+	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
+	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH} dist
 endif
+
 
 deploy: docker
 	@echo Logging into Github Package Registry
 	@docker login ${DOCKER_URL} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
 
-ifeq (${BRANCH},"master")
-ifneq (${COMMIT_HASH},${VERSION})
+ifneq (${COMMIT_HASH}, ${VERSION})
+
+ifeq (${BRANCH}, master)
 	@echo Pushing prod container
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
@@ -96,14 +99,6 @@ ifneq (${COMMIT_HASH},${VERSION})
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 else
-	@echo Pushing dev non-versioned container
-	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
-	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
-
-	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
-	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
-endif
-ifneq (${COMMIT_HASH},${VERSION})
 	@echo Pushing dev versioned container
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
@@ -111,6 +106,14 @@ ifneq (${COMMIT_HASH},${VERSION})
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
 endif
+
+else
+	@echo Pushing dev non-versioned container
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
+
+	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
+	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH}
 endif
 
 clean:
