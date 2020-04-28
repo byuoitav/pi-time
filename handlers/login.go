@@ -12,7 +12,6 @@ import (
 //LogInUser will authenticate a user, upgrade to websocket, and return the timesheet and offline mode to the web socket
 func GetLoginUserHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-
 		//upgrade the connection to a websocket
 		webSocketClient := cache.ServeWebsocket(c.Response().Writer, c.Request())
 
@@ -44,9 +43,9 @@ func GetLoginUserHandler(db *bolt.DB) echo.HandlerFunc {
 
 		//if offline, send an offline message down the web socket
 		if isOffline {
-			cache.SendMessageToClient(byuID, "offline-mode", true)
+			_ = cache.SendMessageToClient(byuID, "offline-mode", true)
 		} else {
-			cache.SendMessageToClient(byuID, "offline-mode", false)
+			_ = cache.SendMessageToClient(byuID, "offline-mode", false)
 		}
 
 		return nil

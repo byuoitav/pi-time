@@ -33,7 +33,7 @@ func init() {
 //WatchForCachedEmployees will start a timer and download the cache every 4 hours
 func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	for {
-		DownloadCachedEmployees(db)
+		_ = DownloadCachedEmployees(db)
 
 		//wait for 4 hours and then do it again
 		select {

@@ -53,7 +53,7 @@ func SendMessageToClient(byuID string, messageType string, toSend interface{}) e
 
 	if toSend == nil {
 		log.P.Debug("Nothing to send down web socket")
-		return fmt.Errorf("Nothing to send down web socket for %v", byuID)
+		return fmt.Errorf("nothing to send down web socket for %v", byuID)
 	}
 
 	openConnectionMutex.Lock()
@@ -61,7 +61,7 @@ func SendMessageToClient(byuID string, messageType string, toSend interface{}) e
 
 	myConnection, ok := openConnections[byuID]
 	if !ok {
-		return fmt.Errorf("No websocket found for %v", byuID)
+		return fmt.Errorf("no websocket found for %v", byuID)
 	}
 
 	message := structs.WebSocketMessage{

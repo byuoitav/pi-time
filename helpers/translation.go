@@ -39,19 +39,19 @@ func translateToElapsedTimeEntry(start structs.ClientOtherHoursRequest) structs.
 	return toReturn
 }
 
-func translateToWorkOrderEntry(start structs.ClientWorkOrderEntry) structs.WorkOrderEntry {
-	var toReturn structs.WorkOrderEntry
-
-	toReturn.WorkOrder = structs.WorkOrder{
-		WorkOrderID:          start.WorkOrder.ID,
-		WorkOrderDescription: start.WorkOrder.Name,
-	}
-	toReturn.TRC = structs.TRC{
-		TRCID:          start.TRC.ID,
-		TRCDescription: start.TRC.Description,
-	}
-	toReturn.TimeReportingCodeHours = start.TimeReportingCodeHours
-	toReturn.Editable = start.Editable
-
-	return toReturn
-}
+//func translateToWorkOrderEntry(start structs.ClientWorkOrderEntry) structs.WorkOrderEntry {
+//	var toReturn structs.WorkOrderEntry
+//
+//	toReturn.WorkOrder = structs.WorkOrder{
+//		WorkOrderID:          start.WorkOrder.ID,
+//		WorkOrderDescription: start.WorkOrder.Name,
+//	}
+//	toReturn.TRC = structs.TRC{
+//		TRCID:          start.TRC.ID,
+//		TRCDescription: start.TRC.Description,
+//	}
+//	toReturn.TimeReportingCodeHours = start.TimeReportingCodeHours
+//	toReturn.Editable = start.Editable
+//
+//	return toReturn
+//}

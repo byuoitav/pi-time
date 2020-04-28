@@ -1,13 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/pi-time/cache"
-	figure "github.com/common-nighthawk/go-figure"
 	"github.com/labstack/echo/v4"
 
 	"github.com/byuoitav/pi-time/employee"
@@ -20,10 +20,6 @@ import (
 var updateCacheNowChannel = make(chan struct{})
 
 func main() {
-	figure.NewFigure("P-TIME", "ntgreek", true).Print()
-	fmt.Print("\n\n")
-	log.SetLevel("debug")
-
 	//start a go routine to go and get the latitude and longitude from the building struct
 	go cache.GetYtimeLocation()
 
@@ -151,7 +147,10 @@ func main() {
 		MaxHeaderBytes: 1024 * 10,
 	}
 
-	router.StartServer(&server)
+	err = router.StartServer(&server)
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.L.Fatalf("failed to start server: %s", err)
+	}
 }
 
 func updateCacheNow(ectx echo.Context) error {

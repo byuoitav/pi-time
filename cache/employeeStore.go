@@ -105,7 +105,7 @@ func UpdateEmployeeFromTimesheet(byuID string, timesheet structs.Timesheet) {
 	}
 
 	//send down websocket
-	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+	_ = SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
 //UpdatePossibleWorkOrders .
@@ -138,7 +138,8 @@ func UpdatePossibleWorkOrders(byuID string, jobID int, workOrderArray []structs.
 			break
 		}
 	}
-	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+
+	_ = SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
 // //UpdateOtherHoursForJob updates the other hours for a job
@@ -293,7 +294,7 @@ func UpdateOtherHoursForJobAndDate(byuID string, jobID int, date time.Time, elap
 		}
 	}
 
-	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+	_ = SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
 //UpdateWorkOrderEntriesForJob updates the work order entries for a particular job
@@ -344,7 +345,7 @@ func UpdateWorkOrderEntriesForJob(byuID string, jobID int, workOrderDayArray []s
 	}
 
 	//send down websocket
-	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+	_ = SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
 //UpdateEmployeePunchesForJob updates from a []structs.TimeClockDay
@@ -396,7 +397,7 @@ func UpdateEmployeePunchesForJob(byuID string, jobID int, dayArray []structs.Tim
 	}
 
 	//send down websocket
-	SendMessageToClient(byuID, "employee", employeeCache[byuID])
+	_ = SendMessageToClient(byuID, "employee", employeeCache[byuID])
 }
 
 //DeleteWorkOrderEntry deletes a work order entry
@@ -439,7 +440,7 @@ func UpdateTimeClockDay(byuID string, jobID int, day structs.TimeClockDay) {
 			updateClientDayFromServerTimeClockDay(&employee.Jobs[jobIdx].Days[i], &day)
 
 			// send the updated employee down the websocket
-			SendMessageToClient(byuID, "employee", employeeCache[byuID])
+			_ = SendMessageToClient(byuID, "employee", employeeCache[byuID])
 			return
 		}
 	}
@@ -508,28 +509,28 @@ func updateClientDayFromServerWorkOrderDay(clientDay *structs.ClientDay, serverD
 	}
 }
 
-func updateClientDayFromServerOtherHoursDay(clientDay *structs.ClientDay, serverDay *structs.ElapsedTimeSummary) {
-	clientDay.SickHoursYTD = serverDay.SickLeaveBalanceHours
-	clientDay.VacationHoursYTD = serverDay.VacationLeaveBalanceHours
-
-	clientDay.OtherHours = []structs.ClientOtherHours{}
-
-	for _, serverElapsedTimeDay := range serverDay.Dates {
-		for _, serverElapsedTimeEntry := range serverElapsedTimeDay.ElapsedTimeEntries {
-			var newElapsedTimeEntry structs.ClientOtherHours
-
-			newElapsedTimeEntry.Editable = *serverElapsedTimeEntry.Editable
-			newElapsedTimeEntry.SequenceNumber = serverElapsedTimeEntry.SequenceNumber
-			newElapsedTimeEntry.TRC = structs.ClientTRC{
-				ID:          serverElapsedTimeEntry.TRC.TRCID,
-				Description: serverElapsedTimeEntry.TRC.TRCDescription,
-			}
-			newElapsedTimeEntry.TimeReportingCodeHours = serverElapsedTimeEntry.TimeReportingCodeHours
-
-			clientDay.OtherHours = append(clientDay.OtherHours, newElapsedTimeEntry)
-		}
-	}
-}
+//func updateClientDayFromServerOtherHoursDay(clientDay *structs.ClientDay, serverDay *structs.ElapsedTimeSummary) {
+//	clientDay.SickHoursYTD = serverDay.SickLeaveBalanceHours
+//	clientDay.VacationHoursYTD = serverDay.VacationLeaveBalanceHours
+//
+//	clientDay.OtherHours = []structs.ClientOtherHours{}
+//
+//	for _, serverElapsedTimeDay := range serverDay.Dates {
+//		for _, serverElapsedTimeEntry := range serverElapsedTimeDay.ElapsedTimeEntries {
+//			var newElapsedTimeEntry structs.ClientOtherHours
+//
+//			newElapsedTimeEntry.Editable = *serverElapsedTimeEntry.Editable
+//			newElapsedTimeEntry.SequenceNumber = serverElapsedTimeEntry.SequenceNumber
+//			newElapsedTimeEntry.TRC = structs.ClientTRC{
+//				ID:          serverElapsedTimeEntry.TRC.TRCID,
+//				Description: serverElapsedTimeEntry.TRC.TRCDescription,
+//			}
+//			newElapsedTimeEntry.TimeReportingCodeHours = serverElapsedTimeEntry.TimeReportingCodeHours
+//
+//			clientDay.OtherHours = append(clientDay.OtherHours, newElapsedTimeEntry)
+//		}
+//	}
+//}
 
 //GetPunchesForAllJobs will get the list of punches for each job and add them to the cached employee record
 func GetPunchesForAllJobs(byuID string) {

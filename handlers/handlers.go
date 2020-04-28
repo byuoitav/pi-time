@@ -184,7 +184,7 @@ func DeleteWorkOrderEntry(c echo.Context) error {
 
 	ne := helpers.DeleteWorkOrderEntry(byuID, incomingRequest)
 	if ne != nil {
-		log.P.Error(fmt.Sprintf("%w", ne))
+		log.P.Error(fmt.Sprintf("%s", ne))
 		return c.String(http.StatusInternalServerError, ne.Error())
 	}
 
