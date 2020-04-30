@@ -6,11 +6,15 @@ DOCKER_URL := docker.pkg.github.com
 # version:
 # use the git tag, if this commit
 # doesn't have a tag, use the git hash
-BRANCH := $(shell git symbolic-ref --short HEAD)
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
 VERSION := $(shell git rev-parse --short HEAD)
 ifneq ($(shell git describe --exact-match --tags HEAD 2> /dev/null),)
 	VERSION = $(shell git describe --exact-match --tags HEAD)
+endif
+
+BRANCH := $(shell git symbolic-ref --short HEAD)
+ifneq (${COMMIT_HASH},${VERSION})
+	BRANCH = $(shell git branch --contains=${VERSION} | tail -1 | xargs)
 endif
 
 # go stuff
