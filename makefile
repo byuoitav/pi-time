@@ -12,11 +12,6 @@ ifneq ($(shell git describe --exact-match --tags HEAD 2> /dev/null),)
 	VERSION = $(shell git describe --exact-match --tags HEAD)
 endif
 
-BRANCH := $(shell git symbolic-ref --short HEAD)
-ifneq (${COMMIT_HASH},${VERSION})
-	BRANCH = $(shell git branch --contains=${VERSION} | tail -1 | xargs)
-endif
-
 # go stuff
 PKG_LIST := $(shell go list ${PKG}/...)
 
@@ -59,31 +54,13 @@ build: deps
 	@echo Build output is located in ./dist/.
 
 docker: clean build
-	@echo git command0: "$(shell git branch --contains=${VERSION} | tail -5)"
-	@echo git command1: "$(shell git branch --contains=${VERSION} | tail -1)"
-	@echo git command2: "$(shell git branch --contains=${VERSION} | tail -1 | xargs)"
-	@echo Branch: ${BRANCH}, Version: ${VERSION}, Commit Hash: ${COMMIT_HASH}
-
 ifneq (${COMMIT_HASH}, ${VERSION})
-
-ifeq (${BRANCH}, master)
-	@echo Building prod container
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION} dist
 
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION} dist
 else
-	@echo Building dev versioned container
-	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
-	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION} dist
-
-	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
-	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION} dist
-endif
-
-else
-	@echo Building dev non-versioned container
 	@echo Building container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-amd64 -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH} dist
 
@@ -91,31 +68,17 @@ else
 	@docker build -f dockerfile --build-arg NAME=${NAME}-linux-arm -t ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${COMMIT_HASH} dist
 endif
 
-
 deploy: docker
 	@echo Logging into Github Package Registry
 	@docker login ${DOCKER_URL} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
 
-ifneq (${COMMIT_HASH}, ${VERSION})
-
 ifeq (${BRANCH}, master)
-	@echo Pushing prod container
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm:${VERSION}
 else
-	@echo Pushing dev versioned container
-	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
-	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${VERSION}
-
-	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
-	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-arm-dev:${VERSION}
-endif
-
-else
-	@echo Pushing dev non-versioned container
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}-dev:${COMMIT_HASH}
 
