@@ -59,6 +59,9 @@ build: deps
 	@echo Build output is located in ./dist/.
 
 docker: clean build
+	@echo git command0: "$(shell git branch --contains=${VERSION} | tail -5)"
+	@echo git command1: "$(shell git branch --contains=${VERSION} | tail -1)"
+	@echo git command2: "$(shell git branch --contains=${VERSION} | tail -1 | xargs)"
 	@echo Branch: ${BRANCH}, Version: ${VERSION}, Commit Hash: ${COMMIT_HASH}
 
 ifneq (${COMMIT_HASH}, ${VERSION})
