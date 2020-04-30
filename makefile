@@ -72,7 +72,7 @@ deploy: docker
 	@echo Logging into Github Package Registry
 	@docker login ${DOCKER_URL} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
 
-ifeq (${BRANCH}, master)
+ifneq (${COMMIT_HASH}, ${VERSION})
 	@echo Pushing container ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 	@docker push ${DOCKER_URL}/${OWNER}/${NAME}/${NAME}:${VERSION}
 
