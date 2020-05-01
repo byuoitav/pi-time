@@ -42,13 +42,13 @@ data "aws_ssm_parameter" "event_proc_host" {
   name = "/env/ytime/event-processor-host"
 }
 
-module "dev" {
+module "stg_non_pf" {
   source = "github.com/byuoitav/terraform//modules/kubernetes-statefulset"
 
   // required
   name                 = "pi-time-dev"
   image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time"
-  image_version        = "63eefe8"
+  image_version        = "v0.3.0"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
@@ -56,7 +56,7 @@ module "dev" {
 
   // optional
   image_pull_secret = "github-docker-registry"
-  public_urls       = ["ytime-dev.av.byu.edu"]
+  public_urls       = ["ytime-stg.av.byu.edu"]
   container_env = {
     "TZ"                      = "America/Denver"
     "CACHE_DATABASE_LOCATION" = "/opt/pi-time/cache.db"
@@ -90,8 +90,8 @@ module "prd" {
 
   // required
   name                 = "pi-time"
-  image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time-dev"
-  image_version        = "63eefe8"
+  image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time"
+  image_version        = "v0.3.0"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
