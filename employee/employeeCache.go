@@ -10,7 +10,6 @@ import (
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
 	bolt "go.etcd.io/bbolt"
-	"go.uber.org/zap"
 )
 
 //LogChannel channel to send log messages
@@ -104,10 +103,6 @@ func DownloadCachedEmployees(db *bolt.DB) error {
 	}
 
 	log.P.Debug("Successfully added employees to the bucket")
-
-	if err != nil {
-		log.P.Warn("an error occured while adding the punch to the bucket: %s", zap.Error(err))
-	}
 
 	return nil
 }
