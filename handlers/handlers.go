@@ -51,9 +51,6 @@ func GetPunchHandler(db *bolt.DB) echo.HandlerFunc {
 
 			return nil
 		}
-		if err != nil {
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
-		}
 
 		return c.String(http.StatusOK, "ok")
 	}
