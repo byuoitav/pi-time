@@ -1,6 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material";
+import {MatSnackBar} from "@angular/material";
 
 @Component({
   selector: "analog",
@@ -8,7 +9,7 @@ import {MatDialog} from "@angular/material";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
-  constructor(private router: Router, private dialog: MatDialog) {}
+  constructor(private router: Router, private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
   ngOnInit() {
     let count = 0;
@@ -36,11 +37,13 @@ export class AppComponent implements OnInit {
 
         this.router.navigate(["/screensaver"]);
         this.dialog.closeAll();
+        this.snackbar.dismiss();
       } else if (count >= 15 && !isLogin && !isScreensaver) {
         count = 0;
 
         this.router.navigate(["/login"]);
         this.dialog.closeAll();
+        this.snackbar.dismiss();
       }
     }, 1000);
   }

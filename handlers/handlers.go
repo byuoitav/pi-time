@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/helpers"
@@ -190,12 +189,15 @@ func DeleteWorkOrderEntry(c echo.Context) error {
 
 //SendEvent passes an event to the messenger
 func SendEvent(c echo.Context) error {
-	log.P.Debug("Event Recieved")
+	if len(eventProcessorHost) == 0 {
+		return c.NoContent(http.StatusOK)
+	}
+
 	var event events.Event
 	err := c.Bind(&event)
 	if err != nil {
 		log.P.Warn("an error occured while binding the error", zap.Error(err))
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("%s", err))
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	//add generating system
@@ -210,7 +212,7 @@ func SendEvent(c echo.Context) error {
 
 		req, err := http.NewRequest("POST", hostName, bytes.NewReader(eventJSON))
 		if err != nil {
-			return nerr.Translate(err)
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		// add headers
@@ -222,7 +224,7 @@ func SendEvent(c echo.Context) error {
 
 		resp, err := client.Do(req)
 		if err != nil {
-			return nerr.Translate(err)
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 		defer resp.Body.Close()
 
@@ -230,15 +232,14 @@ func SendEvent(c echo.Context) error {
 		if resp.StatusCode/100 != 2 {
 			respBody, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-
-				return nerr.Translate(err).Addf("non-200 response: %v. unable to read response body", resp.StatusCode)
+				return c.String(http.StatusInternalServerError, err.Error())
 			}
 
-			return nerr.Createf("error", "non-200 response: %v. response body: %s", resp.StatusCode, respBody)
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("%v response: %v", resp.StatusCode, respBody))
 		}
 	}
 
-	return nil
+	return c.NoContent(http.StatusOK)
 }
 
 //GetSickAndVacationForJobAndDate handles ensuring that we have the sick and vacation for a day
