@@ -27,7 +27,7 @@ mat-card {
 
 .punches {
     width: 40vw;
-    max-height: 60vh;
+    max-height: 50vh;
     overflow-y: auto;
     overflow-x: hidden;
     pointer-events: all;
@@ -39,6 +39,7 @@ mat-card {
     }
     &::-webkit-scrollbar-thumb {
         background: #969595;
+        border-radius: 10px;
     }
     &::-webkit-scrollbar-thumb:hover {
         background: #aaaaaa;
