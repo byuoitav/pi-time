@@ -26,6 +26,9 @@ type Timesheet struct {
 
 	//InternationalMessage is used to indicate that a warning should be shown to the user due to hour working limits
 	InternationalMessage string `json:"international_message"`
+
+	// International is going away in a new version of the api
+	International bool `json:"international"`
 }
 
 //EmployeeCache is the cache list

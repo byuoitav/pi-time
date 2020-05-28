@@ -163,21 +163,19 @@ func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 			//500 code, then we look in cache
 			//look in the cache
 			employeeRecord, innerErr := employee.GetEmployeeFromCache(byuid, db)
-
 			if innerErr != nil {
 				//not found
 				log.P.Debug("No cached timesheet found")
-				return timesheet, false, errors.New("System offline - employee not found")
+				return timesheet, false, errors.New("system offline - employee not found")
 			}
 
 			log.P.Debug("Cached timesheet found")
 
 			timesheet := structs.Timesheet{
-				PersonName:           employeeRecord.Name,
-				WeeklyTotal:          "--:--",
-				PeriodTotal:          "--:--",
-				InternationalMessage: "",
-				Jobs:                 employeeRecord.Jobs,
+				PersonName:  employeeRecord.Name,
+				WeeklyTotal: "--:--",
+				PeriodTotal: "--:--",
+				Jobs:        employeeRecord.Jobs,
 			}
 
 			return timesheet, true, nil
@@ -187,12 +185,27 @@ func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 
 		testForMessageErr := json.Unmarshal([]byte(responseBody), &messageStruct)
 		if testForMessageErr != nil {
-			return timesheet, false, errors.New("Employee not found")
+			return timesheet, false, errors.New("employee not found")
 		}
 
 		errMessage := messageStruct.Status.Message
-
 		return timesheet, false, errors.New(errMessage)
+	}
+
+	// this will be removed once the backend team adds in the international message
+	// for now, we are just hardcoding the logic here.
+	// if the student is an international student who has worked over 15 hours
+	// this week, then show a warning
+	// IF ANYTHING GOES WRONG CHECKING FOR THIS: we are just going to return the timesheet like normal.
+	if timesheet.International {
+		split := strings.Split(timesheet.WeeklyTotal, ":")
+
+		if len(split) == 2 {
+			hoursWorked, _ := strconv.Atoi(split[0])
+			if hoursWorked >= 15 {
+				timesheet.InternationalMessage = "You have more than 15 hours recorded during the pay period.  Be careful not to go over your international student hour limit."
+			}
+		}
 	}
 
 	return timesheet, false, nil
