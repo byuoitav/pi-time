@@ -41,26 +41,30 @@ export class EmployeeRef {
     return undefined;
   }
 
-  constructor(employee: BehaviorSubject<Employee>, logout: () => void, router: Router) {
+  constructor(employee: BehaviorSubject<Employee>, logout: (Boolean) => void, router: Router) {
     this._employee = employee;
     this._logout = logout;
 
     this._subsToDestroy.push(router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         if (!event.url.startsWith("/employee")) {
-          this.logout();
+          // this is only for a session time out
+          this.logout(true);
         }
       }
     }));
   }
 
-  logout = () => {
+  logout = (timeout: Boolean) => {
     for (const s of this._subsToDestroy) {
       s.unsubscribe();
     }
 
     if (this._logout) {
-      return this._logout();
+      if (timeout) {
+        return this._logout(true);
+      }
+      return this._logout(false);
     }
   };
 
@@ -163,8 +167,12 @@ export class APIService {
       this.sendEvent(event);
     }
 
-    const empRef = new EmployeeRef(employee, () => {
-      console.log("logging out employee", employee.value.id);
+    const empRef = new EmployeeRef(employee, (timeout: Boolean) => {
+      if (timeout) {
+        console.log("session timed out for", employee.value.id)
+      } else {
+        console.log("logging out employee", employee.value.id);
+      }
 
       // clean up the websocket
       ws.close();
@@ -176,16 +184,30 @@ export class APIService {
       employee.complete();
 
       // send logout event
-      if (currEmp) {
-        const event = new Event();
-
-        event.User = currEmp.id;
-        event.EventTags = ["pitime-ui"];
-        event.Key = "logout";
-        event.Value = currEmp.id;
-        event.Timestamp = new Date();
-
-        this.sendEvent(event);
+      if (timeout) {
+        if (currEmp) {
+          const event = new Event();
+  
+          event.User = currEmp.id;
+          event.EventTags = ["pitime-ui"];
+          event.Key = "timeout";
+          event.Value = currEmp.id;
+          event.Timestamp = new Date();
+  
+          this.sendEvent(event);
+        }
+      } else {
+        if (currEmp) {
+          const event = new Event();
+  
+          event.User = currEmp.id;
+          event.EventTags = ["pitime-ui"];
+          event.Key = "logout";
+          event.Value = currEmp.id;
+          event.Timestamp = new Date();
+  
+          this.sendEvent(event);
+        }  
       }
 
       // reset theme
