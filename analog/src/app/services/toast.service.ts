@@ -15,9 +15,16 @@ export class ToastService {
     });
   };
 
-  showIndefinitely = (message: string, action: string) => {
-    this._snackbar.open(message, action, {
-      verticalPosition: "bottom"
-    });
+  showIndefinitely = (message: string, action: string, red?: boolean) => {
+    if (red) {
+      this._snackbar.open(message, action, {
+        verticalPosition: "bottom",
+        panelClass: ['red-snackbar']
+      })
+    } else {
+      this._snackbar.open(message, action, {
+        verticalPosition: "bottom"
+      });
+    }
   };
 }

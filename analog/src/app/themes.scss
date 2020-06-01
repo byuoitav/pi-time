@@ -147,3 +147,12 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
 .dismiss button {
   color: #ffc107;
 }
+
+.red-snackbar {
+  color: white;
+  background-color: rgb(151, 0, 0);
+}
+
+.red-snackbar .mat-simple-snackbar-action {
+  color: white
+}
