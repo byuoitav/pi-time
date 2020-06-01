@@ -260,6 +260,6 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   }
 
   logout = () => {
-    this._empRef.logout();
+    this._empRef.logout(false);
   };
 }

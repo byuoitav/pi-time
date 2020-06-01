@@ -49,7 +49,7 @@ export class JobSelectComponent implements OnInit, OnDestroy {
   };
 
   logout = () => {
-    this._empRef.logout();
+    this._empRef.logout(false);
   };
 
   goBack() {
