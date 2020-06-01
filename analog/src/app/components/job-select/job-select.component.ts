@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {BehaviorSubject, Subscription} from "rxjs";
 
 import {EmployeeRef, APIService} from "../../services/api.service";
-import {Employee} from "../../objects";
+import {Employee, Job} from "../../objects";
 
 @Component({
   selector: "job-select",
@@ -60,7 +60,7 @@ export class JobSelectComponent implements OnInit, OnDestroy {
 
   hasTimesheetException = (j: Job) => {
     if (
-        j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
+      j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
     ) {
       return "!";
     }

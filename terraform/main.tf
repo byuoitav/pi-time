@@ -47,7 +47,7 @@ module "stg_non_pf" {
   // required
   name                 = "pi-time-dev"
   image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time"
-  image_version        = "v0.3.0"
+  image_version        = "v0.3.1"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
@@ -90,7 +90,7 @@ module "prd" {
   // required
   name                 = "pi-time"
   image                = "docker.pkg.github.com/byuoitav/pi-time/pi-time"
-  image_version        = "v0.3.0"
+  image_version        = "v0.3.1"
   container_port       = 8463
   repo_url             = "https://github.com/byuoitav/pi-time"
   storage_mount_path   = "/opt/pi-time/"
