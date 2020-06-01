@@ -179,7 +179,7 @@ export class ClockComponent implements OnInit {
   };
 
   logout = () => {
-    this._empRef.logout();
+    this._empRef.logout(false);
   };
 
   canChangeWorkOrder(job: Job) {

@@ -139,7 +139,7 @@ export class DayOverviewComponent implements OnInit, OnDestroy {
 
   //TODO: ADD EVENT
   logout = () => {
-    this._empRef.logout();
+    this._empRef.logout(false);
   };
 
   getPunchExceptionCount() {
