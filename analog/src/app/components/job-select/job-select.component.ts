@@ -58,11 +58,9 @@ export class JobSelectComponent implements OnInit, OnDestroy {
     });
   }
 
-  hasTimesheetException = () => {
+  hasTimesheetException = (j: Job) => {
     if (
-      this.emp.jobs.some(j =>
         j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
-      )
     ) {
       return "!";
     }

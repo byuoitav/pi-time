@@ -38,7 +38,7 @@ export class EmployeeResolverService implements Resolve<EmployeeRef> {
           val => {            
             if (val instanceof Employee) {
               if (val.message !== undefined && val.message.length > 0) {
-                this.toast.showIndefinitely(val.message as string, "DISMISS");
+                this.toast.showIndefinitely(val.message as string, "DISMISS", true);
               }
               observer.next(empRef);
               observer.complete();
