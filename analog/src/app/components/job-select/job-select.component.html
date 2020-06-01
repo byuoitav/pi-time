@@ -27,7 +27,7 @@
             color="accent"
             (click)="selectJob(job?.employeeJobID)"
             mat-flat-button
-            [matBadge]="hasTimesheetException()"
+            [matBadge]="hasTimesheetException(job)"
             matBadgeColor="warn"
             matBadgeSize="medium"
             matBadgeOverlap="true"
