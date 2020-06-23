@@ -34,7 +34,6 @@
   display: grid;
   grid-gap: 2vh 2vh;
   grid-template-columns: auto auto auto;
-  z-index: 100000;
 
   button {
     height: 17vh;
@@ -54,5 +53,4 @@
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 10000;
 }
