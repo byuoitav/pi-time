@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
       const isLogin = this.router.url.startsWith("/login");
       const isScreensaver = this.router.url.startsWith("/screensaver");
 
-      if (count >= 20 && isLogin) {
+      if (count >= 60 && isLogin) {
         count = 0;
 
         this.router.navigate(["/screensaver"]);
