@@ -129,6 +129,7 @@ func main() {
 
 	//force an update of the employee cache
 	router.PUT("/updateCache", updateCacheNow)
+	router.GET("/cache", handlers.CacheDump(db))
 
 	router.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/analog")

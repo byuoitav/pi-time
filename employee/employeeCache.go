@@ -10,18 +10,14 @@ import (
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
 	bolt "go.etcd.io/bbolt"
+	"go.uber.org/zap"
 )
-
-//LogChannel channel to send log messages
-var LogChannel chan string
 
 const (
 	EMPLOYEE_BUCKET = "EMPLOYEE"
 )
 
 func init() {
-	LogChannel = make(chan string)
-
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
 
 	if len(dbLoc) == 0 {
@@ -32,113 +28,125 @@ func init() {
 //WatchForCachedEmployees will start a timer and download the cache every 4 hours
 func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	for {
-		_ = DownloadCachedEmployees(db)
+		log.P.Info("Updating employee cache")
+		wait := 4 * time.Hour
+		start := time.Now()
 
-		//wait for 4 hours and then do it again
+		if err := DownloadCachedEmployees(db); err != nil {
+			log.P.Error("unable to download employee cache", zap.Error(err))
+			wait = 1 * time.Minute
+		} else {
+			log.P.Info("Finished updating employee cache", zap.Duration("took", time.Since(start)), zap.Duration("next", wait))
+		}
+
 		select {
-		case <-time.After(4 * time.Hour):
-			log.P.Info("4 hour timeout reached")
+		case <-time.After(wait):
 		case <-updateNowChan:
-			log.P.Info("4 updating now")
 		}
 	}
 }
 
 //DownloadCachedEmployees makes a call to WSO2 to get the employee cache
 func DownloadCachedEmployees(db *bolt.DB) error {
-	var cacheList structs.EmployeeCache
-	//make a WSO2 request to get the cache
-	log.P.Debug("Making call to get employee cache")
-	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://psws.byu.edu/PSIGW/BYURESTListeningConnector2/PSFT_HR/clock_employees.v1/", "", &cacheList, map[string]string{"sm_user": "timeclock"})
+	log.P.Info("Downloading employees")
 
+	var cache structs.EmployeeCache
+	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://api.byu.edu:443/domains/erp/hr/clock_employees/v1", "", &cache, map[string]string{"sm_user": "timeclock"})
 	if ne != nil {
-		log.P.Error(fmt.Sprintf("Unable to get the cache list: %v", ne))
 		return ne
 	}
 
-	//open our bolt db
-	//initialize the bolt db
-	log.P.Debug(fmt.Sprintf("Adding %v employees to the cache", len(cacheList.Employees)))
+	log.P.Info("Finished downloading employees. Now adding to local cache", zap.Int("numEmployees", len(cache.Employees)))
 
 	err := db.Update(func(tx *bolt.Tx) error {
-		//create punch bucket if it does not exist
-		bucket := tx.Bucket([]byte(EMPLOYEE_BUCKET))
-		if bucket != nil {
-			err := tx.DeleteBucket([]byte(EMPLOYEE_BUCKET))
-			if err != nil {
-				log.P.Warn("failed to delete employeeBucket")
-				return fmt.Errorf("error deleting the employee bucket: %s", err)
-			}
-		}
-		log.P.Debug("Checking if employee Bucket Exists")
+		// delete the existing employee bucket
+		_ = tx.DeleteBucket([]byte(EMPLOYEE_BUCKET))
 
-		_, err := tx.CreateBucketIfNotExists([]byte(EMPLOYEE_BUCKET))
+		// recreate the bucket
+		b, err := tx.CreateBucketIfNotExists([]byte(EMPLOYEE_BUCKET))
 		if err != nil {
-			log.P.Warn("failed to create employeeBucket")
 			return fmt.Errorf("error creating the employee bucket: %s", err)
 		}
+
+		// add the employees to the bucket
+		for _, emp := range cache.Employees {
+			bytes, err := json.Marshal(emp)
+			if err != nil {
+				log.P.Warn("unable to marshal employee", zap.String("id", emp.BYUID), zap.Error(err))
+				continue
+			}
+
+			if err := b.Put([]byte(emp.BYUID), bytes); err != nil {
+				log.P.Warn("unable to cache employee", zap.String("id", emp.BYUID), zap.Error(err))
+				continue
+			}
+		}
+
 		return nil
 	})
-
 	if err != nil {
 		return err
 	}
 
-	for _, employee := range cacheList.Employees {
-		err := db.Batch(func(tx *bolt.Tx) error {
-			employeeJSON, _ := json.Marshal(employee)
-
-			bucket := tx.Bucket([]byte(EMPLOYEE_BUCKET))
-			if bucket == nil {
-				return fmt.Errorf("unable to get employee bucket")
-			}
-
-			return bucket.Put([]byte(employee.BYUID), employeeJSON)
-		})
-
-		if err != nil {
-			log.P.Error(fmt.Sprintf("Unable to get the add to boltdb: %v", err))
-			return err
-		}
-	}
-
-	log.P.Debug("Successfully added employees to the bucket")
-
 	return nil
 }
 
-//GetEmployeeFromCache looks up an employee in the cache
-func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, error) {
-
-	var empRecord structs.EmployeeRecord
+func GetCache(db *bolt.DB) (structs.EmployeeCache, error) {
+	var cache structs.EmployeeCache
 
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(EMPLOYEE_BUCKET))
 		if b == nil {
-			fmt.Print("cannot open employee bucket\n\n")
+			return fmt.Errorf("employee bucket doest not exist")
 		}
 
-		item := b.Get([]byte(byuID))
-		if item == nil {
-			//not found, return it
-			return fmt.Errorf("unable to find the employee in the cache")
-		}
+		err := b.ForEach(func(k, v []byte) error {
+			var emp structs.EmployeeRecord
+			if err := json.Unmarshal(v, &emp); err != nil {
+				return fmt.Errorf("unable to unmarshal employee %q: %w", string(k), err)
+			}
 
-		err := json.Unmarshal(item, &empRecord)
+			cache.Employees = append(cache.Employees, emp)
+			return nil
+		})
 		if err != nil {
-			fmt.Print("unable to unmarshal employee")
 			return err
 		}
 
-		//no error in db.View
 		return nil
 	})
-
 	if err != nil {
-		//unable to retrieve from cache for whatever reason
-		fmt.Printf("unable to retrieve from cache for reason: %s", err)
-		return empRecord, err
+		return cache, err
 	}
 
-	return empRecord, nil
+	return cache, nil
+}
+
+//GetEmployeeFromCache looks up an employee in the cache
+func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, error) {
+	var emp structs.EmployeeRecord
+
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(EMPLOYEE_BUCKET))
+		if b == nil {
+			return fmt.Errorf("employee bucket doest not exist")
+		}
+
+		bytes := b.Get([]byte(byuID))
+		if bytes == nil {
+			return fmt.Errorf("employee not in cache")
+		}
+
+		if err := json.Unmarshal(bytes, &emp); err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		log.P.Warn("unable to get employee from cache", zap.String("id", byuID), zap.Error(err))
+		return emp, err
+	}
+
+	return emp, nil
 }

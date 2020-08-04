@@ -15,6 +15,7 @@ import (
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
 	bolt "go.etcd.io/bbolt"
+	"go.uber.org/zap"
 )
 
 // SendPunchRequest sends a punch request to the YTime API and returns the response.
@@ -148,28 +149,25 @@ func SendDeleteWorkOrderEntryRequest(byuID string, jobID string, punchDate strin
 
 // GetTimesheet returns a timesheet, a bool if the timesheet was returned in offline mode (from cache), and possible error
 func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
-
 	var timesheet structs.Timesheet
-
 	err, httpResponse, responseBody := wso2requests.MakeWSO2RequestWithHeadersReturnResponse("GET", "https://api.byu.edu:443/domains/erp/hr/timesheet/v1/"+byuid, "", &timesheet, map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "application/json",
 	})
 
 	if err != nil {
-		log.P.Debug(fmt.Sprintf("Error when making WSO2 request to get timesheet %v", err))
+		log.P.Warn("unable to get timesheet", zap.Error(err), zap.String("id", byuid))
 
 		if strings.Contains(err.Error(), "network is unreachable") || httpResponse.StatusCode/100 == 5 {
 			//500 code, then we look in cache
 			//look in the cache
 			employeeRecord, innerErr := employee.GetEmployeeFromCache(byuid, db)
 			if innerErr != nil {
-				//not found
-				log.P.Debug("No cached timesheet found")
+				log.P.Warn("no cached timesheet found", zap.String("id", byuid))
 				return timesheet, false, errors.New("system offline - employee not found")
 			}
 
-			log.P.Debug("Cached timesheet found")
+			log.P.Info("Cached timesheet found, returning that", zap.String("id", byuid))
 
 			timesheet := structs.Timesheet{
 				PersonName:  employeeRecord.Name,
@@ -182,14 +180,12 @@ func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 		}
 
 		var messageStruct structs.ServerLoginErrorMessage
-
 		testForMessageErr := json.Unmarshal([]byte(responseBody), &messageStruct)
 		if testForMessageErr != nil {
 			return timesheet, false, errors.New("employee not found")
 		}
 
-		errMessage := messageStruct.Status.Message
-		return timesheet, false, errors.New(errMessage)
+		return timesheet, false, errors.New(messageStruct.Status.Message)
 	}
 
 	// this will be removed once the backend team adds in the international message
