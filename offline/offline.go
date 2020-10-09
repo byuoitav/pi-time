@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/employee"
+	"github.com/byuoitav/pi-time/event"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/structs"
@@ -69,6 +72,20 @@ func ResendPunches(db *bolt.DB) {
 					if err != nil {
 						return fmt.Errorf("error occured in unmarshalling punchrequest from db: %s", err)
 					}
+
+					// send an event saying that we are retrying this punch
+					deviceInfo := events.GenerateBasicDeviceInfo(os.Getenv("SYSTEM_ID"))
+					e := events.Event{
+						Timestamp:    time.Now(),
+						EventTags:    []string{"pi-time"},
+						AffectedRoom: deviceInfo.BasicRoomInfo,
+						TargetDevice: deviceInfo,
+						Key:          "pi-time-retrying-punch-from",
+						Value:        punch.Time.Format(time.RFC3339),
+						User:         punch.BYUID,
+					}
+
+					_ = event.SendEvent(e)
 
 					err = helpers.Punch(punch.BYUID, punch)
 					if err != nil {
@@ -217,54 +234,64 @@ func addPunchToErrorBucket(key []byte, request structs.ClientPunchRequest, db *b
 	return nil
 }
 
+func GetBucketStats(db *bolt.DB) (bucketStats, error) {
+	var stats bucketStats
+
+	var pendingBucket bolt.BucketStats
+	err := db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(PENDING_BUCKET))
+		if bucket == nil {
+			return fmt.Errorf("unable to access bucket")
+		}
+
+		pendingBucket = bucket.Stats()
+		return nil
+	})
+	if err != nil {
+		return stats, fmt.Errorf("unable to get pending bucket: %w", err)
+	}
+
+	var errorBucket bolt.BucketStats
+	err = db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(ERROR_BUCKET))
+		if bucket == nil {
+			return fmt.Errorf("unable to access bucket")
+		}
+
+		errorBucket = bucket.Stats()
+		return nil
+	})
+	if err != nil {
+		return stats, fmt.Errorf("unable to get error bucket: %w", err)
+	}
+
+	var employeeBucket bolt.BucketStats
+	err = db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(employee.EMPLOYEE_BUCKET))
+		if bucket == nil {
+			return fmt.Errorf("unable to access bucket")
+		}
+
+		employeeBucket = bucket.Stats()
+		return nil
+	})
+	if err != nil {
+		return stats, fmt.Errorf("unable to get employee bucket: %w", err)
+	}
+
+	stats.PendingBucket = pendingBucket.KeyN
+	stats.ErrorBucket = errorBucket.KeyN
+	stats.EmployeeBucket = employeeBucket.KeyN
+
+	return stats, nil
+}
+
 func GetBucketStatsHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var pendingBucket bolt.BucketStats
-		var errorBucket bolt.BucketStats
-		var employeeBucket bolt.BucketStats
-		err := db.View(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte(PENDING_BUCKET))
-			if bucket == nil {
-				return fmt.Errorf("unable to access bucket")
-			}
-
-			pendingBucket = bucket.Stats()
-			return nil
-		})
+		stats, err := GetBucketStats(db)
 		if err != nil {
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
-
-		err = db.View(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte(ERROR_BUCKET))
-			if bucket == nil {
-				return fmt.Errorf("unable to access bucket")
-			}
-
-			errorBucket = bucket.Stats()
-			return nil
-		})
-		if err != nil {
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
-		}
-
-		err = db.View(func(tx *bolt.Tx) error {
-			bucket := tx.Bucket([]byte(employee.EMPLOYEE_BUCKET))
-			if bucket == nil {
-				return fmt.Errorf("unable to access bucket")
-			}
-
-			employeeBucket = bucket.Stats()
-			return nil
-		})
-		if err != nil {
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
-		}
-
-		var stats bucketStats
-		stats.ErrorBucket = errorBucket.KeyN
-		stats.PendingBucket = pendingBucket.KeyN
-		stats.EmployeeBucket = employeeBucket.KeyN
 
 		return c.JSON(http.StatusOK, stats)
 	}

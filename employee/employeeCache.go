@@ -3,6 +3,7 @@ package employee
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"os"
 	"time"
 
@@ -28,15 +29,28 @@ func init() {
 //WatchForCachedEmployees will start a timer and download the cache every 4 hours
 func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	for {
-		log.P.Info("Updating employee cache")
-		wait := 4 * time.Hour
 		start := time.Now()
+		log.P.Info("Updating employee cache")
+		var wait time.Duration
 
 		if err := DownloadCachedEmployees(db); err != nil {
-			log.P.Error("unable to download employee cache", zap.Error(err))
-			wait = 1 * time.Minute
+			wait = 30 * time.Minute
+			log.P.Error("unable to download employee cache", zap.Error(err), zap.Time("next", time.Now().Add(wait)))
 		} else {
-			log.P.Info("Finished updating employee cache", zap.Duration("took", time.Since(start)), zap.Duration("next", wait))
+			// generate a random time between 01:00 and 04:00 (in the local timezone) tomorrow
+			one := time.Now().AddDate(0, 0, 1)
+			_, offset := one.Zone()
+			one = one.Truncate(24 * time.Hour)
+			one = one.Add(1 * time.Hour)
+			one = one.Add(time.Duration(-offset) * time.Second)
+			min := one.Unix()
+			max := one.Add(3 * time.Hour).Unix()
+			delta := max - min
+			sec := rand.Int63n(delta) + min
+			update := time.Unix(sec, 0)
+			wait = time.Until(update)
+
+			log.P.Info("Finished updating employee cache", zap.Duration("took", time.Since(start)), zap.Time("next", time.Now().Add(wait)))
 		}
 
 		select {

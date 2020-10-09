@@ -1,30 +1,21 @@
 package handlers
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
+	"github.com/byuoitav/pi-time/event"
 	"github.com/byuoitav/pi-time/helpers"
 	"github.com/byuoitav/pi-time/log"
 	"github.com/byuoitav/pi-time/offline"
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 
 	bolt "go.etcd.io/bbolt"
-)
-
-var (
-	eventProcessorHost = os.Getenv("EVENT_PROCESSOR_HOST")
 )
 
 // Punch adds an in or out punch as determined by the body sent
@@ -187,56 +178,15 @@ func DeleteWorkOrderEntry(c echo.Context) error {
 	return c.String(http.StatusOK, "ok")
 }
 
-//SendEvent passes an event to the messenger
-func SendEvent(c echo.Context) error {
-	if len(eventProcessorHost) == 0 {
-		return c.NoContent(http.StatusOK)
-	}
-
-	var event events.Event
-	err := c.Bind(&event)
-	if err != nil {
-		log.P.Warn("an error occured while binding the error", zap.Error(err))
+//SendEventHandler passes an event to the messenger
+func SendEventHandler(c echo.Context) error {
+	var e events.Event
+	if err := c.Bind(&e); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	//add generating system
-	event.GeneratingSystem = os.Getenv("SYSTEM_ID")
-
-	eventProcessorHostList := strings.Split(eventProcessorHost, ",")
-	for _, hostName := range eventProcessorHostList {
-		// create the request
-		log.P.Debug(fmt.Sprintf("Sending event to address %s", hostName))
-
-		eventJSON, _ := json.Marshal(event)
-
-		req, err := http.NewRequest("POST", hostName, bytes.NewReader(eventJSON))
-		if err != nil {
-			return c.String(http.StatusInternalServerError, err.Error())
-		}
-
-		// add headers
-		req.Header.Add("content-type", "application/json")
-
-		client := http.Client{
-			Timeout: 5 * time.Second,
-		}
-
-		resp, err := client.Do(req)
-		if err != nil {
-			return c.String(http.StatusInternalServerError, err.Error())
-		}
-		defer resp.Body.Close()
-
-		// read the resp
-		if resp.StatusCode/100 != 2 {
-			respBody, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return c.String(http.StatusInternalServerError, err.Error())
-			}
-
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("%v response: %v", resp.StatusCode, respBody))
-		}
+	if err := event.SendEvent(e); err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.NoContent(http.StatusOK)

@@ -2,6 +2,7 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/byuoitav/common v0.0.0-20191210190714-e9b411b3cc0d h1:F3/vBL2hw+zjCm78sWss6eCozj5IopBzN2bIHvKj2hw=
 github.com/byuoitav/common v0.0.0-20191210190714-e9b411b3cc0d/go.mod h1:YTDTFEmez7HU3oyCIWjU3RfQ/P6v24LEzH5YUebph7I=
+github.com/byuoitav/common v0.0.0-20200521193927-1fdf4e0a4271 h1:3bUfk879CvOFb+HDPugqk0GFy7oyJDU7t/r9zC2c7j8=
 github.com/byuoitav/wso2services v0.0.0-20190911022430-c396c6091bcc h1:Av3Wt5SAY+OFEXaEIXsNa4ASol8Svs0DsvT++J3dHJQ=
 github.com/byuoitav/wso2services v0.0.0-20190911022430-c396c6091bcc/go.mod h1:coHjR6JEYwJ3YDnDhPOX80JF3H9JniwvlFC8cVpqzGI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

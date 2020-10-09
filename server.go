@@ -5,9 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/pi-time/cache"
+	"github.com/byuoitav/pi-time/event"
 	"github.com/labstack/echo/v4"
 
 	"github.com/byuoitav/pi-time/employee"
@@ -77,6 +81,9 @@ func main() {
 	//Get all the bucket stats (pending, error, employee)
 	router.GET("/statz", offline.GetBucketStatsHandler(db))
 
+	// push up bucket stats every 5 minutes
+	go sendBucketStats(db)
+
 	//Search for employee in the employee cache
 	router.GET("/employeeBucket/:id", offline.GetEmployeeFromBucket(db))
 
@@ -125,7 +132,7 @@ func main() {
 	router.DELETE("/punch/:id", handlers.DeletePunch)
 
 	//endpoint for UI events
-	router.POST("/event", handlers.SendEvent)
+	router.POST("/event", handlers.SendEventHandler)
 
 	//force an update of the employee cache
 	router.PUT("/updateCache", updateCacheNow)
@@ -158,4 +165,45 @@ func updateCacheNow(ectx echo.Context) error {
 	updateCacheNowChannel <- struct{}{}
 
 	return ectx.String(http.StatusOK, "cache update initiated")
+}
+
+func sendBucketStats(db *bolt.DB) {
+	ticker := time.NewTicker(10 * time.Minute)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		stats, err := offline.GetBucketStats(db)
+		if err != nil {
+			log.L.Warnf("unable to get bucket stats: %s", err)
+			continue
+		}
+
+		deviceInfo := events.GenerateBasicDeviceInfo(os.Getenv("SYSTEM_ID"))
+		e := events.Event{
+			Timestamp:    time.Now(),
+			EventTags:    []string{"pi-time"},
+			AffectedRoom: deviceInfo.BasicRoomInfo,
+			TargetDevice: deviceInfo,
+			Key:          "pi-time-pending-bucket-size",
+			Value:        strconv.Itoa(stats.PendingBucket),
+		}
+
+		if err := event.SendEvent(e); err != nil {
+			log.L.Infof("unable to send pending bucket event: %w")
+		}
+
+		e.Key = "pi-time-error-bucket-size"
+		e.Value = strconv.Itoa(stats.ErrorBucket)
+
+		if err := event.SendEvent(e); err != nil {
+			log.L.Infof("unable to send error bucket event: %w")
+		}
+
+		e.Key = "pi-time-employee-bucket-size"
+		e.Value = strconv.Itoa(stats.EmployeeBucket)
+
+		if err := event.SendEvent(e); err != nil {
+			log.L.Infof("unable to send employee bucket event: %w")
+		}
+	}
 }
