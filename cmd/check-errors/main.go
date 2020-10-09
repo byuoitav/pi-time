@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -21,7 +22,8 @@ func main() {
 		log.Fatalf("error: %s", err)
 	}
 
-	fmt.Printf("deviceID,time,byuID\n")
+	w := csv.NewWriter(os.Stdout)
+	w.Write([]string{"deviceID", "time", "byuID", "error"})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -77,11 +79,21 @@ func main() {
 
 			for _, punch := range punches.Punches {
 				if time.Since(punch.Punch.Punch.Time) < 24*time.Hour {
-					fmt.Printf("%v,%v,%v\n", dev.ID, punch.Punch.Punch.Time.Format(time.RFC3339), punch.Punch.Punch.BYUID)
+					w.Write([]string{
+						dev.ID,
+						punch.Punch.Punch.Time.Format(time.RFC3339),
+						punch.Punch.Punch.BYUID,
+						punch.Punch.Err,
+					})
 				}
 			}
 		}(dev)
 	}
 
 	wg.Wait()
+	w.Flush()
+
+	if err := w.Error(); err != nil {
+		log.Fatalf("error writing csv: %s", err)
+	}
 }
