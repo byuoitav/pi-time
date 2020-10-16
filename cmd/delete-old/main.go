@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -23,9 +24,9 @@ func main() {
 	}
 
 	w := csv.NewWriter(os.Stdout)
-	w.Write([]string{"deviceID", "time", "byuID", "error"})
+	w.Write([]string{"deviceID", "punchID", "time", "error"})
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 
 	wg := sync.WaitGroup{}
@@ -79,15 +80,27 @@ func main() {
 			}
 
 			for _, punch := range punches.Punches {
-				if time.Since(punch.Punch.Punch.Time) < 4*time.Hour {
-					wMu.Lock()
-					w.Write([]string{
-						dev.ID,
-						punch.Punch.Punch.Time.Format(time.RFC3339),
-						punch.Punch.Punch.BYUID,
-						punch.Punch.Err,
-					})
-					wMu.Unlock()
+				if time.Since(punch.Punch.Punch.Time) > 1*time.Second {
+					// delete this punch
+					if err := deletePunch(ctx, dev.Address, punch.Key); err != nil {
+						wMu.Lock()
+						w.Write([]string{
+							dev.ID,
+							punch.Key,
+							punch.Punch.Punch.Time.Format(time.RFC3339),
+							err.Error(),
+						})
+						wMu.Unlock()
+					} else {
+						wMu.Lock()
+						w.Write([]string{
+							dev.ID,
+							punch.Key,
+							punch.Punch.Punch.Time.Format(time.RFC3339),
+							"",
+						})
+						wMu.Unlock()
+					}
 				}
 			}
 		}(dev)
@@ -99,4 +112,29 @@ func main() {
 	if err := w.Error(); err != nil {
 		log.Fatalf("error writing csv: %s", err)
 	}
+}
+
+func deletePunch(ctx context.Context, addr, id string) error {
+	url := fmt.Sprintf("http://%s:8463/buckets/error/punches/%s", addr, id)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
+	if err != nil {
+		return fmt.Errorf("unable to build request: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("unable to do request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		return nil
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("unable to read body: %w", err)
+	}
+
+	return fmt.Errorf("%s", body)
 }

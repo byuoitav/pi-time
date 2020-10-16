@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"encoding/csv"
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +13,6 @@ import (
 
 	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/structs"
-	pstructs "github.com/byuoitav/pi-time/structs"
 )
 
 func main() {
@@ -23,7 +22,7 @@ func main() {
 	}
 
 	w := csv.NewWriter(os.Stdout)
-	w.Write([]string{"deviceID", "time", "byuID", "error"})
+	w.Write([]string{"deviceID", "worked", "error"})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -43,8 +42,7 @@ func main() {
 
 			l := log.New(os.Stderr, dev.ID+" ", log.Flags())
 
-			// get error bucket from this device
-			url := fmt.Sprintf("http://%s:8463/buckets/error/punches", dev.Address)
+			url := fmt.Sprintf("http://%s:8463/buckets/error/reset", dev.Address)
 			req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 			if err != nil {
 				l.Printf("error building request: %s", err)
@@ -58,38 +56,36 @@ func main() {
 			}
 			defer resp.Body.Close()
 
-			if resp.StatusCode != http.StatusOK {
-				l.Printf("bad status code %v", resp.StatusCode)
+			if resp.StatusCode == http.StatusOK {
+				wMu.Lock()
+				defer wMu.Unlock()
+				w.Write([]string{
+					dev.ID,
+					"true",
+					"",
+				})
 				return
 			}
 
-			punches := struct {
-				Punches []struct {
-					Key   string `json:"Key"`
-					Punch struct {
-						Err   string                      `json:"Err"`
-						Punch pstructs.ClientPunchRequest `json:"Punch"`
-					}
-				} `json:"Punches"`
-			}{}
-
-			if err := json.NewDecoder(resp.Body).Decode(&punches); err != nil {
-				l.Printf("error decoding: %s", err)
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				wMu.Lock()
+				defer wMu.Unlock()
+				w.Write([]string{
+					dev.ID,
+					"false",
+					fmt.Sprintf("unable to read body: %s", err),
+				})
 				return
 			}
 
-			for _, punch := range punches.Punches {
-				if time.Since(punch.Punch.Punch.Time) < 4*time.Hour {
-					wMu.Lock()
-					w.Write([]string{
-						dev.ID,
-						punch.Punch.Punch.Time.Format(time.RFC3339),
-						punch.Punch.Punch.BYUID,
-						punch.Punch.Err,
-					})
-					wMu.Unlock()
-				}
-			}
+			wMu.Lock()
+			defer wMu.Unlock()
+			w.Write([]string{
+				dev.ID,
+				"false",
+				string(body),
+			})
 		}(dev)
 	}
 
