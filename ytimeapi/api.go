@@ -158,9 +158,11 @@ func GetTimesheet(byuid string, db *bolt.DB) (structs.Timesheet, bool, error) {
 	if err != nil {
 		log.P.Warn("unable to get timesheet", zap.Error(err), zap.String("id", byuid))
 
-		if strings.Contains(err.Error(), "network is unreachable") || httpResponse.StatusCode/100 == 5 {
-			//500 code, then we look in cache
-			//look in the cache
+		// httpResponse is nil if unable to get wso2 access key
+		// we can't just return the cached one on any error because it may be that the employee doesn't exist (anymore)
+		// and we don't want to returned a bad, cached version
+		if strings.Contains(err.Error(), "network is unreachable") || httpResponse == nil || httpResponse.StatusCode/100 == 5 {
+			// return cached version
 			employeeRecord, innerErr := employee.GetEmployeeFromCache(byuid, db)
 			if innerErr != nil {
 				log.P.Warn("no cached timesheet found", zap.String("id", byuid))
