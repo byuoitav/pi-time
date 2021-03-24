@@ -11,8 +11,8 @@ func translateToPunch(start structs.ClientPunchRequest) structs.Punch {
 	var req structs.Punch
 	req.PunchType = start.PunchType
 	req.PunchTime = start.Time.Local().Format("15:04:05")
-	req.Latitude = structs.String(cache.LATITUDE)
-	req.Longitude = structs.String(cache.LONGITUDE)
+	req.Latitude = structs.String(cache.Latitude)
+	req.Longitude = structs.String(cache.Longitude)
 	req.LocationDescription = structs.String(os.Getenv("SYSTEM_ID"))
 	req.TimeCollectionSource = structs.String("CPI")
 	req.PunchDate = structs.String(start.Time.Local().Format("2006-01-02"))

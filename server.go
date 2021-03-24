@@ -24,8 +24,14 @@ import (
 var updateCacheNowChannel = make(chan struct{})
 
 func main() {
-	//start a go routine to go and get the latitude and longitude from the building struct
-	go cache.GetYtimeLocation()
+	// set cache.Latitude and cache.Longitude from the SYSTEM_ID's building
+	if err := cache.GetYTimeLocation(); err != nil {
+		fmt.Printf("unable to get location: %s\n", err)
+
+		fmt.Printf("shutting down in 30 seconds\n")
+		time.Sleep(30 * time.Second) // so it doesn't restart too quickly lol
+		os.Exit(1)
+	}
 
 	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
 
