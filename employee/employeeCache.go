@@ -65,7 +65,7 @@ func DownloadCachedEmployees(db *bolt.DB) error {
 	log.P.Info("Downloading employees")
 
 	var cache structs.EmployeeCache
-	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://api.byu.edu:443/domains/erp/hr/clock_employees/v1", "", &cache, map[string]string{"sm_user": "timeclock"})
+	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://api.byu.edu:443/domains/erp/hr/clock_employees/v1/", "", &cache, map[string]string{"sm_user": "timeclock"})
 	if ne != nil {
 		return ne
 	}
