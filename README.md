@@ -1,3 +1,3 @@
 # pi-time
 
-Current code used on all of the timeclocks on campus.  This allows users on campus to add and remove entries in timeclock.  
+This is the source code deployed on the raspberry-pi based timeclocks around BYU. Hourly employees use these clocks to clock in/out of their jobs, to review/correct their punches, etc.
