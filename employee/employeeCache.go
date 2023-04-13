@@ -26,7 +26,7 @@ func init() {
 	}
 }
 
-//WatchForCachedEmployees will start a timer and download the cache every 4 hours
+// WatchForCachedEmployees will start a timer and download the cache every 4 hours
 func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	for {
 		start := time.Now()
@@ -60,12 +60,12 @@ func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	}
 }
 
-//DownloadCachedEmployees makes a call to WSO2 to get the employee cache
+// DownloadCachedEmployees makes a call to WSO2 to get the employee cache
 func DownloadCachedEmployees(db *bolt.DB) error {
 	log.P.Info("Downloading employees")
 
 	var cache structs.EmployeeCache
-	ne := wso2requests.MakeWSO2RequestWithHeaders("GET", "https://api.byu.edu:443/domains/erp/hr/clock_employees/v1/", "", &cache, map[string]string{"sm_user": "timeclock"})
+	ne := wso2requests.MakeWSO2Request("GET", "https://api.byu.edu:443/domains/erp/hr/clock_employees/v1/", "", &cache)
 	if ne != nil {
 		return ne
 	}
@@ -136,7 +136,7 @@ func GetCache(db *bolt.DB) (structs.EmployeeCache, error) {
 	return cache, nil
 }
 
-//GetEmployeeFromCache looks up an employee in the cache
+// GetEmployeeFromCache looks up an employee in the cache
 func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, error) {
 	var emp structs.EmployeeRecord
 
