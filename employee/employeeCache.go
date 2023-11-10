@@ -27,7 +27,6 @@ func init() {
 }
 
 // *********************************************************************Workday
-
 func GetWorkersFromWorkday(cache *structs.EmployeeCache) error {
 	// get worker_summary
 	var workerSummaryData []structs.WorkerSummaryData
