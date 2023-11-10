@@ -26,6 +26,135 @@ func init() {
 	}
 }
 
+// *********************************************************************Workday
+
+func GetWorkersFromWorkday(cache *structs.EmployeeCache) error {
+	// get worker_summary
+	var workerSummaryData []structs.WorkerSummaryData
+	getWorkerSummaryFullTable(&workerSummaryData)
+
+	// get positions
+	var workerPositions []structs.WorkerPositionData
+	getWorkerPositionFullTable(&workerPositions)
+
+	fmt.Printf("Got %d workers\n", len(workerSummaryData))
+	fmt.Printf("Got %d positions\n", len(workerPositions))
+
+	// merge positions to worker_summary
+	var employeeCache []structs.EmployeeRecord
+	count := 0
+	for _, workerData := range workerSummaryData {
+		var employee structs.EmployeeRecord
+		employee.BYUID = workerData.Worker_ID
+		employee.NETID = "No NETID" //Need to figure out if we need NetID
+
+		firstName := workerData.First_Name
+		if workerData.Preferred_first_name != "" {
+			firstName = workerData.Preferred_first_name
+		}
+
+		middleName := workerData.Middle_Name
+		if workerData.Preferred_middle_name != "" {
+			middleName = workerData.Preferred_middle_name
+		}
+
+		lastName := workerData.Last_name
+		if workerData.Preferred_first_name != "" {
+			lastName = workerData.Preferred_last_name
+		}
+		employee.Name = lastName + ", " + firstName + " " + middleName
+
+		//add job slice
+		var jobs []structs.Job
+		for _, jobData := range workerPositions {
+			if jobData.Worker_id == workerData.Worker_ID {
+				var job structs.Job
+				//var trcs []TRC
+
+				job.JobCodeDesc = ""
+				job.PunchType = ""
+				job.EmployeeRecord = 12345
+				job.WeeklySubtotal = ""
+				job.PeriodSubtotal = ""
+				//job.PhysicalFacilities = false
+				job.OperatingUnit = ""
+				//job.TRCs = trcs
+				//job.CurrentWorkOrder = ""
+				//job.CurrentTRC = ""
+				if jobData.Fte_percentage == "100" {
+					job.FullPartTime = "F"
+				} else {
+					job.FullPartTime = "P"
+				}
+				// job.HasPunchException = ""
+				// job.HasWorkOrderException = ""
+
+				jobs = append(jobs, job)
+			}
+		}
+		employee.Jobs = jobs
+		employeeCache = append(employeeCache, employee)
+		cache.Employees = employeeCache
+	}
+	fmt.Println("count", count)
+
+	fmt.Printf("%+v\n", employeeCache[1])
+	return nil
+}
+
+func getWorkerSummaryFullTable(data *[]structs.WorkerSummaryData, next ...string) error { //recursively get the entire list of workersummary
+	url := "https://api-sandbox.byu.edu/bdp/human_resources/worker_summary/v0?is_active=true&page_size=10000"
+	method := "GET"
+	tempURL := url
+	if len(next) > 0 {
+		tempURL = url + "&next_identifier=" + next[0]
+	}
+
+	var dataPage structs.WorkerSummaryResponse
+
+	err, _, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, tempURL, nil, &dataPage, map[string]string{
+		"Host": "api-sandbox.byu.edu",
+	})
+	if err != nil {
+		return fmt.Errorf("error getting worker_summary from BDP: %s", err)
+	}
+
+	*data = append(*data, dataPage.Data...)
+	fmt.Println(len(*data))
+	if len(dataPage.Info.Paging.Next_identifier) > 0 {
+		getWorkerSummaryFullTable(data, dataPage.Info.Paging.Next_identifier)
+	}
+	return nil
+}
+
+func getWorkerPositionFullTable(data *[]structs.WorkerPositionData, next ...string) error { //recursively get the entire list of workersummary
+	url := "https://api-sandbox.byu.edu/bdp/human_resources/worker_position/v0?is_active_position=true&page_size=10000"
+	method := "GET"
+	tempURL := url
+	if len(next) > 0 {
+		tempURL = url + "&next_identifier=" + next[0]
+	}
+
+	var dataPage structs.WorkerPositionResponse
+
+	err, _, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, tempURL, nil, &dataPage, map[string]string{
+		"Host": "api-sandbox.byu.edu",
+	})
+	if err != nil {
+		return fmt.Errorf("error getting worker_position from BDP: %s", err)
+	}
+	//fmt.Println("Next_identifier", dataPage.Info.Paging.Next_identifier)
+
+	*data = append(*data, dataPage.Data...)
+	fmt.Println(len(*data))
+	if len(dataPage.Info.Paging.Next_identifier) > 0 {
+		getWorkerPositionFullTable(data, dataPage.Info.Paging.Next_identifier)
+	}
+	return nil
+}
+
+// *********************************************************************Workday End
+
 // WatchForCachedEmployees will start a timer and download the cache every 4 hours
 func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 	for {
@@ -66,7 +195,7 @@ func DownloadCachedEmployees(db *bolt.DB) error {
 
 	var cache structs.EmployeeCache
 
-	ne := wso2requests.MakeWSO2Request("GET", "https://api.byu.edu:443/domains/erp/hr/clock_employees/v1/", "", &cache)
+	ne := GetWorkersFromWorkday(&cache)
 	if ne != nil {
 		return ne
 	}

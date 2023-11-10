@@ -1,35 +1,61 @@
 package main
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/pi-time/employee"
+	"github.com/byuoitav/pi-time/offline"
+	bolt "go.etcd.io/bbolt"
 )
 
 func TestAPI(t *testing.T) {
-	//gobyuID := "666567890"
+	byuID := "779147452"
 
-	// log.SetLevel("debug")
+	log.SetLevel("debug")
 
-	//test the cache
-	//helpers.DownloadCachedEmployees()
+	fmt.Println("Building databases")
+	//TODO Smitty - open db and pass it in to the functions
+	dbLoc := "_testing/testDB.db"
+	db, err := bolt.Open(dbLoc, 0666, nil)
+	if err != nil {
+		panic(fmt.Sprintf("could not open db: %s", err))
+	}
 
-	// cache.GetYtimeLocation()
+	//create buckets if they do not exist
+	err = db.Update(func(tx *bolt.Tx) error {
+		//create punch bucket if it does not exist
+		log.L.Debug("Checking if Pending Bucket Exists")
+		_, err := tx.CreateBucketIfNotExists([]byte(offline.PENDING_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the pending bucket: %s", err)
+		}
 
-	//get timesheet
-	//timesheet, _, _ := helpers.GetTimesheet(byuID)
-	//cache.AddEmployee(byuID)
-	//cache.UpdateEmployeeFromTimesheet(byuID, timesheet)
+		log.L.Debug("Checking if Error Bucket Exists")
+		_, err = tx.CreateBucketIfNotExists([]byte(offline.ERROR_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the error bucket: %s", err)
+		}
 
-	//go get the possible work orders
-	//cache.GetPossibleWorkOrders(byuID)
+		log.L.Debug("Checking if Employee Bucket Exists")
+		_, err = tx.CreateBucketIfNotExists([]byte(employee.EMPLOYEE_BUCKET))
+		if err != nil {
+			return fmt.Errorf("error creating the employee bucket: %s", err)
+		}
 
-	//get punches for all the jobs
-	//cache.GetPunchesForAllJobs(byuID)
+		return nil
+	})
+	if err != nil {
+		panic(fmt.Sprintf("could not create db buckets: %s", err))
+	}
 
-	//cache.GetWorkOrderEntries(byuID)
-	//cache.GetOtherHours(byuID)
+	fmt.Println("START: get workers from Workday and test that byuid can be found")
 
-	//employee := cache.GetEmployeeFromStore(byuID)
-	//employeeJSON, _ := json.Marshal(employee)
-
-	//log.P.Debug("result: %s", employeeJSON)
+	err = employee.DownloadCachedEmployees(db)
+	if err != nil {
+		fmt.Printf("error creating the employee bucket: %s\n", err)
+	}
+	fmt.Println(employee.GetEmployeeFromCache(byuID, db))
+	fmt.Println("END: get workers from Workday and test that byuid can be found")
 }
