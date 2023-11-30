@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/events"
-	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/event"
 	"github.com/labstack/echo/v4"
 
@@ -24,28 +24,9 @@ import (
 var updateCacheNowChannel = make(chan struct{})
 
 func main() {
-	// set cache.Latitude and cache.Longitude from the SYSTEM_ID's building
-	if err := cache.GetYTimeLocation(); err != nil {
-		fmt.Printf("unable to get location: %s\n", err)
+	var err error
 
-		fmt.Printf("shutting down in 30 seconds\n")
-		time.Sleep(30 * time.Second) // so it doesn't restart too quickly lol
-		os.Exit(1)
-	}
-
-	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the clock comes online
-
-	//start up a server to serve the angular site and set up the handlers for the UI to use
-	port := ":8463"
-
-	router := echo.New()
-
-	// health endpoint
-	router.GET("/healthz", func(c echo.Context) error {
-		return c.String(http.StatusOK, "healthy")
-	})
-
-	//TODO Smitty - open db and pass it in to the functions
+	//open db and pass it in to the functions
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
 	db, err := bolt.Open(dbLoc, 0600, nil)
 	if err != nil {
@@ -80,9 +61,21 @@ func main() {
 	}
 
 	//start a go routine that will pull the cache information for offline mode
-	go employee.WatchForCachedEmployees(updateCacheNowChannel, db)
+	//go employee.WatchForCachedEmployees(updateCacheNowChannel, db)
 
-	go offline.ResendPunches(db)
+	//start a go routine that will monitor the persistent cache for punches that didn't get posted and post them once the database comes online
+	//go offline.ResendPunches(db)
+
+	//start up a server to serve the angular site and set up the handlers for the UI to use
+	var port *string
+	port = flag.String("p", "8463", "port for microservice to av-api communication")
+
+	router := echo.New()
+
+	// health endpoint
+	router.GET("/healthz", func(c echo.Context) error {
+		return c.String(http.StatusOK, "healthy")
+	})
 
 	//Get all the bucket stats (pending, error, employee)
 	router.GET("/statz", offline.GetBucketStatsHandler(db))
@@ -112,30 +105,7 @@ func main() {
 
 	//clock in
 	//clock out
-	//transfer
-	//add missing punch
-	router.POST("/punch/:id", handlers.GetPunchHandler(db))
-
-	//will send in a ClientPunchRequest in the body
-	router.PUT("/punch/:id/:seq", handlers.FixPunch) //will send in a ClientPunchRequest in the body
-
-	//lunchpunch
-	router.POST("/lunchpunch/:id", handlers.LunchPunch)
-
-	//get sick and vacation
-	router.GET("/otherhours/:id/:jobid/:date", handlers.GetSickAndVacationForJobAndDate)
-
-	//add sick or vacation
-	router.PUT("/otherhours/:id", handlers.OtherHours)
-
-	// add/edit work order entry
-	router.POST("/workorderentry/:id", handlers.UpsertWorkOrderEntry)
-
-	//delete work order entry
-	router.DELETE("/workorderentry/:id", handlers.DeleteWorkOrderEntry)
-
-	//delete duplicate punch
-	router.DELETE("/punch/:id", handlers.DeletePunch)
+	router.POST("/punch/:id", handlers.PostPunch(db))
 
 	//endpoint for UI events
 	router.POST("/event", handlers.SendEventHandler)
@@ -157,7 +127,7 @@ func main() {
 	}))
 
 	server := http.Server{
-		Addr:           port,
+		Addr:           *port,
 		MaxHeaderBytes: 1024 * 10,
 	}
 
@@ -173,12 +143,13 @@ func updateCacheNow(ectx echo.Context) error {
 	return ectx.String(http.StatusOK, "cache update initiated")
 }
 
+// send bucket stats to the event hub
 func sendBucketStats(db *bolt.DB) {
 	ticker := time.NewTicker(10 * time.Minute)
 	defer ticker.Stop()
 
 	for range ticker.C {
-		stats, err := offline.GetBucketStats(db)
+		stats, err := offline.GetBucketStats(db) //stats is three integers indicating the qty of key/value pairs in the buckets (pending, error, and employee)
 		if err != nil {
 			log.L.Warnf("unable to get bucket stats: %s", err)
 			continue

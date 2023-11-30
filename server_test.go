@@ -54,7 +54,7 @@ func TestAPI(t *testing.T) {
 
 	err = employee.DownloadCachedEmployees(db)
 	if err != nil {
-		fmt.Printf("error creating the employee bucket: %s\n", err)
+		fmt.Printf("error downloading cached employees: %s\n", err)
 	}
 	fmt.Println(employee.GetEmployeeFromCache(byuID, db))
 	fmt.Println("END: get workers from Workday and test that byuid can be found")

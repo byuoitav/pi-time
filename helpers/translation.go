@@ -3,7 +3,6 @@ package helpers
 import (
 	"os"
 
-	"github.com/byuoitav/pi-time/cache"
 	"github.com/byuoitav/pi-time/structs"
 )
 
@@ -11,8 +10,6 @@ func translateToPunch(start structs.ClientPunchRequest) structs.Punch {
 	var req structs.Punch
 	req.PunchType = start.PunchType
 	req.PunchTime = start.Time.Local().Format("15:04:05")
-	req.Latitude = structs.String(cache.Latitude)
-	req.Longitude = structs.String(cache.Longitude)
 	req.LocationDescription = structs.String(os.Getenv("SYSTEM_ID"))
 	req.TimeCollectionSource = structs.String("CPI")
 	req.PunchDate = structs.String(start.Time.Local().Format("2006-01-02"))
@@ -38,20 +35,3 @@ func translateToElapsedTimeEntry(start structs.ClientOtherHoursRequest) structs.
 
 	return toReturn
 }
-
-//func translateToWorkOrderEntry(start structs.ClientWorkOrderEntry) structs.WorkOrderEntry {
-//	var toReturn structs.WorkOrderEntry
-//
-//	toReturn.WorkOrder = structs.WorkOrder{
-//		WorkOrderID:          start.WorkOrder.ID,
-//		WorkOrderDescription: start.WorkOrder.Name,
-//	}
-//	toReturn.TRC = structs.TRC{
-//		TRCID:          start.TRC.ID,
-//		TRCDescription: start.TRC.Description,
-//	}
-//	toReturn.TimeReportingCodeHours = start.TimeReportingCodeHours
-//	toReturn.Editable = start.Editable
-//
-//	return toReturn
-//}
