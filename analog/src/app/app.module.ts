@@ -3,28 +3,26 @@ import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import {
-  MatToolbarModule,
-  MatButtonModule,
-  MatGridListModule,
-  MatFormFieldModule,
-  MatInputModule,
-  MatSidenavModule,
-  MatIconModule,
-  MatCardModule,
-  MatDividerModule,
-  MatDialogModule,
-  MAT_DIALOG_DEFAULT_OPTIONS,
-  MatSelectModule,
-  MatNativeDateModule,
-  MatDatepickerModule,
-  MatTabsModule,
-  MatRadioModule,
-  MatProgressSpinnerModule,
-  MatBadgeModule,
-  MatSnackBarModule,
-  MatRippleModule
-} from "@angular/material";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatButtonModule } from "@angular/material/button";
+import { MatGridListModule } from "@angular/material/grid-list";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatIconModule } from "@angular/material/icon";
+import { MatCardModule } from "@angular/material/card";
+import { MatDividerModule } from "@angular/material/divider";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MAT_DIALOG_DEFAULT_OPTIONS } from "@angular/material/dialog";
+import { MatSelectModule } from "@angular/material/select";
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatBadgeModule } from "@angular/material/badge";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatRippleModule } from "@angular/material/core";
 import { OverlayModule } from "@angular/cdk/overlay";
 import "hammerjs";
 
@@ -43,6 +41,7 @@ import { DateSelectComponent } from "./components/date-select/date-select.compon
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
 import { WoSelectComponent } from "./components/wo-select/wo-select.component";
 import { ErrorDialog } from "./dialogs/error/error.dialog";
+import { ManagementComponent } from './components/management/management.component';
 import { PunchesComponent } from "./components/punches/punches.component";
 import { WoSrComponent } from "./components/wo-sr/wo-sr.component";
 import { SickVacationComponent } from "./components/sick-vacation/sick-vacation.component";
@@ -52,7 +51,6 @@ import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
 import { ToastService } from "./services/toast.service";
 import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
 import { DeletePunchDialog } from './dialogs/delete-punch/delete-punch.dialog';
-import { ManagementComponent } from './components/management/management.component'
 @NgModule({
   declarations: [
     AppComponent,
@@ -126,4 +124,5 @@ import { ManagementComponent } from './components/management/management.componen
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule {}

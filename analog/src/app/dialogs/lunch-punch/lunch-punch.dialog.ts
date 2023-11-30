@@ -1,5 +1,5 @@
 import {Component, OnInit, Inject, Injector, OnDestroy} from "@angular/core";
-import {MatDialogRef, MAT_DIALOG_DATA} from "@angular/material";
+import {MatDialogRef, MAT_DIALOG_DATA} from "@angular/material/dialog";
 import {ComponentPortal, PortalInjector} from "@angular/cdk/portal";
 import {Overlay, OverlayRef} from "@angular/cdk/overlay";
 import {Observable, of, Subscription} from "rxjs";
