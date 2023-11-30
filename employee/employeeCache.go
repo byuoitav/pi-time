@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/url"
 	"os"
 	"time"
 
@@ -11,12 +12,13 @@ import (
 	"github.com/byuoitav/pi-time/structs"
 	"github.com/byuoitav/wso2services/wso2requests"
 	bolt "go.etcd.io/bbolt"
-	"go.uber.org/zap"
 )
 
 const (
 	EMPLOYEE_BUCKET = "EMPLOYEE"
 )
+
+var tokenRefreshURL string
 
 func init() {
 	dbLoc := os.Getenv("CACHE_DATABASE_LOCATION")
@@ -24,6 +26,7 @@ func init() {
 	if len(dbLoc) == 0 {
 		log.P.Warn("Need CACHE_DATABASE_LOCATION variable")
 	}
+	tokenRefreshURL = os.Getenv("TOKEN_REFRESH_URL")
 }
 
 // *********************************************************************Workday
@@ -73,8 +76,8 @@ func GetWorkersFromWorkday(cache *structs.EmployeeCache) error {
 				job.JobCodeDesc = ""
 				job.PunchType = ""
 				job.EmployeeRecord = 12345
-				job.WeeklySubtotal = ""
-				job.PeriodSubtotal = ""
+				job.WeeklySubtotal = "N/A"
+				job.PeriodSubtotal = "N/A"
 				//job.PhysicalFacilities = false
 				job.OperatingUnit = ""
 				//job.TRCs = trcs
@@ -96,30 +99,42 @@ func GetWorkersFromWorkday(cache *structs.EmployeeCache) error {
 		cache.Employees = employeeCache
 	}
 	fmt.Println("count", count)
-
+	if count < 1 {
+		return fmt.Errorf("got 0 employees")
+	}
 	fmt.Printf("%+v\n", employeeCache[1])
 	return nil
 }
 
 func getWorkerSummaryFullTable(data *[]structs.WorkerSummaryData, next ...string) error { //recursively get the entire list of workersummary
-	url := "https://api-sandbox.byu.edu/bdp/human_resources/worker_summary/v0?is_active=true&page_size=10000"
-	method := "GET"
-	tempURL := url
-	if len(next) > 0 {
-		tempURL = url + "&next_identifier=" + next[0]
+	u, err := url.Parse(tokenRefreshURL)
+	fmt.Println("host:", u.Host)
+	if err != nil {
+		return fmt.Errorf("error parsing host from TOKEN_REFRESH_URL environment variable: %s", err)
 	}
+
+	tokenURL := "https://" + u.Host + "/bdp/human_resources/worker_summary/v0?is_active=true&page_size=10000"
+	method := "GET"
+	pageURL := tokenURL
+	if len(next) > 0 {
+		pageURL = tokenURL + "&next_identifier=" + next[0]
+	}
+	fmt.Println("next:", next)
+	fmt.Println("tokenURL:", tokenURL)
+	fmt.Println("pageURL", pageURL)
 
 	var dataPage structs.WorkerSummaryResponse
 
-	err, _, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, tempURL, nil, &dataPage, map[string]string{
-		"Host": "api-sandbox.byu.edu",
+	err2, _, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, pageURL, nil, &dataPage, map[string]string{
+		"Host": u.Host,
 	})
-	if err != nil {
+
+	if err2 != nil {
 		return fmt.Errorf("error getting worker_summary from BDP: %s", err)
 	}
 
 	*data = append(*data, dataPage.Data...)
-	fmt.Println(len(*data))
+	fmt.Println("Data length", len(*data))
 	if len(dataPage.Info.Paging.Next_identifier) > 0 {
 		getWorkerSummaryFullTable(data, dataPage.Info.Paging.Next_identifier)
 	}
@@ -127,22 +142,26 @@ func getWorkerSummaryFullTable(data *[]structs.WorkerSummaryData, next ...string
 }
 
 func getWorkerPositionFullTable(data *[]structs.WorkerPositionData, next ...string) error { //recursively get the entire list of workersummary
-	url := "https://api-sandbox.byu.edu/bdp/human_resources/worker_position/v0?is_active_position=true&page_size=10000"
+	u, err := url.Parse(tokenRefreshURL)
+	if err != nil {
+		return fmt.Errorf("error parsing host from TOKEN_REFRESH_URL environment variable: %s", err)
+	}
+
+	tokenURL := "https://" + u.Host + "/bdp/human_resources/worker_position/v0?is_active_position=true&page_size=10000"
 	method := "GET"
-	tempURL := url
+	pageURL := tokenURL
 	if len(next) > 0 {
-		tempURL = url + "&next_identifier=" + next[0]
+		pageURL = tokenURL + "&next_identifier=" + next[0]
 	}
 
 	var dataPage structs.WorkerPositionResponse
 
-	err, _, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, tempURL, nil, &dataPage, map[string]string{
-		"Host": "api-sandbox.byu.edu",
+	err2, _, _ := wso2requests.MakeWSO2RequestWithHeadersReturnResponse(method, pageURL, nil, &dataPage, map[string]string{
+		"Host": u.Host,
 	})
-	if err != nil {
+	if err2 != nil {
 		return fmt.Errorf("error getting worker_position from BDP: %s", err)
 	}
-	//fmt.Println("Next_identifier", dataPage.Info.Paging.Next_identifier)
 
 	*data = append(*data, dataPage.Data...)
 	fmt.Println(len(*data))
@@ -163,7 +182,7 @@ func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 
 		if err := DownloadCachedEmployees(db); err != nil {
 			wait = 30 * time.Minute
-			log.P.Error("unable to download employee cache", zap.Error(err), zap.Time("next", time.Now().Add(wait)))
+			log.P.Error("unable to download employee cache", err, "next", time.Now().Add(wait))
 		} else {
 			// generate a random time between 01:00 and 04:00 (in the local timezone) tomorrow
 			one := time.Now().AddDate(0, 0, 1)
@@ -178,7 +197,7 @@ func WatchForCachedEmployees(updateNowChan chan struct{}, db *bolt.DB) {
 			update := time.Unix(sec, 0)
 			wait = time.Until(update)
 
-			log.P.Info("Finished updating employee cache", zap.Duration("took", time.Since(start)), zap.Time("next", time.Now().Add(wait)))
+			log.P.Info("Finished updating employee cache", "took", time.Since(start), "next", time.Now().Add(wait))
 		}
 
 		select {
@@ -194,14 +213,14 @@ func DownloadCachedEmployees(db *bolt.DB) error {
 
 	var cache structs.EmployeeCache
 
-	ne := GetWorkersFromWorkday(&cache)
-	if ne != nil {
-		return ne
+	err := GetWorkersFromWorkday(&cache)
+	if err != nil {
+		return err
 	}
 
-	log.P.Info("Finished downloading employees. Now adding to local cache", zap.Int("numEmployees", len(cache.Employees)))
+	log.P.Info("Finished downloading employees. Now adding to local cache", "numEmployees", len(cache.Employees))
 
-	err := db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bolt.Tx) error {
 		// delete the existing employee bucket
 		_ = tx.DeleteBucket([]byte(EMPLOYEE_BUCKET))
 
@@ -215,12 +234,12 @@ func DownloadCachedEmployees(db *bolt.DB) error {
 		for _, emp := range cache.Employees {
 			bytes, err := json.Marshal(emp)
 			if err != nil {
-				log.P.Warn("unable to marshal employee", zap.String("id", emp.BYUID), zap.Error(err))
+				log.P.Warn("unable to marshal employee", "id", emp.BYUID, err)
 				continue
 			}
 
 			if err := b.Put([]byte(emp.BYUID), bytes); err != nil {
-				log.P.Warn("unable to cache employee", zap.String("id", emp.BYUID), zap.Error(err))
+				log.P.Warn("unable to cache employee", "id", emp.BYUID, err)
 				continue
 			}
 		}
@@ -287,7 +306,7 @@ func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, er
 		return nil
 	})
 	if err != nil {
-		log.P.Warn("unable to get employee from cache", zap.String("id", byuID), zap.Error(err))
+		log.P.Warn("unable to get employee from cache", "id", byuID, "error", err)
 		return emp, err
 	}
 

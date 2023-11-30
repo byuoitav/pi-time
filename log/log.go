@@ -1,51 +1,26 @@
 package log
 
 import (
-	"log"
-
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"log/slog"
+	"os"
+	"runtime"
 )
 
-// P is a plain zap logger
-var P *zap.Logger
-
-// Config is the logger config used for P
-var Config zap.Config
+var P *slog.Logger
 
 func init() {
-	var err error
-	Config = zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
-		Development: false,
-		Sampling: &zap.SamplingConfig{
-			Initial:    100,
-			Thereafter: 100,
-		},
-		Encoding: "json",
-		EncoderConfig: zapcore.EncoderConfig{
-			TimeKey:        "@",
-			LevelKey:       "level",
-			NameKey:        "logger",
-			CallerKey:      "caller",
-			MessageKey:     "msg",
-			StacktraceKey:  "stacktrace",
-			LineEnding:     zapcore.DefaultLineEnding,
-			EncodeLevel:    zapcore.LowercaseLevelEncoder,
-			EncodeTime:     zapcore.ISO8601TimeEncoder,
-			EncodeDuration: zapcore.StringDurationEncoder,
-			EncodeCaller:   zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      []string{"stderr"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
+	var logLevel = new(slog.LevelVar)
+	P = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
+	slog.SetDefault(P)
 
-	P, err = Config.Build()
-	if err != nil {
-		log.Fatalf("failed to initialize zap logger: %v", err)
+	logLevel.Set(slog.LevelInfo)
+
+	//set log level to debug if running on Windows
+	if runtime.GOOS == "windows" {
+		logLevel.Set(slog.LevelDebug)
+		P.Info("running from Windows, logging set to debug")
 	}
 
 	P.Info("Zap logger started")
 
-	_ = P.Sync()
 }
