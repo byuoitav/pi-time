@@ -105,18 +105,18 @@ $card-width: 95%;
     border: 0.3vh solid #b3b3b3;
     border-radius: 12px; // fully rounded
     &.in {
-      /deep/.mat-radio-outer-circle {
+      ::ng-deep.mat-radio-outer-circle {
         border-color: #009245 !important;
       }
-      /deep/.mat-radio-inner-circle {
+      ::ng-deep.mat-radio-inner-circle {
         background-color: #009245 !important;
       }
     }
     &.out {
-      /deep/.mat-radio-outer-circle {
+      ::ng-deep.mat-radio-outer-circle {
         border-color: #c1272d !important;
       }
-      /deep/.mat-radio-inner-circle {
+      ::ng-deep.mat-radio-inner-circle {
         background-color: #c1272d !important;
       }
     }
