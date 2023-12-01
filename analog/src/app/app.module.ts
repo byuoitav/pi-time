@@ -3,8 +3,8 @@ import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatButtonModule } from "@angular/material/button";
+import {MatToolbarModule} from '@angular/material/toolbar'; 
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -52,77 +52,68 @@ import { ToastService } from "./services/toast.service";
 import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
 import { DeletePunchDialog } from './dialogs/delete-punch/delete-punch.dialog';
 @NgModule({
-  declarations: [
-    AppComponent,
-    ClockComponent,
-    ByuIDPipe,
-    LoginComponent,
-    HoursPipe,
-    WoTrcDialog,
-    ActivityButton,
-    JobSelectComponent,
-    DateSelectComponent,
-    DayOverviewComponent,
-    WoSelectComponent,
-    ErrorDialog,
-    PunchesComponent,
-    WoSrComponent,
-    SickVacationComponent,
-    ScreenSaverComponent,
-    TimeEntryComponent,
-    LunchPunchDialog,
-    ConfirmDialog,
-    DeletePunchDialog,
-    ManagementComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatGridListModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatCardModule,
-    MatDividerModule,
-    MatDialogModule,
-    MatSelectModule,
-    MatNativeDateModule,
-    MatDatepickerModule,
-    MatTabsModule,
-    MatRadioModule,
-    OverlayModule,
-    MatProgressSpinnerModule,
-    MatBadgeModule,
-    MatSnackBarModule,
-    MatRippleModule
-  ],
-  providers: [
-    APIService,
-    {
-      provide: MAT_DIALOG_DEFAULT_OPTIONS,
-      useValue: {
-        hasBackdrop: true
-      }
-    },
-    ToastService
-  ],
-  entryComponents: [
-    WoTrcDialog,
-    WoSelectComponent,
-    ErrorDialog,
-    TimeEntryComponent,
-    LunchPunchDialog,
-    ConfirmDialog,
-    DeletePunchDialog
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        ClockComponent,
+        ByuIDPipe,
+        LoginComponent,
+        HoursPipe,
+        WoTrcDialog,
+        ActivityButton,
+        JobSelectComponent,
+        DateSelectComponent,
+        DayOverviewComponent,
+        WoSelectComponent,
+        ErrorDialog,
+        PunchesComponent,
+        WoSrComponent,
+        SickVacationComponent,
+        ScreenSaverComponent,
+        TimeEntryComponent,
+        LunchPunchDialog,
+        ConfirmDialog,
+        DeletePunchDialog,
+        ManagementComponent,
+    ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatGridListModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatCardModule,
+        MatDividerModule,
+        MatDialogModule,
+        MatSelectModule,
+        MatNativeDateModule,
+        MatDatepickerModule,
+        MatTabsModule,
+        MatRadioModule,
+        OverlayModule,
+        MatProgressSpinnerModule,
+        MatBadgeModule,
+        MatSnackBarModule,
+        MatRippleModule
+    ],
+    providers: [
+        APIService,
+        {
+            provide: MAT_DIALOG_DEFAULT_OPTIONS,
+            useValue: {
+                hasBackdrop: true
+            }
+        },
+        ToastService
+    ],
+    bootstrap: [AppComponent]
 })
 
 export class AppModule {}
