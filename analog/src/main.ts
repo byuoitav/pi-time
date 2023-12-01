@@ -12,7 +12,7 @@ import { environment } from "./environments/environment";
     if (document.body) {
       document.body.appendChild(i);
     }
-    (window as any).console = i.contentWindow.console;
+    (i.contentWindow as any).console = window.console;
 
     console.log("Logging enabled.");
   },
