@@ -1,8 +1,8 @@
-.mat-dialog-title {
+.mat-mdc-dialog-title {
   text-align: center;
 }
 
-.mat-dialog-content {
+.mat-mdc-dialog-content {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -13,7 +13,7 @@
   }
 }
 
-.mat-dialog-actions {
+.mat-mdc-dialog-actions {
   display: flex;
   justify-content: space-evenly;
   align-items: center;

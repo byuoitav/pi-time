@@ -1,5 +1,5 @@
 import {Component, OnInit, Inject, Injector} from "@angular/core";
-import {MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from "@angular/material/legacy-dialog";
+import {MatDialogRef, MAT_DIALOG_DATA} from "@angular/material/dialog";
 import {ComponentPortal, PortalInjector} from "@angular/cdk/portal";
 import {Overlay, OverlayRef} from "@angular/cdk/overlay";
 import {BehaviorSubject, Observable, of, Subscription} from "rxjs";

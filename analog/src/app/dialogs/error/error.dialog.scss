@@ -1,9 +1,9 @@
-.mat-dialog-title {
+.mat-mdc-dialog-title {
   text-align: center;
   font-size: 1.8em;
 }
 
-.mat-dialog-content {
+.mat-mdc-dialog-content {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -14,12 +14,12 @@
   font-size: 1.5em;
 }
 
-.mat-dialog-actions {
+.mat-mdc-dialog-actions {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 
-  .mat-raised-button {
+  .mat-mdc-raised-button {
     font-size: 1.2em;
   }
 }

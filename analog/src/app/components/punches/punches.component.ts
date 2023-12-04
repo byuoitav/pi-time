@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Inject, Injector, OnDestroy} from "@angular/core";
 import {Router, NavigationStart} from "@angular/router";
 import {ComponentPortal, PortalInjector} from "@angular/cdk/portal";
-import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {Overlay, OverlayRef} from "@angular/cdk/overlay";
 import {Observable, Subscription} from "rxjs";
 import {share} from "rxjs/operators";

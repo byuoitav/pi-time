@@ -14,7 +14,7 @@
 
 <!-- <button mat-raised-button (click)="selectRandomDay()">Select Random Day</button> -->
 <div class="container">
-  <mat-card class="month card mat-elevation-z3">
+  <mat-card appearance="outlined" class="month card mat-elevation-z3">
     <button
       mat-stroked-button
       class="month-nav"
@@ -34,7 +34,7 @@
     </button>
   </mat-card>
 
-  <mat-card class="calendar card mat-elevation-z3">
+  <mat-card appearance="outlined" class="calendar card mat-elevation-z3">
     <mat-grid-list class="grid" cols="7" rowHeight="8.25vh" gutterSize=".3vh">
       <ng-container *ngFor="let weekday of DayNames">
         <mat-grid-tile colspan="1" rowspan="1" class="header">

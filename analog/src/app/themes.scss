@@ -12,14 +12,14 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
 
-  .mat-card {
+  .mat-mdc-card {
     background-color: mat-color($background, card);
     color: mat-color($foreground, text);
   }
 }
 
 @mixin mat-card-typography($config) {
-  .mat-card {
+  .mat-mdc-card {
     font {
       family: mat-font-family($config, body-1);
       size: mat-font-size($config, body-1);
@@ -50,7 +50,7 @@
 }
 
 @mixin overlay-typography($config) {
-  .mat-card {
+  .mat-mdc-card {
     font {
       family: mat-font-family($config, body-1);
       size: mat-font-size($config, body-1);
@@ -125,6 +125,7 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
   }
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
 .mat-tab-label-active {
   background-color: #002e5d;
 }
@@ -153,6 +154,6 @@ $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
   background-color: rgb(151, 0, 0);
 }
 
-.red-snackbar .mat-simple-snackbar-action {
+.red-snackbar .mat-mdc-snack-bar-action {
   color: white
 }
