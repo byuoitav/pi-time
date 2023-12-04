@@ -10,7 +10,7 @@ import {
   DeleteWorkOrder,
   WorkOrderUpsertRequest
 } from "../../objects";
-import {MatDialog} from "@angular/material/dialog";
+import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
 import {WoTrcDialog} from "src/app/dialogs/wo-trc/wo-trc.dialog";
 import {APIService} from "src/app/services/api.service";
 import {Observable} from "rxjs";

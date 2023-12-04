@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Router, ActivationEnd, NavigationEnd} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
+import {MatLegacyDialog as MatDialog} from "@angular/material/legacy-dialog";
 import {JsonConvert} from "json2typescript";
 import {BehaviorSubject, Observable, throwError, Subscription} from "rxjs";
 
