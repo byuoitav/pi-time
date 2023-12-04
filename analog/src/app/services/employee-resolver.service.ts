@@ -1,10 +1,5 @@
 import { Injectable } from "@angular/core";
-import {
-  Router,
-  Resolve,
-  RouterStateSnapshot,
-  ActivatedRouteSnapshot
-} from "@angular/router";
+import { Router, RouterStateSnapshot, ActivatedRouteSnapshot } from "@angular/router";
 import { Observable, of, EMPTY, Subject, BehaviorSubject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 
@@ -15,7 +10,7 @@ import { ToastService } from "./toast.service";
 @Injectable({
   providedIn: "root"
 })
-export class EmployeeResolverService implements Resolve<EmployeeRef> {
+export class EmployeeResolverService  {
   constructor(
     private api: APIService,
     private router: Router,
