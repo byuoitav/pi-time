@@ -17,6 +17,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "querystring",
+              "simple-keyboard"
+            ],
             "outputPath": "dist/analog",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -113,7 +117,6 @@
       }
     }
   },
-  "defaultProject": "analog",
   "cli": {
     "analytics": false
   }
