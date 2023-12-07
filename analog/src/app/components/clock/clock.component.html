@@ -1,3 +1,5 @@
+
+
 <mat-toolbar color="primary">
   <object type="image/svg+xml" data="./assets/byu_logo.svg"></object>
   <span>Y-Time</span> <span class="header-spacer"></span>
@@ -21,7 +23,7 @@
       gutterSize=".2vh"
     >
       <!-- headers -->
-      <mat-grid-tile colspan="1" rowspan="1" class="header title">
+      <mat-grid-tile (click)="api?.hiddenDarkMode()" colspan="1" rowspan="1" class="header title" >
         Job Title
       </mat-grid-tile>
       <mat-grid-tile colspan="1" rowspan="1" class="header">
@@ -42,10 +44,12 @@
         >Clock</mat-grid-tile
       >
       <ng-container *ngFor="let job of emp?.jobs">
+       
         <!-- name -->
         <mat-grid-tile colspan="1" rowspan="1" style="text-align: center;">
           {{ job?.description }}
         </mat-grid-tile>
+    
 
         <!-- week total -->
         <mat-grid-tile colspan="1" rowspan="1">
@@ -72,6 +76,7 @@
           >
             <mat-radio-button
               class="clock-button in"
+              color="accent"
               [value]="punchType.In"
               (click)="
                 doubleClockConfirm(jobRef(job?.employeeJobID), punchType.In)
@@ -79,6 +84,7 @@
               >IN</mat-radio-button
             >
             <mat-radio-button
+              color = "warn"
               class="clock-button out"
               [value]="punchType.Out"
               (click)="

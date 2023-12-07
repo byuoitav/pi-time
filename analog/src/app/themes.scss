@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-
 @include mat.core();
 
 $byu-blue: (
@@ -12,6 +11,7 @@ $byu-blue: (
     700: #ffffff
   )
 );
+
 
 $light-blue: (
   300: #6092f2,
@@ -35,32 +35,43 @@ $warning-red: (
   )
 );
 
-$my-primary: mat.define-palette($byu-blue, 500, 300, 700);
-$my-accent: mat.define-palette($light-blue, 500, 300, 700);
-$my-warn: mat.define-palette($warning-red, 500, 300, 700);
+$default-primary: mat.define-palette($byu-blue, 500, 300, 700);
+$default-accent: mat.define-palette($light-blue, 500, 300, 700);
+$default-warn: mat.define-palette($warning-red, 500, 300, 700);
 
-$my-theme: mat.define-light-theme((
+$default-theme: mat.define-light-theme((
  color: (
-   primary: $my-primary,
-   accent: $my-accent,
-   warn: $my-warn,
+   primary: $default-primary,
+   accent: $default-accent,
+   warn: $default-warn,
  ),
  typography: mat.define-typography-config(),
  density: 0,
 ));
 
-@include mat.all-component-themes($my-theme);
+@include mat.all-component-themes($default-theme);
 
 // dark theme :)
 $dark: mat.define-dark-theme((
  color: (
-   primary: $my-primary,
-   accent: $my-accent,
-   warn: $my-warn,
+   primary: $default-primary,
+   accent: $default-accent,
+   warn: $default-warn,
  ),
  typography: mat.define-typography-config(),
  density: 0,
 ));
+
+.dark-theme {
+  @include mat.all-component-themes($dark);
+  .mat-mdc-card {
+    padding: 10px;
+  }
+  .mat-mdc-card-outlined, .clock-group[_ngcontent-ng-c825893131] .clock-button[_ngcontent-ng-c825893131] {
+    border-color: #c1272d;
+  }
+
+}
 
 
 .mat-tab-label-active {
@@ -94,6 +105,5 @@ $dark: mat.define-dark-theme((
 .red-snackbar .mat-simple-snackbar-action {
   color: white
 }
-
 
 
