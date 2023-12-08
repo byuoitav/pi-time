@@ -104,31 +104,7 @@ $card-width: 95%;
     padding: 0.8vh 0.55vw;
     border: 0.3vh solid #b3b3b3;
     border-radius: 12px; // fully rounded
-    &.in {
-      /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
-      ::ng-deep.mat-radio-outer-circle {
-        border-color: #009245 !important;
-      }
-      /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
-      ::ng-deep.mat-radio-inner-circle {
-        background-color: #009245 !important;
-      }
-    }
-    &.out {
-      /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
-      ::ng-deep.mat-radio-outer-circle {
-        border-color: #c1272d !important;
-      }
-      /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
-      ::ng-deep.mat-radio-inner-circle {
-        background-color: #c1272d !important;
-      }
-    }
   }
-}
-
-.change-wo {
-  width: 80%;
 }
 
 .title {

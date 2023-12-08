@@ -1,6 +1,70 @@
 @use '@angular/material' as mat;
 @include mat.core();
 
+/* custom templates */
+
+// mat-card
+@mixin mat-card-theme($theme) {
+  // get the colors i need
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, warn);
+  $warn: map-get($theme, accent);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  .mat-card {
+    background-color: mat-color($background, card);
+    color: mat-color($foreground, text);
+  }
+}
+
+@mixin mat-card-typography($config) {
+  .mat-card {
+    font {
+      family: mat-font-family($config, body-1);
+      size: mat-font-size($config, body-1);
+      weight: mat-font-weight($config, body-1);
+    }
+  }
+}
+
+@mixin overlay-theme($theme) {
+  // get the colors i need
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, warn);
+  $warn: map-get($theme, accent);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  .overlay {
+    &.wo-select-overlay {
+      background-color: mat-color($background, background);
+      color: mat-color($foreground, text);
+    }
+
+    &.time-entry-overlay {
+      background-color: mat-color($background, background);
+      color: mat-color($foreground, text);
+    }
+  }
+}
+
+@mixin overlay-typography($config) {
+  .mat-card {
+    font {
+      family: mat-font-family($config, body-1);
+      size: mat-font-size($config, body-1);
+      weight: mat-font-weight($config, body-1);
+    }
+  }
+}
+
+// mixin for any of my themes for custom templates
+@mixin custom($theme) {
+  @include mat-card-theme($theme);
+  @include overlay-theme($theme);
+}
+
 $byu-blue: (
   300: #3c568b,
   500: #002e5d,
@@ -48,7 +112,6 @@ $default-theme: mat.define-light-theme((
  typography: mat.define-typography-config(),
  density: 0,
 ));
-
 @include mat.all-component-themes($default-theme);
 
 // dark theme :)
@@ -64,16 +127,15 @@ $dark: mat.define-dark-theme((
 
 .dark-theme {
   @include mat.all-component-themes($dark);
-  .mat-mdc-card {
-    padding: 10px;
-  }
+  
   .mat-mdc-card-outlined, .clock-group[_ngcontent-ng-c825893131] .clock-button[_ngcontent-ng-c825893131] {
     border-color: #c1272d;
   }
-
 }
 
-
+.mat-mdc-card {
+  padding: 10px;
+}
 .mat-tab-label-active {
   background-color: #002e5d;
 }
@@ -106,4 +168,33 @@ $dark: mat.define-dark-theme((
   color: white
 }
 
+//in and out radio button colors
+.dark-theme .mat-mdc-radio-button.mat-accent, .mat-mdc-radio-button.mat-accent {
+  --mdc-radio-disabled-selected-icon-color: #36bf1b;
+  --mdc-radio-disabled-unselected-icon-color: #36bf1b;
+  --mdc-radio-unselected-hover-icon-color: #36bf1b;
+  --mdc-radio-unselected-icon-color: #36bf1b;
+  --mdc-radio-unselected-pressed-icon-color: #36bf1b;
+  --mdc-radio-selected-focus-icon-color: #3cbf1b;
+  --mdc-radio-selected-hover-icon-color: #36bf1b;
+  --mdc-radio-selected-icon-color: #36bf1b;
+  --mdc-radio-selected-pressed-icon-color: #29bf1b;
+  --mat-radio-ripple-color: #36bf1b;
+  --mat-radio-checked-ripple-color: #41bf1b;
+  --mat-radio-disabled-label-color: #36bf1b;
+}
+.dark-theme .mat-mdc-radio-button.mat-warn, .mat-mdc-radio-button.mat-warn {
+  --mdc-radio-disabled-selected-icon-color: #c20909;
+  --mdc-radio-disabled-unselected-icon-color: #c20909;
+  --mdc-radio-unselected-hover-icon-color: #c20909;
+  --mdc-radio-unselected-icon-color: #c20909;
+  --mdc-radio-unselected-pressed-icon-color: #c20909;
+  --mdc-radio-selected-focus-icon-color: #c20909;
+  --mdc-radio-selected-hover-icon-color: #c20909;
+  --mdc-radio-selected-icon-color: #c20909;
+  --mdc-radio-selected-pressed-icon-color: #c20909;
+  --mat-radio-ripple-color: #c20909;
+  --mat-radio-checked-ripple-color: #c20909;
+  --mat-radio-disabled-label-color: #c20909;
+}
 
