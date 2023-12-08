@@ -119,7 +119,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   }
 
   canMoveMonthForward(): boolean {
-    return this.viewMonth <= this.today.getMonth();
+    return this.viewMonth <= this.today.getMonth() && this.viewMonth !== 11;
   }
 
   moveMonthBack() {
