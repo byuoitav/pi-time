@@ -1,11 +1,12 @@
+
 <mat-toolbar class="do-header" color="primary">
 	<button mat-button (click)="goBack()">
 		<mat-icon style="transform: scale(2)">keyboard_arrow_left </mat-icon>
 	</button>
 	<span (click)="goBack()">
 		{{
-      job?.description.length > 10
-        ? job?.description.substring(0, 10) + "..."
+      job?.description.length > 30
+        ? job?.description.substring(0, 30) + "..."
         : job?.description
     }}
 	</span>
