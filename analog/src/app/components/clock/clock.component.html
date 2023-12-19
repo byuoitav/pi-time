@@ -43,59 +43,118 @@
       <mat-grid-tile colspan="2" rowspan="1" class="header"
         ><b>Clock</b></mat-grid-tile
       >
+      <!-- Primary Job -->
       <ng-container *ngFor="let Position of emp?.positions">
+        <ng-container *ngIf="Position?.primaryPosition == 'true'">
+          <!-- name -->
+          <mat-grid-tile colspan="1" rowspan="1" style="text-align: center;">
+            {{ Position?.businessTitle }}
+          </mat-grid-tile>
+      
 
-        <!-- name -->
-        <mat-grid-tile colspan="1" rowspan="1" style="text-align: center;">
-          {{ Position?.businessTitle }}
-        </mat-grid-tile>
-    
+          <!-- week total -->
+          <mat-grid-tile colspan="1" rowspan="1">
+            {{ Position?.totalWeekHours }}
+          </mat-grid-tile>
 
-        <!-- week total -->
-        <mat-grid-tile colspan="1" rowspan="1">
-          {{ Position?.totalWeekHours }}
-        </mat-grid-tile>
+          <!-- pay period total -->
+          <mat-grid-tile colspan="1" rowspan="1">
+            {{ Position?.totalPeriodHours }}
+          </mat-grid-tile>
 
-        <!-- pay period total -->
-        <mat-grid-tile colspan="1" rowspan="1">
-          {{ Position?.totalPeriodHours }}
-        </mat-grid-tile>
+          <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
+            {{ job?.currentTRC?.id ? job?.currentTRC?.id : "N/A" }}
+          </mat-grid-tile>
 
-        <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
-          {{ job?.currentTRC?.id ? job?.currentTRC?.id : "N/A" }}
-        </mat-grid-tile>
-
-        <!-- clock in/out -->
-        <mat-grid-tile colspan="2" rowspan="1">
-          <mat-radio-group
-            class="clock-group"
-            (change)="
-              clockInOut(jobRef(job?.employeeJobID), $event.value, $event)
-            "
-          >
-            <mat-radio-button
-              class="clock-button in"
-              color="accent"
-              [value]="punchType.In"
-              [checked]="Position?.inStatus"
-              (click)="
-                doubleClockConfirm(jobRef(job?.employeeJobID), punchType.In)
+          <!-- clock in/out -->
+          <mat-grid-tile colspan="2" rowspan="1">
+            <mat-radio-group
+              class="clock-group"
+              (change)="
+                clockInOut(jobRef(Position.positionNumber), $event.value, $event)
               "
-              >IN</mat-radio-button
             >
-            <mat-radio-button
-              color = "warn"
-              class="clock-button out"
-              [value]="punchType.Out"
-              [checked]="!Position?.inStatus"
-              (click)="
-                doubleClockConfirm(jobRef(job?.employeeJobID), punchType.Out)
-              "
-              >OUT</mat-radio-button
-            >
-          </mat-radio-group>
-        </mat-grid-tile>
+              <mat-radio-button
+                class="clock-button in"
+                color="accent"
+                [value]="punchType.In"
+                [checked]="Position?.inStatus"
+                (click)="
+                  doubleClockConfirm(jobRef(job?.employeeJobID), punchType.In)
+                "
+                >IN</mat-radio-button
+              >
+              <mat-radio-button
+                color = "warn"
+                class="clock-button out"
+                [value]="punchType.Out"
+                [checked]="!Position?.inStatus"
+                (click)="
+                  doubleClockConfirm(jobRef(job?.employeeJobID), punchType.Out)
+                "
+                >OUT</mat-radio-button
+              >
+            </mat-radio-group>
+          </mat-grid-tile>
+        </ng-container>
       </ng-container>
+
+      <!-- Non-Primary Jobs -->
+      <ng-container *ngFor="let Position of emp?.positions">
+        <ng-container *ngIf="Position?.primaryPosition == 'false'">
+          <!-- name -->
+          <mat-grid-tile colspan="1" rowspan="1" style="text-align: center;">
+            {{ Position?.businessTitle }}
+          </mat-grid-tile>
+      
+
+          <!-- week total -->
+          <mat-grid-tile colspan="1" rowspan="1">
+            {{ Position?.totalWeekHours }}
+          </mat-grid-tile>
+
+          <!-- pay period total -->
+          <mat-grid-tile colspan="1" rowspan="1">
+            {{ Position?.totalPeriodHours }}
+          </mat-grid-tile>
+
+          <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
+            {{ job?.currentTRC?.id ? job?.currentTRC?.id : "N/A" }}
+          </mat-grid-tile>
+
+          <!-- clock in/out -->
+          <mat-grid-tile colspan="2" rowspan="1">
+            <mat-radio-group
+              class="clock-group"
+              (change)="
+                clockInOut(jobRef(Position.positionNumber), $event.value, $event)
+              "
+            >
+              <mat-radio-button
+                class="clock-button in"
+                color="accent"
+                [value]="punchType.In"
+                [checked]="Position?.inStatus"
+                (click)="
+                  doubleClockConfirm(jobRef(job?.employeeJobID), punchType.In)
+                "
+                >IN</mat-radio-button
+              >
+              <mat-radio-button
+                color = "warn"
+                class="clock-button out"
+                [value]="punchType.Out"
+                [checked]="!Position?.inStatus"
+                (click)="
+                  doubleClockConfirm(jobRef(job?.employeeJobID), punchType.Out)
+                "
+                >OUT</mat-radio-button
+              >
+            </mat-radio-group>
+          </mat-grid-tile>
+        </ng-container>
+      </ng-container>
+
     </mat-grid-list>
   </mat-card>
 

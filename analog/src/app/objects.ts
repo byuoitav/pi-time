@@ -204,10 +204,10 @@ export class Day {
   time: Date = undefined;
 
   @JsonProperty("punched-hours", String, false)
-  punchedHours: string = "1212";
+  punchedHours: string = undefined;
 
   @JsonProperty("reported-hours", String, true)
-  reportedHours: string = "1212";
+  reportedHours: string = undefined;
 
   @JsonProperty("punches", [Punch], true)
   punches: Punch[] = Array<Punch>();
@@ -307,7 +307,28 @@ export class Employee {
 }
 
 
+@JsonObject("PunchRequest") 
+export class PunchRequest {
+  @JsonProperty("worker_id", String)
+  workerID: string = undefined;
 
+  @JsonProperty("position_number", String)
+  positionNumber: string = undefined;
+
+  @JsonProperty("clock_event_type", String)
+  clockEventType: string = undefined;
+
+  @JsonProperty("time_entry_code", String)
+  timeEntryCode: string = undefined;
+
+  @JsonProperty("comment", String)
+  comment: string = undefined;
+
+  @JsonProperty("time_clock_event_date_time", DateConverter, String)
+  time: String = undefined;
+
+
+}
 @JsonObject("ClientPunchRequest")
 export class ClientPunchRequest {
   @JsonProperty("byu-id", String)

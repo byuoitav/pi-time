@@ -43,7 +43,9 @@ export class JobSelectComponent implements OnInit, OnDestroy {
   }
 
   selectJob = (jobID: number) => {
-    this.router.navigate(["./" + jobID + "/date/"], {relativeTo: this.route});
+    this.router.navigate(["./" + jobID + "/date/"], {
+      relativeTo: this.route,
+      queryParamsHandling: "preserve"});
   };
 
   logout = () => {

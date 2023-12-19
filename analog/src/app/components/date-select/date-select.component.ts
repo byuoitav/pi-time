@@ -154,6 +154,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
     console.log("str", str);
     this.router.navigate(["./" + str], {
       relativeTo: this.route,
+      queryParamsHandling: "preserve"
     });
     if (!this.job) {
       console.warn("job", this._jobID, "is undefined for this employee");

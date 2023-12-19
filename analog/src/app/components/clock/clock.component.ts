@@ -72,11 +72,11 @@ export class ClockComponent implements OnInit {
   }
 
   jobRef(jobID: number): BehaviorSubject<Position> {
-    const position = this.emp.positions.find(j => j.positionNumber === jobID);
+    const position = this.emp.positions.find(j => Number(j.positionNumber) === Number(jobID));
     const ref = new BehaviorSubject(position);
 
     this._empRef.subject().subscribe(emp => {
-      const position = this.emp.positions.find(j => j.positionNumber === jobID);
+      const position = this.emp.positions.find(j => Number(j.positionNumber) === Number(jobID));
       if (position) {
         ref.next(position);
       }
@@ -111,7 +111,9 @@ export class ClockComponent implements OnInit {
   };
 
   toTimesheet = () => {
-    this.router.navigate(["./job/"], { relativeTo: this.route });
+    this.router.navigate(["./job/"], { 
+      relativeTo: this.route,
+      queryParamsHandling: "preserve" });
   };
 
   logout = () => {
