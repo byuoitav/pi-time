@@ -85,12 +85,13 @@ export class PunchesComponent implements OnInit, OnDestroy {
     if (day.punchedHours !== undefined) {
       return day;
     }
-   
+
     let copyPunches = new Array<Punch>;
-    day.punches.slice().sort(this.comparePunches);
+    day.punches = day.punches.slice().sort(this.comparePunches);
     for (let i = 0; i < day.punches.length; i++) {
       copyPunches.push(day.punches[i]);
     }
+
     let totalHours: number = 0.0;
 
     if (copyPunches[0].type === "OUT") {
@@ -119,15 +120,9 @@ export class PunchesComponent implements OnInit, OnDestroy {
     }
     copyPunches = copyPunches.slice().sort(this.comparePunches);
 
-    console.log(copyPunches);
-    console.log(day.punches);
     for (let i = copyPunches.length - 1; i > 0; i -= 2) {
-      console.log(copyPunches[i].time.getTime());
-      console.log(copyPunches[i - 1].time.getTime());
       let timeDiff = copyPunches[i].time.getTime() - copyPunches[i - 1].time.getTime();
-      console.log(timeDiff);
       let hours = timeDiff / (1000 * 3600);
-      console.log(hours);
       totalHours += hours;
     }
   
