@@ -11,8 +11,8 @@
 
 <div class="container">
   <mat-card appearance="outlined" class="card totals mat-elevation-z2">
-    <span>Week Total: {{ emp?.totalTime?.week }}</span>
-    <span>Pay Period Total: {{ emp?.totalTime?.payPeriod }}</span>
+    <span><b>Week Total: </b> {{ emp?.totalWeekHours }}</span>
+    <span><b>Pay Period Total: </b> {{ emp?.totalPeriodHours }}</span>
   </mat-card>
 
   <mat-card appearance="outlined" class="jobs card mat-elevation-z2">
@@ -24,13 +24,13 @@
     >
       <!-- headers -->
       <mat-grid-tile (click)="api?.hiddenDarkMode()" colspan="1" rowspan="1" class="header title" >
-        Job Title
+        <b>Job Title</b>
       </mat-grid-tile>
       <mat-grid-tile colspan="1" rowspan="1" class="header">
-        Week
+        <b>Week</b>
       </mat-grid-tile>
       <mat-grid-tile colspan="1" rowspan="1" class="header">
-        Pay Period
+        <b>Pay Period</b>
       </mat-grid-tile>
       <mat-grid-tile
         *ngIf="emp?.showTRC()"
@@ -38,27 +38,27 @@
         rowspan="1"
         class="tile header"
       >
-        TRC
+        <b>TRC</b>
       </mat-grid-tile>
       <mat-grid-tile colspan="2" rowspan="1" class="header"
-        >Clock</mat-grid-tile
+        ><b>Clock</b></mat-grid-tile
       >
-      <ng-container *ngFor="let job of emp?.jobs">
-       
+      <ng-container *ngFor="let Position of emp?.positions">
+
         <!-- name -->
         <mat-grid-tile colspan="1" rowspan="1" style="text-align: center;">
-          {{ job?.description }}
+          {{ Position?.businessTitle }}
         </mat-grid-tile>
     
 
         <!-- week total -->
         <mat-grid-tile colspan="1" rowspan="1">
-          {{ job?.subtotals?.week }}
+          {{ Position?.totalWeekHours }}
         </mat-grid-tile>
 
         <!-- pay period total -->
         <mat-grid-tile colspan="1" rowspan="1">
-          {{ job?.subtotals?.payPeriod }}
+          {{ Position?.totalPeriodHours }}
         </mat-grid-tile>
 
         <mat-grid-tile *ngIf="emp?.showTRC()" colspan="1" rowspan="1">
@@ -69,7 +69,6 @@
         <mat-grid-tile colspan="2" rowspan="1">
           <mat-radio-group
             class="clock-group"
-            [value]="job?.clockStatus"
             (change)="
               clockInOut(jobRef(job?.employeeJobID), $event.value, $event)
             "
@@ -78,6 +77,7 @@
               class="clock-button in"
               color="accent"
               [value]="punchType.In"
+              [checked]="Position?.inStatus"
               (click)="
                 doubleClockConfirm(jobRef(job?.employeeJobID), punchType.In)
               "
@@ -87,6 +87,7 @@
               color = "warn"
               class="clock-button out"
               [value]="punchType.Out"
+              [checked]="!Position?.inStatus"
               (click)="
                 doubleClockConfirm(jobRef(job?.employeeJobID), punchType.Out)
               "
@@ -94,22 +95,6 @@
             >
           </mat-radio-group>
         </mat-grid-tile>
-
-        <ng-container *ngIf="canChangeWorkOrder(job)">
-          <mat-grid-tile colspan="{{ emp?.showTRC() ? 4 : 3 }}" rowspan="1">
-            {{ job?.currentWorkOrder?.toString() }}
-          </mat-grid-tile>
-          <mat-grid-tile colspan="2" rowspan="1">
-            <button
-              mat-flat-button
-              color="accent"
-              class="change-wo"
-              (click)="changeWorkOrder(jobRef(job?.employeeJobID))"
-            >
-              Transfer WO
-            </button>
-          </mat-grid-tile>
-        </ng-container>
       </ng-container>
     </mat-grid-list>
   </mat-card>
@@ -118,11 +103,6 @@
     class="view-timesheet"
     color="accent"
     (click)="toTimesheet()"
-    [disabled]="offline"
-    [matBadge]="hasTimesheetException()"
-    matBadgeColor="warn"
-    matBadgeSize="medium"
-    mat-raised-button
   >
     Review Time Entry
   </button>

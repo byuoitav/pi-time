@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import Keyboard from "simple-keyboard";
 
 import {EmployeeRef, APIService} from "../../services/api.service";
-import {Employee, Job, Day, JobType} from "../../objects";
+import {Employee, Day, JobType, Position} from "../../objects";
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -22,16 +22,14 @@ export class DayOverviewComponent implements OnInit, OnDestroy {
     if (this._empRef) {
       return this._empRef.employee;
     }
-
     return undefined;
   }
 
   private _jobID: number;
-  get job(): Job {
+  get job(): Position {
     if (this.emp) {
-      return this.emp.jobs.find(j => j.employeeJobID === this._jobID);
+      return this.emp.positions.find(j => Number(j.positionNumber) === Number(this._jobID));
     }
-
     return undefined;
   }
 
@@ -129,7 +127,7 @@ export class DayOverviewComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigate(
-      ["/employee/" + this.emp.id + "/job/" + this.job.employeeJobID + "/date"],
+      ["/employee/" + this.emp.id + "/job/" + this.job.positionNumber + "/date"],
       {
         preserveFragment: false,
         queryParamsHandling: "preserve"
@@ -142,37 +140,4 @@ export class DayOverviewComponent implements OnInit, OnDestroy {
     this._empRef.logout(false);
   };
 
-  getPunchExceptionCount() {
-    if (this.day == undefined) {
-      return "";
-    } else if (this.day.hasPunchException) {
-      let count = 0;
-      let deletePair = 0;
-
-      // count missing time punches, delete-able pairs
-      for (const p of this.day.punches) {
-        if (p.time == undefined) {
-          count++;
-        } else if (p.deletablePair) {
-          deletePair++;
-        }
-      }
-
-      // should always be even, but .floor() just in case
-      count += Math.floor(deletePair / 2)
-
-      return String(count);
-    }
-  }
-
-  getWOExceptionCount() {
-    if (this.day === undefined) {
-      return "";
-    } else {
-      if (this.day.hasWorkOrderException) {
-        let count = 1;
-        return String(count);
-      }
-    }
-  }
 }

@@ -14,9 +14,9 @@
   <mat-card appearance="outlined" class="jobs card mat-elevation-z3">
     <mat-grid-list class="grid" cols="1" rowHeight="12vh" gutterSize="2vh">
       <mat-grid-tile colspan="1" rowspan="1" class="header"
-        ><span class="mat-h1">Select a Job</span>
+        ><span class="mat-h1 selectJob">Select a Job</span>
       </mat-grid-tile>
-      <ng-container *ngFor="let job of emp?.jobs">
+      <ng-container *ngFor="let job of emp?.positions">
         <mat-grid-tile
           style="padding-top: 2vh; padding-bottom: 2vh;"
           colspan="1"
@@ -25,16 +25,13 @@
           <button
             class="full-button"
             color="accent"
-            (click)="selectJob(job?.employeeJobID)"
+            (click)="selectJob(job?.positionNumber)"
             mat-flat-button
-            [matBadge]="hasTimesheetException(job)"
-            matBadgeColor="warn"
-            matBadgeSize="medium"
-            matBadgeOverlap="true"
+          
           >
             <span class="spaced-button">
               <span style="padding-top: 2px; font-size: 14pt;">{{
-                job?.description
+                job?.businessTitle
               }}</span>
               <span class="header-spacer"></span>
               <mat-icon>keyboard_arrow_right</mat-icon>

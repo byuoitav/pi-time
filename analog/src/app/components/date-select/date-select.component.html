@@ -3,7 +3,7 @@
     <mat-icon style="transform: scale(2)">keyboard_arrow_left </mat-icon>
   </button>
   <span (click)="goBack()">
-    {{job.description}}
+   {{ job.businessTitle }}
   </span>  
   <span class="header-spacer"></span>  
   <span (click)="logout()">{{ emp?.name }} </span>
@@ -21,23 +21,23 @@
       (click)="moveMonthBack()"
       [class.hide]="!canMoveMonthBack()"
     >
-      < Prev
+      <b>< Prev</b>
     </button>
-    <span>{{ MonthNames[viewMonth] }} {{ viewYear }}</span>
+    <span class="monthName"> <b>{{ MonthNames[viewMonth] }} {{ viewYear }} </b></span>
     <button
       mat-stroked-button
       class="month-nav"
       (click)="moveMonthForward()"
       [class.hide]="!canMoveMonthForward()"
     >
-      Next >
+     <b>Next ></b>
     </button>
   </mat-card>
 
   <mat-card appearance="outlined" class="calendar card mat-elevation-z3">
     <mat-grid-list class="grid" cols="7" rowHeight="8.25vh" gutterSize=".3vh">
       <ng-container *ngFor="let weekday of DayNames">
-        <mat-grid-tile colspan="1" rowspan="1" class="header">
+        <mat-grid-tile colspan="1" rowspan="1" class="header dayName">
           {{ weekday }}
         </mat-grid-tile>
       </ng-container>
@@ -48,14 +48,12 @@
             (click)="selectDay(day)"
             class="date"
             [class.today]="today.toDateString() === day.toDateString()"
-            [class.exception]="dayHasException(day)"
             [class.outside]="day.getMonth() != viewMonth"
           >
-            <span style="text-align: center">{{ day.getDate() }}</span>
+            <span style="text-align: center" >{{ day.getDate() }}</span>
             <span
               *ngIf="dayHasPunch(day)"
               class="dot"
-              [class.exception]="dayHasException(day)"
             ></span>
           </div>
         </mat-grid-tile>

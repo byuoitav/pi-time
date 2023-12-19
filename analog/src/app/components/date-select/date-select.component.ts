@@ -4,7 +4,7 @@ import {Observable, BehaviorSubject, Subscription} from "rxjs";
 
 import {EmployeeRef, APIService} from "../../services/api.service";
 import {ToastService} from "../../services/toast.service";
-import {Employee, Job, Day, JobType} from "../../objects";
+import {Employee, Day, Position} from "../../objects";
 
 @Component({
   selector: "date-select",
@@ -46,11 +46,16 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   ];
 
   private _jobID: number;
-  get job(): Job {
+  Position: Position;
+  get job(): Position {
     if (this.emp) {
-      return this.emp.jobs.find(j => j.employeeJobID === this._jobID);
+      for (let i = 0; i < this.emp.positions.length; i++) {
+        if (Number(this.emp.positions[i].positionNumber) === Number(this._jobID)) {
+          return this.emp.positions[i];
+        }
+      }
     }
-
+  
     return undefined;
   }
 
@@ -59,7 +64,6 @@ export class DateSelectComponent implements OnInit, OnDestroy {
     if (this._empRef) {
       return this._empRef.employee;
     }
-
     return undefined;
   }
 
@@ -83,8 +87,8 @@ export class DateSelectComponent implements OnInit, OnDestroy {
 
       this._subsToDestroy.push(this._empRef.subject().subscribe(emp => {
         if (this.job) {
-          this.minDay = Day.minDay(this.job.days);
-          this.maxDay = Day.maxDay(this.job.days);
+          // this.minDay = Day.minDay(this.job.days);
+          // this.maxDay = Day.maxDay(this.job.days);
         }
 
         this.getViewDays();
@@ -101,7 +105,7 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    if (this.emp.jobs.length > 1) {
+    if (this.emp.positions.length > 1) {
       // job select
       this.router.navigate(["/employee/" + this.emp.id + "/job"], {
         queryParamsHandling: "preserve"
@@ -145,13 +149,16 @@ export class DateSelectComponent implements OnInit, OnDestroy {
   }
 
   selectDay = (date: Date) => {
+    console.log("CLICKED", date);
+    const str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    console.log("str", str);
+    this.router.navigate(["./" + str], {
+      relativeTo: this.route,
+    });
     if (!this.job) {
       console.warn("job", this._jobID, "is undefined for this employee");
-      // TODO redirect to job select/error?
       return;
     }
-
-    const str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
     const day = this.job.days.find(
       d =>
@@ -160,34 +167,9 @@ export class DateSelectComponent implements OnInit, OnDestroy {
         d.time.getDate() === date.getDate()
     );
 
-    if (!day && this.job.jobType !== JobType.FullTime) {
-      this.toast.show(
-        "No punches recorded for " + date.toDateString(),
-        "DISMISS",
-        1500
-      );
-      return;
-    }
-
     //add cookie to know what current date they are looking at
     if (this._empRef) {
       this._empRef.selectedDate = date;
-    }
-
-    if (!day) {
-      this.router.navigate(["./" + str], {
-        relativeTo: this.route,
-        fragment: "other-hours"
-      });
-    } else {
-      if (day.hasWorkOrderException && !day.hasPunchException) {
-        this.router.navigate(["./" + str], {
-          relativeTo: this.route,
-          fragment: "wo/sr"
-        });
-      } else {
-        this.router.navigate(["./" + str], {relativeTo: this.route});
-      }
     }
   };
 
@@ -229,20 +211,6 @@ export class DateSelectComponent implements OnInit, OnDestroy {
       d.setDate(startDate.getDate() + i);
       this.viewDays.push(d);
     }
-  }
-
-  dayHasException(day: Date): boolean {
-    if (this.job) {
-      const empDay = this.job.days.find(
-        d => d.time.toDateString() === day.toDateString()
-      );
-
-      if (empDay) {
-        return empDay.hasPunchException || empDay.hasWorkOrderException;
-      }
-    }
-
-    return false;
   }
 
   dayHasPunch(day: Date): boolean {

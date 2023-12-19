@@ -130,12 +130,14 @@ $dark: mat.define-dark-theme((
   
   .mat-mdc-card-outlined, .clock-group[_ngcontent-ng-c825893131] .clock-button[_ngcontent-ng-c825893131] {
     border-color: #c1272d;
+    border-width: 2px;
   }
 }
 
 .mat-mdc-card {
   padding: 10px;
 }
+
 .mat-tab-label-active {
   background-color: #002e5d;
 }

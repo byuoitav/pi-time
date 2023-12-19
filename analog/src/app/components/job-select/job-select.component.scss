@@ -19,6 +19,15 @@ $card-width: 95%;
     }
 }
 
+.mat-mdc-unelevated-button:not(:disabled) {
+    padding: 30px;
+}
+
+.selectJob {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
 .jobs {
     overflow-y: auto;
     height: 76vh;
@@ -26,6 +35,7 @@ $card-width: 95%;
     .card {
         height: 100%;
     }
+    
 }
 
 .column {
@@ -56,7 +66,7 @@ $card-width: 95%;
         &:after {
             $width: 45%;
             position: absolute;
-            bottom: 29%;
+            bottom: 0%;
             height: 3%;
             width: $width;
             margin-left: (100% - $width) / 2;

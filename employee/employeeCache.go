@@ -287,28 +287,56 @@ func GetCache(db *bolt.DB) (structs.EmployeeCache, error) {
 // GetEmployeeFromCache looks up an employee in the cache
 func GetEmployeeFromCache(byuID string, db *bolt.DB) (structs.EmployeeRecord, error) {
 	var emp structs.EmployeeRecord
-
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(EMPLOYEE_BUCKET))
-		if b == nil {
-			return fmt.Errorf("employee bucket doest not exist")
-		}
-
-		bytes := b.Get([]byte(byuID))
-		if bytes == nil {
-			return fmt.Errorf("employee not in cache")
-		}
-
-		if err := json.Unmarshal(bytes, &emp); err != nil {
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
-		log.P.Warn("unable to get employee from cache", "id", byuID, "error", err)
-		return emp, err
+	trc := structs.TRC{
+		TRCID:          "11111",
+		TRCDescription: "Regular Hours",
 	}
+	trcs := []structs.TRC{trc}
+	workorder := structs.WorkOrder{
+		WorkOrderID:          "12345",
+		WorkOrderDescription: "Angular App",
+	}
+	job1 := structs.Job{
+		JobCodeDesc:      "Computer Programmer",
+		PunchType:        "O",
+		EmployeeRecord:   12345,
+		WeeklySubtotal:   "20",
+		PeriodSubtotal:   "40",
+		OperatingUnit:    "IT",
+		TRCs:             trcs,
+		CurrentWorkOrder: workorder,
+		CurrentTRC:       trc,
+		FullPartTime:     "F",
+	}
+	jobs := []structs.Job{job1}
+	emp = structs.EmployeeRecord{
+		BYUID: byuID,
+		NETID: "testNet",
+		Jobs:  jobs,
+		Name:  "Test Name",
+	}
+
+	// err := db.View(func(tx *bolt.Tx) error {
+	// 	b := tx.Bucket([]byte(EMPLOYEE_BUCKET))
+	// 	if b == nil {
+	// 		return fmt.Errorf("employee bucket doest not exist")
+	// 	}
+
+	// 	bytes := b.Get([]byte(byuID))
+	// 	if bytes == nil {
+	// 		return fmt.Errorf("employee not in cache")
+	// 	}
+
+	// 	if err := json.Unmarshal(bytes, &emp); err != nil {
+	// 		return err
+	// 	}
+
+	// 	return nil
+	// })
+	// if err != nil {
+	// 	log.P.Warn("unable to get employee from cache", "id", byuID, "error", err)
+	// 	return emp, err
+	// }
 
 	return emp, nil
 }

@@ -1,13 +1,12 @@
-
 <mat-toolbar class="do-header" color="primary">
 	<button mat-button (click)="goBack()">
 		<mat-icon style="transform: scale(2)">keyboard_arrow_left </mat-icon>
 	</button>
 	<span (click)="goBack()">
 		{{
-      job?.description.length > 30
-        ? job?.description.substring(0, 30) + "..."
-        : job?.description
+      job?.businessTitle.length > 15
+        ? job?.businessTitle.substring(0, 15) + "..."
+        : job?.businessTitle
     }}
 	</span>
 
@@ -25,25 +24,9 @@
 	[disableRipple]="true" [@.disabled]="true">
 	<mat-tab>
 		<ng-template mat-tab-label>
-			<span *ngIf="!day?.hasPunchException">Punches</span>
-			<span *ngIf="day?.hasPunchException" matBadge="{{ getPunchExceptionCount() }}" matBadgeColor="warn"
-				matBadgeOverlap="false" matBadgeSize="medium">Punches</span>
+			<span class="punchesText" >Punches</span>
+		
 		</ng-template>
-		<punches class="tab-content" [byuID]="emp?.id" [jobID]="job?.employeeJobID" [day]="day" [job]="job"></punches>
-	</mat-tab>
-
-	<mat-tab *ngIf="job?.isPhysicalFacilities">
-		<ng-template mat-tab-label>
-			<span *ngIf="!day?.hasWorkOrderException">WO/SR</span>
-			<span *ngIf="day?.hasWorkOrderException" matBadge="{{ getWOExceptionCount() }}" matBadgeColor="warn"
-				matBadgeOverlap="false" matBadgeSize="medium">WO/SR</span>
-		</ng-template>
-		<wo-sr class="tab-content" [day]="day" [job]="job" [emp]="emp"></wo-sr>
-	</mat-tab>
-
-	<!-- This tab is always hidden for now!!! When we roll out PF, remove the `false &&` bit -->
-	<mat-tab *ngIf="false && job?.jobType === jobType.FullTime">
-		<ng-template mat-tab-label> <span>Sick/Vacation</span> </ng-template>
-		<sick-vacation class="tab-content" [byuID]="emp?.id" [jobID]="job?.employeeJobID" [day]="day"></sick-vacation>
+		<punches class="tab-content" [byuID]="emp?.id" [jobID]="job?.positionNumber" [day]="day" [job]="job"></punches>
 	</mat-tab>
 </mat-tab-group>
