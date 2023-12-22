@@ -58,9 +58,6 @@ const routes: Routes = [
                   {
                     path: ":date",
                     component: DayOverviewComponent,
-                    resolve: {
-                      date: DateResolverService
-                    }
                   }
                 ]
               }

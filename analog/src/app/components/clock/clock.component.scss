@@ -3,6 +3,10 @@ $card-width: 95%;
   flex: 1 1 auto;
 }
 
+.mat-toolbar {
+  min-inline-size: 100%;
+}
+
 .sidenav-container {
   height: 100%;
 }
@@ -33,7 +37,7 @@ $card-width: 95%;
 
 .jobs {
   overflow-y: auto;
-  height: 53vh;
+  height: 60vh;
   width: $card-width;
 
   &::-webkit-scrollbar {
@@ -87,6 +91,11 @@ $card-width: 95%;
   width: $card-width + 2%;
   height: 10vh;
   margin: 0 0 0.5em;
+  background-color: #1b65bf;
+  border-radius: 10px;
+  border-width: 0px;
+  color: white;
+  font-size: 1em;
 }
 
 .clock-group {
@@ -100,7 +109,7 @@ $card-width: 95%;
     display: flex;
     align-items: center;
     min-height: 6vh;
-    min-width: 7vw;
+    min-width: 10vw;
     padding: 0.8vh 0.55vw;
     border: 0.3vh solid #b3b3b3;
     border-radius: 12px; // fully rounded

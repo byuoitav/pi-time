@@ -9,12 +9,10 @@ import {ErrorDialog} from "../dialogs/error/error.dialog";
 import {ToastService} from "./toast.service";
 import {
   Employee,
+  Day,
   ClientPunchRequest,
-  LunchPunch,
-  DeletePunch,
-  OtherHourRequest,
-  DeleteWorkOrder,
-  WorkOrderUpsertRequest
+  Punch,
+  DateConverter
 } from "../objects";
 import {
   JsonObject,
@@ -205,7 +203,6 @@ export class APIService {
           event.Key = "logout";
           event.Value = currEmp.id;
           event.Timestamp = new Date();
-  
           this.sendEvent(event);
         }  
       }
@@ -218,40 +215,20 @@ export class APIService {
     }, this.router);
 
     ws.onmessage = event => {
-      const data: Message = JSON.parse(event.data);
+      const data: JSON = JSON.parse(event.data);      
+     
+      try {
+        const emp = this.jsonConvert.deserializeObject(data, Employee);
+        emp.id = String(id);
+        this.loadInStatus(emp);
+        this.loadDays(emp);
+        
 
-      console.debug("key: '" + data.key + "', value:", data.value);
-      switch (data.key) {
-        case "employee":
-          try {
-            const emp = this.jsonConvert.deserializeObject(
-              data.value,
-              Employee
-            );
-
-            console.log("updated employee", emp);
-            employee.next(emp);
-          } catch (e) {
-            console.warn("unable to deserialize employee", e);
-            employee.error("invalid response from api");
-          }
-
-          break;
-        case "offline-mode":
-          empRef.offline = Boolean(data.value);
-
-          if (empRef.offline) {
-            this.router
-              .navigate(["/employee/" + empRef.employee.id], {
-                queryParams: {},
-                fragment: null
-              })
-              .finally(() => {
-                this.toast.showIndefinitely("Offline Mode", "");
-              });
-          }
-
-          break;
+        console.log("updated employee", emp);
+        employee.next(emp);
+      } catch (e) {
+        console.warn("unable to deserialize employee", e);
+        employee.error("invalid response from api");
       }
     };
 
@@ -325,180 +302,6 @@ export class APIService {
     }
   };
 
-  fixPunch = (req: ClientPunchRequest): Observable<any> => {
-    try {
-      const json = this.jsonConvert.serialize(req);
-
-      if (req) {
-        const event = new Event();
-
-        event.User = req.byuID;
-        event.EventTags = ["pitime-ui"];
-        event.Key = "fix-punch";
-        event.Value = req.byuID;
-        event.Data = req.sequenceNumber;
-        event.Timestamp = new Date();
-
-        this.sendEvent(event);
-      }
-
-      return this.http.put(
-        "/punch/" + req.byuID + "/" + req.sequenceNumber,
-        json,
-        {
-          responseType: "text",
-          headers: new HttpHeaders({
-            "content-type": "application/json"
-          })
-        }
-      );
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-
-  upsertWorkOrder = (byuID: string, data: WorkOrderUpsertRequest) => {
-    try {
-      const json = this.jsonConvert.serialize(data);
-
-      if (data) {
-        const event = new Event();
-
-        event.User = byuID;
-        event.EventTags = ["pitime-ui"];
-        event.Key = "upsert-work-order";
-        event.Value = byuID;
-        event.Value = stringify(json);
-        event.Timestamp = new Date();
-
-        this.sendEvent(event);
-      }
-
-      return this.http.post("/workorderentry/" + byuID, json, {
-        responseType: "text",
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-
-  lunchPunch = (byuID: string, data: LunchPunch) => {
-    try {
-      const json = this.jsonConvert.serialize(data);
-
-      if (data) {
-        const event = new Event();
-
-        event.User = byuID;
-        event.EventTags = ["pitime-ui"];
-        event.Key = "lunch-punch";
-        event.Value = byuID;
-        event.Data = stringify(json);
-        event.Timestamp = new Date();
-
-        this.sendEvent(event);
-      }
-
-      return this.http.post("/lunchpunch/" + byuID, json, {
-        responseType: "text",
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-
-  deletePunch = (byuID: string, data: DeletePunch) => {
-    try {
-      const json = this.jsonConvert.serialize(data);
-
-      if (data) {
-        const event = new Event();
-
-        event.User = byuID;
-        event.EventTags = ["pitime-ui"];
-        event.Key = "delete-punch";
-        event.Value = byuID;
-        event.Timestamp = new Date();
-        event.Data = stringify(json);
-
-        this.sendEvent(event);
-      }
-
-      return this.http.request("delete", "/punch/" + byuID, {
-        body: json,
-        responseType: "text",
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-
-  deleteWorkOrder = (byuID: string, data: DeleteWorkOrder) => {
-    try {
-      const json = this.jsonConvert.serialize(data);
-
-      if (data) {
-        const event = new Event();
-
-        event.User = byuID;
-        event.EventTags = ["pitime-ui"];
-        event.Key = "delete-workorder";
-        event.Value = byuID;
-        event.Timestamp = new Date();
-        event.Data = stringify(json);
-
-        this.sendEvent(event);
-      }
-
-      return this.http.request("delete", "/workorderentry/" + byuID, {
-        body: json,
-        responseType: "text",
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-
-  submitOtherHour = (byuID: string, data: OtherHourRequest) => {
-    try {
-      const json = this.jsonConvert.serialize(data);
-
-      if (data) {
-        const event = new Event();
-
-        event.User = byuID;
-        event.EventTags = ["pitime-ui"];
-        event.Key = "submit-otherhour";
-        event.Value = byuID;
-        event.Timestamp = new Date();
-        event.Data = stringify(json);
-
-        this.sendEvent(event);
-      }
-
-      return this.http.put("/otherhours/" + byuID, json, {
-        responseType: "text",
-        headers: new HttpHeaders({
-          "content-type": "application/json"
-        })
-      });
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-
   getOtherHours = (byuID: string, jobID: number, date: string) => {
     try {
       return this.http.get("/otherhours/" + byuID + "/" + jobID + "/" + date, {
@@ -515,37 +318,70 @@ export class APIService {
   sendEvent = (event: Event) => {
     const data = this.jsonConvert.serializeObject(event);
     console.log("sending event", data);
-
+    
     this.http.post("/event", data).subscribe();
   }
-}
 
-@JsonConverter
-class DateConverter implements JsonCustomConvert<Date> {
-  serialize(date: Date): any {
-    function pad(n) {
-      return n < 10 ? "0" + n : n;
+  //determines In/Out status for each position based off most recent punch
+  loadInStatus(emp: Employee): any {
+    const today = new Date();
+    for (const pos of emp.positions) {
+      let currPunch: Punch;
+      for (const punch of emp.periodPunches) {
+       if (Number(pos.positionNumber) === Number(punch.positionNumber)) {
+          if (currPunch === undefined) {
+            currPunch = punch;
+          }
+          else if (punch.time > currPunch.time) {
+            currPunch = punch;
+          }
+       }
+      }
+      if (currPunch !== undefined) {
+        if (currPunch.type === "IN") {
+          pos.inStatus = true;
+        }
+        else {
+          pos.inStatus = false;
+        }
+      }
+      else {
+        pos.inStatus = false;
+      }
     }
+  } 
 
-    return (
-      date.getUTCFullYear() +
-      "-" +
-      pad(date.getUTCMonth() + 1) +
-      "-" +
-      pad(date.getUTCDate()) +
-      "T" +
-      pad(date.getUTCHours()) +
-      ":" +
-      pad(date.getUTCMinutes()) +
-      ":" +
-      pad(date.getUTCSeconds()) +
-      "Z"
-    );
+  loadDays(emp: Employee) {
+    const today = Date.now();
+    
+    //for each position
+    for (const pos of emp.positions) {
+
+      //create an array of days for the last 62 days
+      const days: Day[] = [];
+      const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+      for (let i = 0; i < 62; i++) {
+        const day = new Day();
+        day.time = new Date(today - (i * oneDayInMilliseconds));
+        days.push(day);
+      }
+
+      //add punches to the days
+      for (const punch of emp.periodPunches) {
+        if (Number(pos.positionNumber) === Number(punch.positionNumber)) {
+          for (const day of days) {
+            if (punch.time.getDate() === day.time.getDate() 
+            && punch.time.getMonth() === day.time.getMonth() 
+          && punch.time.getFullYear() === day.time.getFullYear()) {
+              day.punches.push(punch);
+            }
+          }
+        }
+      }
+      pos.days = days;
+    }
   }
 
-  deserialize(date: any): Date {
-    return new Date(date);
-  }
 }
 
 @JsonObject("Event")
@@ -577,7 +413,6 @@ export class Event {
 }
 
 interface Message {
-  key: string;
   value: object;
 }
 

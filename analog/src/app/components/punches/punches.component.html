@@ -6,23 +6,19 @@
 		<div *ngIf="day?.punches?.length > 0" class="card-content">
 			<div class="punches">
 				<div class="punch" *ngFor="let punch of day?.punches">
-					<span class="time" [class.edit]="!punch?.time" [class.delete]="punch?.deletablePair > 0"
-						(click)="openKeyboard(punch)" (click)="deletePunch(punch)">
+					<span class="time" >
 						{{ punch?.time ? (punch?.time | date: "shortTime") : "--:--" }}
 					</span>
 
-					<span class="type" [class.delete]="punch?.deletablePair > 0" (click)="deletePunch(punch)">
-						{{ punchType.toString(punch?.type) }}
+					<span class="type"  [ngStyle]="{'color' : punchType.toString(punch?.type) === 'IN' ? 'darkgreen' : 'darkred'}">
+						<b>
+							{{ punchType.toString(punch?.type) }}
+						</b>
 					</span>
 				</div>
 			</div>
 
-			<span class="total"> Total: {{ day?.punchedHours }} </span>
-
-			<button *ngIf="job.isPhysicalFacilities" class="lunch" color="accent" mat-raised-button
-				(click)="lunchPunch()">
-				Missed Lunch Punch
-			</button>
+			<span class="total"> Total Hours: {{ calculateTotalHours(day)?.punchedHours }} </span>
 		</div>
 	</mat-card>
 </div>

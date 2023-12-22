@@ -34,23 +34,16 @@ import { AppComponent } from "./components/app.component";
 import { ClockComponent } from "./components/clock/clock.component";
 import { LoginComponent } from "./components/login/login.component";
 import { HoursPipe } from "./pipes/hours.pipe";
-import { WoTrcDialog } from "./dialogs/wo-trc/wo-trc.dialog";
 import { ActivityButton } from "./components/activity-button/activity-button.component";
 import { JobSelectComponent } from "./components/job-select/job-select.component";
 import { DateSelectComponent } from "./components/date-select/date-select.component";
 import { DayOverviewComponent } from "./components/day-overview/day-overview.component";
-import { WoSelectComponent } from "./components/wo-select/wo-select.component";
 import { ErrorDialog } from "./dialogs/error/error.dialog";
 import { ManagementComponent } from './components/management/management.component';
 import { PunchesComponent } from "./components/punches/punches.component";
-import { WoSrComponent } from "./components/wo-sr/wo-sr.component";
-import { SickVacationComponent } from "./components/sick-vacation/sick-vacation.component";
 import { ScreenSaverComponent } from "./components/screen-saver/screen-saver.component";
-import { TimeEntryComponent } from "./components/time-entry/time-entry.component";
-import { LunchPunchDialog } from "./dialogs/lunch-punch/lunch-punch.dialog";
 import { ToastService } from "./services/toast.service";
 import { ConfirmDialog } from './dialogs/confirm/confirm.dialog';
-import { DeletePunchDialog } from './dialogs/delete-punch/delete-punch.dialog';
 @NgModule({
     declarations: [
         AppComponent,
@@ -58,21 +51,14 @@ import { DeletePunchDialog } from './dialogs/delete-punch/delete-punch.dialog';
         ByuIDPipe,
         LoginComponent,
         HoursPipe,
-        WoTrcDialog,
         ActivityButton,
         JobSelectComponent,
         DateSelectComponent,
         DayOverviewComponent,
-        WoSelectComponent,
         ErrorDialog,
         PunchesComponent,
-        WoSrComponent,
-        SickVacationComponent,
         ScreenSaverComponent,
-        TimeEntryComponent,
-        LunchPunchDialog,
         ConfirmDialog,
-        DeletePunchDialog,
         ManagementComponent,
     ],
     imports: [

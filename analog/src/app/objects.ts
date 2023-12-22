@@ -71,9 +71,8 @@ export enum JobType {
   FullTime = "F",
   PartTime = "P"
 }
-
 @JsonConverter
-class DateConverter implements JsonCustomConvert<Date> {
+export class DateConverter implements JsonCustomConvert<Date> {
   serialize(date: Date): any {
     if (!date) {
       return "0001-01-01T00:00:00Z";
@@ -98,15 +97,38 @@ class DateConverter implements JsonCustomConvert<Date> {
       "Z"
     );
   }
-
-  deserialize(date: any): Date {
-    if (!date || date === "0001-01-01T00:00:00Z") {
+  deserialize(dateString: any): Date {
+    if (!dateString || dateString === "0001-01-01T00:00:00Z") {
       return undefined;
     }
-
-    return new Date(date);
+  
+    // Extract date components using a regular expression
+    const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.000 ([\+\-]\d{4})$/);
+  
+    if (match) {
+      const [, year, month, day, hours, minutes, seconds, offset] = match;
+      const utcOffset = parseInt(offset) / 100; // Convert offset to hours
+      const utcMilliseconds = Date.UTC(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        parseInt(hours),
+        parseInt(minutes),
+        parseInt(seconds)
+      );
+  
+      // Adjust for UTC offset
+      const localMilliseconds = utcMilliseconds - utcOffset * 60 * 60 * 1000;
+      const localDate = new Date(localMilliseconds);
+  
+      return localDate;
+    }
+  
+    // Return undefined if the format is not recognized
+    return undefined;
   }
 }
+
 
 export class Hours {
   private _time: string;
@@ -142,6 +164,7 @@ export class Hours {
   }
 }
 
+
 @JsonObject("TRC")
 export class TRC {
   @JsonProperty("id", String, true)
@@ -160,83 +183,19 @@ export class TotalTime {
   payPeriod: string = undefined;
 }
 
-@JsonObject("WorkOrder")
-export class WorkOrder {
-  @JsonProperty("id", String, true)
-  id: string = undefined;
-
-  @JsonProperty("name", String, true)
-  name: string = undefined;
-
-  toString = (): string => {
-    if (!this.id && !this.name) {
-      return "";
-    }
-
-    if (!this.name) {
-      return this.id;
-    }
-
-    if (!this.id) {
-      return this.name;
-    }
-
-    return this.id + ": " + this.name;
-  };
-}
-
 @JsonObject("Punch")
 export class Punch {
-  @JsonProperty("id", Number, true)
-  id: number = undefined;
+  @JsonProperty("position_number", String, true)
+  positionNumber: number = undefined;
 
-  @JsonProperty("employee-job-id", Number, true)
-  employeeJobID: number = undefined;
+  @JsonProperty("business_title", String, true)
+  businessTitle: String = undefined;
 
-  @JsonProperty("time", DateConverter, true)
-  time: Date = undefined;
-
-  @JsonProperty("type", String, true)
+  @JsonProperty("clock_event_type", String, true)
   type: String = undefined;
 
-  @JsonProperty("deletable-pair", Number, true)
-  deletablePair: number = undefined;
-
-  editedTime: string = undefined;
-  editedAMPM: string = undefined;
-}
-
-@JsonObject("WorkOrderEntry")
-export class WorkOrderEntry {
-  @JsonProperty("id", Number, true)
-  id: number = undefined;
-
-  @JsonProperty("work-order", WorkOrder, true)
-  workOrder: WorkOrder = undefined;
-
-  @JsonProperty("time-reporting-code-hours", String, true)
-  timeReportingCodeHours: string = undefined;
-
-  @JsonProperty("trc", TRC, true)
-  trc: TRC = undefined;
-
-  @JsonProperty("editable", Boolean, true)
-  editable: boolean = undefined;
-}
-
-@JsonObject("OtherHour")
-export class OtherHour {
-  @JsonProperty("editable", Boolean)
-  editable: boolean = undefined;
-
-  @JsonProperty("sequence-number", Number)
-  sequenceNumber: number = undefined;
-
-  @JsonProperty("time-reporting-code-hours", String)
-  timeReportingCodeHours: string = undefined;
-
-  @JsonProperty("trc", TRC)
-  trc: TRC = undefined;
+  @JsonProperty("time_clock_event_date_time", DateConverter, true)
+  time: Date = undefined;
 }
 
 @JsonObject("Day")
@@ -244,35 +203,14 @@ export class Day {
   @JsonProperty("date", DateConverter, false)
   time: Date = undefined;
 
-  @JsonProperty("has-punch-exception", Boolean, true)
-  hasPunchException: boolean = undefined;
-
-  @JsonProperty("has-work-order-exception", Boolean, true)
-  hasWorkOrderException: boolean = undefined;
-
   @JsonProperty("punched-hours", String, false)
   punchedHours: string = undefined;
-
-  @JsonProperty("physical-facilities-hours", String, true)
-  physicalFacilitiesHours: string = undefined;
 
   @JsonProperty("reported-hours", String, true)
   reportedHours: string = undefined;
 
   @JsonProperty("punches", [Punch], true)
   punches: Punch[] = Array<Punch>();
-
-  @JsonProperty("work-order-entries", [WorkOrderEntry], true)
-  workOrderEntries: Array<WorkOrderEntry> = new Array<WorkOrderEntry>();
-
-  @JsonProperty("other-hours", [OtherHour], true)
-  otherHours: Array<OtherHour> = new Array<OtherHour>();
-
-  @JsonProperty("sick-hours-ytd", String, true)
-  sickHoursYTD: string = undefined;
-
-  @JsonProperty("vacation-hours-ytd", String, true)
-  vacationHoursYTD: string = undefined;
 
   public static minDay<T extends Day>(days: T[]): Day {
     if (days == null) {
@@ -321,94 +259,76 @@ export class Day {
   }
 }
 
-@JsonObject("Job")
-export class Job {
-  @JsonProperty("employee-job-id", Number, true)
-  employeeJobID: Number = undefined;
+@JsonObject("Position")
+export class Position {
+ @JsonProperty('position_number', String)
+ positionNumber: number = undefined;
 
-  @JsonProperty("description", String, true)
-  description: string = undefined;
+ @JsonProperty('primary_position', String)
+ primaryPosition: boolean = undefined;
 
-  @JsonProperty("time-subtotals", TotalTime, true)
-  subtotals: TotalTime = undefined;
+ @JsonProperty('business_title')
+ businessTitle: string = undefined;
 
-  // TODO PunchType
-  @JsonProperty("clock-status", String, true)
-  clockStatus: String = undefined;
+ @JsonProperty('position_total_week_hours', String)
+ totalWeekHours: number = undefined;
 
-  // TODO JobType
-  @JsonProperty("job-type", String, true)
-  jobType: String = undefined;
+ @JsonProperty('position_total_period_hours', String)
+ totalPeriodHours: number = undefined;
 
-  @JsonProperty("is-physical-facilities", Boolean, true)
-  isPhysicalFacilities: Boolean = undefined;
+ inStatus: boolean = undefined;
+ days = Array<Day>();
 
-  @JsonProperty("trcs", [TRC], true)
-  trcs: Array<TRC> = new Array<TRC>();
-
-  @JsonProperty("current-trc", TRC, false)
-  currentTRC: TRC = undefined;
-
-  @JsonProperty("work-orders", [WorkOrder], true)
-  workOrders: Array<WorkOrder> = new Array<WorkOrder>();
-
-  @JsonProperty("current-work-order", WorkOrder, true)
-  currentWorkOrder: WorkOrder = undefined;
-
-  @JsonProperty("has-punch-exception", Boolean, true)
-  hasPunchException: boolean = undefined;
-
-  @JsonProperty("has-work-order-exception", Boolean, true)
-  hasWorkOrderException: boolean = undefined;
-
-  @JsonProperty("days", [Day], true)
-  days: Array<Day> = new Array<Day>();
-
-  showTRC = (): boolean => {
-    return (
-      this.isPhysicalFacilities &&
-      this.jobType === JobType.FullTime &&
-      this.clockStatus === PunchType.In
-    );
-  };
-
-  showWorkOrder = (): boolean => {
-    if (!this.currentWorkOrder) {
-      return false;
-    }
-
-    return this.clockStatus === PunchType.In;
-  };
 }
 
 @JsonObject("Employee")
 export class Employee {
-  @JsonProperty("id", String, false)
   id: string = undefined;
-
-  @JsonProperty("name", String, false)
+  @JsonProperty("employee_name", String, false)
   name: string = undefined;
+  @JsonProperty("total_week_hours", String, false)
+  totalWeekHours: string = undefined;
 
-  @JsonProperty("jobs", [Job], true)
-  jobs: Array<Job> = new Array<Job>();
+  @JsonProperty("total_period_hours", String, false)
+  totalPeriodHours: string = undefined;
 
-  @JsonProperty("total-time", TotalTime, true)
-  totalTime: TotalTime = undefined;
+  @JsonProperty('time_entry_codes', Object)
+  timeEntryCodes: { [key: string]: string } = undefined;
 
-  @JsonProperty("international-message", String, true)
-  message: String = undefined;
+  @JsonProperty('positions', [Position])
+  positions: Position[] = undefined; 
+
+  @JsonProperty("period_punches", [Punch], false)
+  periodPunches: Punch[] = undefined;
 
   showTRC = (): boolean => {
-    for (const job of this.jobs) {
-      if (job.showTRC()) {
-        return true;
-      }
-    }
-
     return false;
-  };
+  }
 }
 
+
+@JsonObject("PunchRequest") 
+export class PunchRequest {
+  @JsonProperty("worker_id", String)
+  workerID: string = undefined;
+
+  @JsonProperty("position_number", String)
+  positionNumber: string = undefined;
+
+  @JsonProperty("clock_event_type", String)
+  clockEventType: string = undefined;
+
+  @JsonProperty("time_entry_code", String)
+  timeEntryCode: string = undefined;
+
+  @JsonProperty("comment", String)
+  comment: string = undefined;
+
+  @JsonProperty("time_clock_event_date_time", DateConverter, String)
+  time: String = undefined;
+
+
+}
 @JsonObject("ClientPunchRequest")
 export class ClientPunchRequest {
   @JsonProperty("byu-id", String)
@@ -433,78 +353,6 @@ export class ClientPunchRequest {
   trcID: String;
 }
 
-@JsonObject("LunchPunch")
-export class LunchPunch {
-  @JsonProperty("start_time", DateConverter)
-  startTime: Date;
 
-  @JsonProperty("duration", String)
-  duration: string;
 
-  @JsonProperty("employee_record", Number)
-  jobID: number;
-}
 
-@JsonObject("DeletePunch")
-export class DeletePunch {
-  @JsonProperty("employee-record", Number)
-  jobID: number;
-
-  @JsonProperty("punch-time", DateConverter)
-  punchTime: Date;
-
-  @JsonProperty("sequence-number", Number)
-  sequenceNumber: number;
-}
-
-@JsonObject("OtherHourRequest")
-export class OtherHourRequest {
-  @JsonProperty("employee-job-id", Number)
-  jobID: number;
-
-  @JsonProperty("sequence-number", Number)
-  sequenceNumber: number;
-
-  @JsonProperty("time-reporting-code-hours", String)
-  timeReportingCodeHours: string;
-
-  @JsonProperty("punch-date", DateConverter)
-  punchDate: Date = undefined;
-
-  @JsonProperty("trc-id", String)
-  trcID: string;
-}
-
-@JsonObject("DeleteWorkOrder")
-export class DeleteWorkOrder {
-  @JsonProperty("employee-job-id", Number)
-  jobID: number;
-
-  @JsonProperty("date", String)
-  date: string;
-
-  @JsonProperty("sequence-number", Number)
-  sequenceNumber: number;
-}
-
-@JsonObject("WorkOrderUpsertRequest")
-export class WorkOrderUpsertRequest {
-  @JsonProperty("employee_record", Number)
-  employeeRecord: number = undefined;
-
-  // empty if adding a new work order
-  @JsonProperty("sequence_number", Number, true)
-  sequenceNumber: number = undefined;
-
-  @JsonProperty("time_reporting_code_hours", String)
-  timeReportingCodeHours: string = undefined;
-
-  @JsonProperty("punch_date", DateConverter)
-  punchDate: Date = undefined;
-
-  @JsonProperty("trc_id", String, true)
-  trcID: string = undefined;
-
-  @JsonProperty("work_order_id", String, true)
-  workOrderID: string = undefined;
-}

@@ -127,7 +127,7 @@ func main() {
 	}))
 
 	server := http.Server{
-		Addr:           *port,
+		Addr:           ":" + *port,
 		MaxHeaderBytes: 1024 * 10,
 	}
 

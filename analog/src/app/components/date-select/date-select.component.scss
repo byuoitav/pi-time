@@ -12,6 +12,9 @@ $date-diameter: 4.5vw;
     padding-right: 10vw;
 }
 
+
+
+
 .container {
     margin: 0.5em auto;
     width: 98%;
@@ -28,12 +31,20 @@ $date-diameter: 4.5vw;
     }
 }
 
+.monthName {
+    font-size: 1.5em;
+    font-weight: bold;
+}
 .month {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: $card-width;
+}
+
+.dayName {
+    font-weight: bold;
 }
 
 .hide {
@@ -101,12 +112,11 @@ $date-diameter: 4.5vw;
 }
 
 .dot {
-    height: 0.3em;
-    width: 0.3em;
+    height: 0.6em;
+    width: 0.6em;
     // margin-right: 0.35em;
-    margin-top: 2px;
     align-self: center;
-    background-color: #000000;
+    background-color: darkgreen;
     border-radius: 50%;
     display: block;
     &.exception {

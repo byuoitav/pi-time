@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {BehaviorSubject, Subscription} from "rxjs";
 
 import {EmployeeRef, APIService} from "../../services/api.service";
-import {Employee, Job} from "../../objects";
+import {Employee} from "../../objects";
 
 @Component({
   selector: "job-select",
@@ -16,7 +16,6 @@ export class JobSelectComponent implements OnInit, OnDestroy {
     if (this._empRef) {
       return this._empRef.employee;
     }
-
     return undefined;
   }
 
@@ -29,8 +28,8 @@ export class JobSelectComponent implements OnInit, OnDestroy {
       this._empRef = data.empRef;
 
       this._subsToDestroy.push(this._empRef.subject().subscribe(emp => {
-        if (emp && emp.jobs.length === 1) {
-          this.selectJob(+emp.jobs[0].employeeJobID);
+        if (emp && emp.positions.length === 1) {
+          this.selectJob(+emp.positions[0].positionNumber);
         }
       }));
     }));
@@ -40,12 +39,13 @@ export class JobSelectComponent implements OnInit, OnDestroy {
     for (const s of this._subsToDestroy) {
       s.unsubscribe();
     }
-
     this._empRef = undefined;
   }
 
   selectJob = (jobID: number) => {
-    this.router.navigate(["./" + jobID + "/date/"], {relativeTo: this.route});
+    this.router.navigate(["./" + jobID + "/date/"], {
+      relativeTo: this.route,
+      queryParamsHandling: "preserve"});
   };
 
   logout = () => {
@@ -58,13 +58,4 @@ export class JobSelectComponent implements OnInit, OnDestroy {
     });
   }
 
-  hasTimesheetException = (j: Job) => {
-    if (
-      j.days.some(d => d.hasPunchException || d.hasWorkOrderException)
-    ) {
-      return "!";
-    }
-
-    return "";
-  };
 }
